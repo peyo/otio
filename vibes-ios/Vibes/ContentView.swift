@@ -96,7 +96,10 @@ struct ContentView: View {
                 NavigationLink {
                     EmotionsAnalyticsView()
                 } label: {
-                    Label("Analytics", systemImage: "chart.xyaxis.line")
+                    HStack(spacing: 4) {
+                        Image(systemName: "chart.xyaxis.line")
+                    }
+                    .foregroundColor(.appAccent)
                 }
             }
             .sheet(isPresented: $showingIntensitySheet) {
