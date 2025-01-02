@@ -2,8 +2,7 @@ import SwiftUI
 import Charts
 
 struct EmotionsAnalyticsView: View {
-    @State private var timeframe = "Week"
-    private let timeframes = ["Day", "Week", "Month"]
+    @State private var selectedTimeframe: DateRange = .week
     
     var body: some View {
         ScrollView {
@@ -20,31 +19,46 @@ struct EmotionsAnalyticsView: View {
                 .padding(.top, 20)
                 .frame(maxWidth: .infinity)
                 
-                VStack(spacing: 24) {
-                    // Timeframe picker
-                    Picker("Timeframe", selection: $timeframe) {
-                        ForEach(timeframes, id: \.self) { timeframe in
-                            Text(timeframe)
+                // Modern Segmented Picker
+                HStack(spacing: 8) {
+                    ForEach(DateRange.allCases, id: \.self) { timeframe in
+                        Button {
+                            withAnimation {
+                                selectedTimeframe = timeframe
+                            }
+                        } label: {
+                            Text(timeframe.rawValue)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .padding(.vertical, 10)
                                 .frame(maxWidth: .infinity)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    
-                    // Show insights based on selected timeframe
-                    Group {
-                        switch timeframe {
-                        case "Day":
-                            InsightCard(insights: dayInsights)
-                        case "Week":
-                            InsightCard(insights: weekInsights)
-                        case "Month":
-                            InsightCard(insights: monthInsights)
-                        default:
-                            EmptyView()
+                                .background(
+                                    Capsule()
+                                        .fill(selectedTimeframe == timeframe ? 
+                                             .blue : Color.clear)
+                                )
+                                .foregroundColor(selectedTimeframe == timeframe ? 
+                                               .white : .secondary)
                         }
                     }
                 }
-                .padding(.horizontal)  // Single padding for both picker and card
+                .padding(3)
+                .background(Color(.systemGray6))
+                .clipShape(Capsule())
+                .padding(.horizontal)
+                
+                // Show insights based on selected timeframe
+                Group {
+                    switch selectedTimeframe {
+                    case .day:
+                        InsightCard(insights: dayInsights)
+                    case .week:
+                        InsightCard(insights: weekInsights)
+                    case .month:
+                        InsightCard(insights: monthInsights)
+                    }
+                }
+                .padding(.horizontal)
             }
             .padding(.vertical)
         }

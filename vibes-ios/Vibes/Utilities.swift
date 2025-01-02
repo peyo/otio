@@ -22,9 +22,9 @@ enum ChartType: String, CaseIterable {
 }
 
 enum DateRange: String, CaseIterable {
-    case day = "24h"
-    case week = "7d"
-    case month = "30d"
+    case day = "Day"
+    case week = "Week"
+    case month = "Month"
 }
 
 enum EmotionType: String, CaseIterable, Identifiable {
