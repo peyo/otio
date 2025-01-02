@@ -90,6 +90,7 @@ struct ContentView: View {
                     }
                 }
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Vibes")
             .toolbar {
                 NavigationLink {
@@ -115,7 +116,7 @@ struct ContentView: View {
         } else {
             selectedEmotion = EmotionOption(
                 type: type,
-                icon: type  // We'll use the type directly since we're using emojis
+                icon: type
             )
             showingIntensitySheet = true
         }
@@ -236,17 +237,6 @@ struct EmotionButton: View {
         }
         .foregroundColor(.primary)
     }
-    
-    private func emojiFor(_ emotion: String) -> String {
-        switch emotion {
-        case "Happy": return "😊"
-        case "Sad": return "😢"
-        case "Anxious": return "😰"
-        case "Angry": return "😠"
-        case "Neutral": return "😐"
-        default: return "❓"
-        }
-    }
 }
 
 struct IntensitySelectionView: View {
@@ -303,17 +293,6 @@ struct IntensitySelectionView: View {
         }
     }
     
-    private func emojiFor(_ emotion: String) -> String {
-        switch emotion {
-        case "Happy": return "😊"
-        case "Sad": return "😢"
-        case "Anxious": return "😰"
-        case "Angry": return "😠"
-        case "Neutral": return "😐"
-        default: return "❓"
-        }
-    }
-    
     private func intensityLabel(for intensity: Int) -> String {
         switch intensity {
         case 1: return "A little"
@@ -365,17 +344,6 @@ struct EmotionCard: View {
                 .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
         )
-    }
-    
-    private func emojiFor(_ type: String) -> String {
-        switch type {
-        case "Happy": return "😊"
-        case "Sad": return "😢"
-        case "Anxious": return "😰"
-        case "Angry": return "😠"
-        case "Neutral": return "😐"
-        default: return "❓"
-        }
     }
 }
 

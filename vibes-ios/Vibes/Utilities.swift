@@ -52,4 +52,15 @@ extension Color {
         default: return .gray
         }
     }
+}
+
+public func emojiFor(_ emotion: String) -> String {
+    switch emotion {
+    case "Happy": return "😊"
+    case "Sad": return "😢"
+    case "Anxious": return "😰"
+    case "Angry": return "😠"
+    case "Neutral": return "😐"
+    default: return "❓"
+    }
 } 

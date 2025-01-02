@@ -19,7 +19,7 @@ struct EmotionsAnalyticsView: View {
                 .padding(.top, 20)
                 .frame(maxWidth: .infinity)
                 
-                // Modern Segmented Picker
+                // Modern Rectangular Segmented Picker
                 HStack(spacing: 8) {
                     ForEach(DateRange.allCases, id: \.self) { timeframe in
                         Button {
@@ -33,7 +33,7 @@ struct EmotionsAnalyticsView: View {
                                 .padding(.vertical, 10)
                                 .frame(maxWidth: .infinity)
                                 .background(
-                                    Capsule()
+                                    RoundedRectangle(cornerRadius: 12)
                                         .fill(selectedTimeframe == timeframe ? 
                                              .blue : Color.clear)
                                 )
@@ -44,7 +44,7 @@ struct EmotionsAnalyticsView: View {
                 }
                 .padding(3)
                 .background(Color(.systemGray6))
-                .clipShape(Capsule())
+                .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal)
                 
                 // Show insights based on selected timeframe
