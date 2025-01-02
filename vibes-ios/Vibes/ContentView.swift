@@ -121,25 +121,17 @@ struct ContentView: View {
         }
     }
     
-    private func relativeTimeString(from date: Date) -> String {
-        let now = Date()
-        let components = Calendar.current.dateComponents([.minute, .hour, .day], from: date, to: now)
-        
-        if let day = components.day, day > 0 {
-            return day == 1 ? "yesterday" : "\(day) days ago"
+    private func iconName(for emotion: String) -> String {
+        switch emotion {
+        case "Happy": return "face.smiling"
+        case "Sad": return "face.sad"
+        case "Anxious": return "face.anxious"
+        case "Angry": return "face.angry"
+        case "Neutral": return "face.neutral"
+        default: return "questionmark"
         }
-        
-        if let hour = components.hour, hour > 0 {
-            return hour == 1 ? "an hour ago" : "\(hour) hours ago"
-        }
-        
-        if let minute = components.minute, minute > 0 {
-            return minute == 1 ? "a minute ago" : "\(minute) minutes ago"
-        }
-        
-        return "just now"
     }
-
+    
     private func submitEmotion(type: String, intensity: Int) {
         Task {
             guard let url = URL(string: "http://localhost:3000/api/emotions") else { return }
@@ -168,8 +160,8 @@ struct ContentView: View {
             }
         }
     }
-
-    private func fetchEmotions() async {
+    
+    func fetchEmotions() async {
         isLoading = true
         defer { isLoading = false }
         
@@ -180,20 +172,19 @@ struct ContentView: View {
         
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
-            print("Raw data:", String(data: data, encoding: .utf8) ?? "Could not convert data to string")
             
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
+            
+            // Create a custom date formatter to match the API format
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+            decoder.dateDecodingStrategy = .formatted(formatter)
             
             let emotionsResponse = try decoder.decode(EmotionsResponse.self, from: data)
-            print("Decoded response:", emotionsResponse)
-            
             recentEmotions = emotionsResponse.data
                 .sorted { $0.date > $1.date }
                 .prefix(3)
                 .map { $0 }
-            
-            print("Recent emotions:", recentEmotions)
             
         } catch {
             print("Error fetching emotions:", error)
@@ -201,62 +192,24 @@ struct ContentView: View {
             showError = true
         }
     }
-}
-
-// New component for emotion cards
-struct EmotionCard: View {
-    let emotion: EmotionData
-    let timeString: (Date) -> String
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Top row: Emoji and time
-            HStack {
-                Text(emojiFor(emotion.type))
-                    .font(.title)
-                Spacer()
-                Text(timeString(emotion.date))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
-            // Bottom row: Type and intensity
-            HStack {
-                Text(emotion.type)
-                    .fontWeight(.medium)
-                
-                if emotion.type != "Neutral" {
-                    Spacer()
-                    Text("Intensity \(emotion.intensity)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(Color(.systemGray6))
-                        )
-                }
-            }
+    private func relativeTimeString(from date: Date) -> String {
+        let now = Date()
+        let components = Calendar.current.dateComponents([.minute, .hour, .day], from: date, to: now)
+        
+        if let day = components.day, day > 0 {
+            return day == 1 ? "yesterday" : "\(day) days ago"
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
-        )
-        .padding(.horizontal)
-    }
-    
-    private func emojiFor(_ type: String) -> String {
-        switch type {
-        case "Happy": return "😊"
-        case "Sad": return "😢"
-        case "Anxious": return "😰"
-        case "Angry": return "😠"
-        case "Neutral": return "😐"
-        default: return "❓"
+        
+        if let hour = components.hour, hour > 0 {
+            return hour == 1 ? "an hour ago" : "\(hour) hours ago"
         }
+        
+        if let minute = components.minute, minute > 0 {
+            return minute == 1 ? "a minute ago" : "\(minute) minutes ago"
+        }
+        
+        return "just now"
     }
 }
 
@@ -299,48 +252,119 @@ struct EmotionButton: View {
 struct IntensitySelectionView: View {
     let emotion: EmotionOption
     let onSelect: (Int) -> Void
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack(spacing: 24) {
-            // Header with emoji and title
-            HStack(spacing: 12) {
-                Text(emotion.type == "Neutral" ? "😐" : emojiFor(emotion.type))
-                    .font(.system(size: 44))
-                Text("Select intensity")
-                    .font(.title2)
-                    .fontWeight(.medium)
-            }
-            .padding(.top)
-            
-            // Intensity buttons
-            HStack(spacing: 24) {
-                ForEach(1...3, id: \.self) { intensity in
-                    IntensityButton(
-                        intensity: intensity,
-                        emotion: emotion.type,
-                        action: {
-                            withAnimation {
-                                onSelect(intensity)
-                                dismiss()
-                            }
+        NavigationStack {
+            VStack(spacing: 32) {
+                VStack(spacing: 16) {
+                    Text(emojiFor(emotion.type))
+                        .font(.system(size: 60))
+                    
+                    Text("How \(emotion.type.lowercased()) are you feeling?")
+                        .font(.headline)
+                }
+                .padding(.top, 40)
+                
+                HStack(spacing: 20) {
+                    ForEach(1...3, id: \.self) { intensity in
+                        Button {
+                            onSelect(intensity)
+                            dismiss()
+                        } label: {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.forEmotion(emotion.type).opacity(Double(intensity) / 3.0))
+                                .frame(width: 100, height: 100)
+                                .overlay(
+                                    VStack(spacing: 4) {
+                                        Text("\(intensity)")
+                                            .font(.title2)
+                                        Text(intensityLabel(for: intensity))
+                                            .font(.caption)
+                                    }
+                                    .foregroundColor(.primary)
+                                )
                         }
-                    )
+                    }
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Select Intensity")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
             }
-            .padding(.vertical, 32)
+        }
+    }
+    
+    private func emojiFor(_ emotion: String) -> String {
+        switch emotion {
+        case "Happy": return "😊"
+        case "Sad": return "😢"
+        case "Anxious": return "😰"
+        case "Angry": return "😠"
+        case "Neutral": return "😐"
+        default: return "❓"
+        }
+    }
+    
+    private func intensityLabel(for intensity: Int) -> String {
+        switch intensity {
+        case 1: return "A little"
+        case 2: return "Somewhat"
+        case 3: return "Very"
+        default: return ""
+        }
+    }
+}
+
+struct EmotionCard: View {
+    let emotion: EmotionData
+    let timeString: (Date) -> String
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Emoji Circle
+            Text(emojiFor(emotion.type))
+                .font(.title)
+                .padding(12)
+                .background(
+                    Circle()
+                        .fill(Color.forEmotion(emotion.type).opacity(0.1))
+                )
+            
+            // Content
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(emotion.type)
+                        .fontWeight(.medium)
+                    if emotion.type != "Neutral" {
+                        Text("•")
+                            .foregroundColor(.secondary)
+                        Text("Intensity \(emotion.intensity)")
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Text(timeString(emotion.date))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
             
             Spacer()
         }
         .padding()
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") {
-                    dismiss()
-                }
-            }
-        }
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+        )
     }
     
     private func emojiFor(_ type: String) -> String {
@@ -349,56 +373,9 @@ struct IntensitySelectionView: View {
         case "Sad": return "😢"
         case "Anxious": return "😰"
         case "Angry": return "😠"
+        case "Neutral": return "😐"
         default: return "❓"
         }
-    }
-}
-
-// Simplified intensity button component
-struct IntensityButton: View {
-    let intensity: Int
-    let emotion: String
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                action()
-            }
-        }) {
-            VStack(spacing: 4) {
-                Text("\(intensity)")
-                    .font(.title2)
-                    .fontWeight(.medium)
-                Text(intensityLabel)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .frame(width: 80, height: 80)
-            .background(
-                Circle()
-                    .fill(Color.forEmotion(emotion).opacity(Double(intensity) / 5.0))
-            )
-        }
-        .buttonStyle(IntensityButtonStyle())
-    }
-    
-    private var intensityLabel: String {
-        switch intensity {
-        case 1: return "Light"
-        case 2: return "Medium"
-        case 3: return "Strong"
-        default: return ""
-        }
-    }
-}
-
-// Custom button style for intensity buttons
-struct IntensityButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.92 : 1)
-            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: configuration.isPressed)
     }
 }
 
