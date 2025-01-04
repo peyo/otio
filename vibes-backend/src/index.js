@@ -2,6 +2,8 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const axios = require('axios');
+const insightsRoutes = require('./routes/insights'); 
 
 // Load environment variables
 dotenv.config();
@@ -16,6 +18,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/emotions', require('./routes/emotions'));
+app.use('/api/insights', require('./routes/insights'));
 
 // Basic error handling
 app.use((err, req, res, next) => {
@@ -23,7 +26,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({
         success: false,
         message: 'Something went wrong!',
-        error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined,
     });
 });
 
@@ -31,7 +34,7 @@ app.use((err, req, res, next) => {
 app.get('/', (req, res) => {
     res.json({
         success: true,
-        message: 'Vibes API is running!'
+        message: 'Vibes API is running!',
     });
 });
 
