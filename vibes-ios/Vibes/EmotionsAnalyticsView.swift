@@ -104,19 +104,12 @@ struct EmotionsAnalyticsView: View {
             }
             print("Response Data:", String(data: data, encoding: .utf8) ?? "nil")
 
-            /*// Decode backend response
-            struct InsightsResponse: Decodable {
-                let success: Bool
-                let insights: [Insight]
-            }
-            */
             let insightsResponse = try JSONDecoder().decode(InsightsResponse.self, from: data)
 
             guard insightsResponse.success else {
                 throw URLError(.badServerResponse)
             }
 
-            // Create insights with generated IDs
             let insights = insightsResponse.insights.map { insight in
                 Insight(emoji: insight.emoji, title: insight.title, description: insight.description)
             }
@@ -134,32 +127,25 @@ struct EmotionsAnalyticsView: View {
         let insight: Insight
         
         var body: some View {
-            HStack(spacing: 16) {
-                // Emoji Column
-                Text(insight.emoji)
-                    .font(.title)
-                    .padding(12)
-                
-                // Content Column
-                VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(insight.emoji)
+                        .font(.title2)
                     Text(insight.title)
-                        .font(.body)
-                        .fontWeight(.medium)
-                        .foregroundColor(.primary)
-                    
-                    Text(insight.description)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(.headline)
                 }
                 
-                Spacer()
+                Text(insight.description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
             .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color(.systemBackground))
+                    .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
             )
-            // Removed the extra .padding(.horizontal) here
         }
     }
 }

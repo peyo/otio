@@ -7,6 +7,7 @@ struct EmotionOption: Identifiable {
 }
 
 struct ContentView: View {
+    @EnvironmentObject var userService: UserService
     private let emotions = ["Happy", "Sad", "Anxious", "Angry", "Neutral"]
     private let buttonSpacing: CGFloat = 12
 
@@ -19,41 +20,54 @@ struct ContentView: View {
     @State private var errorMessage = ""
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 32) {
-                    emotionInputSection
-                    recentEmotionsSection
-                }
-            }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Vibes")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    HStack(spacing: 16) {
-                        NavigationLink {
-                            ConnectionView()
-                        } label: {
-                            Image(systemName: "person.2.fill")
-                                .foregroundColor(.appAccent)
-                        }
-                        
-                        NavigationLink {
-                            EmotionsAnalyticsView(emotions: weekEmotions)
-                        } label: {
-                            Image(systemName: "eye")
-                                .foregroundColor(.appAccent)
+        Group {
+            if userService.isAuthenticated {
+                NavigationStack {
+                    ScrollView {
+                        VStack(spacing: 32) {
+                            emotionInputSection
+                            recentEmotionsSection
                         }
                     }
+                    .background(Color(.systemGroupedBackground))
+                    .navigationTitle("Vibes")
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            HStack(spacing: 16) {
+                                NavigationLink {
+                                    ConnectionView()
+                                } label: {
+                                    Image(systemName: "person.2.fill")
+                                        .foregroundColor(.appAccent)
+                                }
+                                
+                                NavigationLink {
+                                    EmotionsAnalyticsView(emotions: weekEmotions)
+                                } label: {
+                                    Image(systemName: "eye")
+                                        .foregroundColor(.appAccent)
+                                }
+                                
+                                Button(action: {
+                                    userService.signOut()
+                                }) {
+                                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                                        .foregroundColor(.appAccent)
+                                }
+                            }
+                        }
+                    }
+                    .sheet(isPresented: $showingIntensitySheet) {
+                        IntensitySelectionView(emotion: selectedEmotion!) { intensity in
+                            submitEmotion(type: selectedEmotion!.type, intensity: intensity)
+                        }
+                    }
+                    .task {
+                        await fetchEmotions()
+                    }
                 }
-            }
-            .sheet(isPresented: $showingIntensitySheet) {
-                IntensitySelectionView(emotion: selectedEmotion!) { intensity in
-                    submitEmotion(type: selectedEmotion!.type, intensity: intensity)
-                }
-            }
-            .task {
-                await fetchEmotions()
+            } else {
+                SignInView()
             }
         }
     }
