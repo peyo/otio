@@ -13,13 +13,20 @@ const generatePrompt = (emotions) => {
         
         ${emotionSummary}
         
-        Generate 3 meaningful insights about the emotional patterns. Each insight should:
-        1. Be encouraging and supportive
-        2. Focus on patterns and trends
-        3. Provide gentle suggestions when relevant
-        4. Be concise (max 2 sentences)
-        5. Do not number the insights; present them as standalone statements without prefixes.
-        Format each insight as: title|description
+        Generate 3 meaningful insights about the emotional patterns. Each insight MUST follow this exact format:
+        emoji|title|description
+
+        Requirements for each insight:
+        1. Emoji must be relevant to the insight's message (e.g., 🌟 for positive trends, 🧘‍♀️ for mindfulness, etc.)
+        2. Title should be short and clear (2-4 words)
+        3. Description should be encouraging and supportive (max 2 sentences)
+        4. Focus on patterns and trends
+        5. Provide gentle suggestions when relevant
+
+        Example format:
+        🌱|Growth Mindset|Your emotional awareness is growing stronger each day.
+        
+        Do not number the insights or add any additional formatting.
     `;
 };
 
@@ -66,8 +73,8 @@ router.post('/', async (req, res) => {
         const insights = rawOutput
             .split('\n')
             .map(line => {
-                const [title, description] = line.split('|').map(part => part.trim());
-                return { title, description };
+                const [emoji, title, description] = line.split('|').map(part => part.trim());
+                return { emoji, title, description };
             })
             .filter(insight => insight.title && insight.description);
 

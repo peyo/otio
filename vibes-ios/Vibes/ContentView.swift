@@ -29,11 +29,22 @@ struct ContentView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Vibes")
             .toolbar {
-                NavigationLink {
-                    EmotionsAnalyticsView(emotions: weekEmotions)
-                } label: {
-                    Image(systemName: "eye")
-                        .foregroundColor(.appAccent)
+                ToolbarItem(placement: .topBarTrailing) {
+                    HStack(spacing: 16) {
+                        NavigationLink {
+                            ConnectionView()
+                        } label: {
+                            Image(systemName: "person.2.fill")
+                                .foregroundColor(.appAccent)
+                        }
+                        
+                        NavigationLink {
+                            EmotionsAnalyticsView(emotions: weekEmotions)
+                        } label: {
+                            Image(systemName: "eye")
+                                .foregroundColor(.appAccent)
+                        }
+                    }
                 }
             }
             .sheet(isPresented: $showingIntensitySheet) {

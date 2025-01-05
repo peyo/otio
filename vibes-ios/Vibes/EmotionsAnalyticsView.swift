@@ -9,7 +9,7 @@ struct EmotionsAnalyticsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(spacing: 24) {
                 // Title and Subtitle
                 VStack(spacing: 2) {
                     Text("Insights")
@@ -20,33 +20,29 @@ struct EmotionsAnalyticsView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
-                .padding(.top, 8)
                 .frame(maxWidth: .infinity)
 
                 // Insights Section
-                VStack(alignment: .leading, spacing: 8) {
-                    if isLoading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    } else if insights.isEmpty {
-                        let defaultInsight = Insight(title: "", description: "Track more to see this week's insights.")
-                        InsightCard(insight: defaultInsight)
-                    } else if let errorMessage = errorMessage {
-                        let errorInsight = Insight(title: "", description: errorMessage)
-                        InsightCard(insight: errorInsight)
-                    } else {
-                        LazyVStack(spacing: 12) {
-                            ForEach(insights.indices, id: \.self) { index in
-                                InsightCard(insight: insights[index])
-                            }
+                if isLoading {
+                    ProgressView()
+                        .tint(.appAccent)
+                        .frame(maxWidth: .infinity)
+                } else if insights.isEmpty {
+                    let defaultInsight = Insight(emoji: "❓", title: "", description: "Track more to see this week's insights.")
+                    InsightCard(insight: defaultInsight)
+                } else if let errorMessage = errorMessage {
+                    let errorInsight = Insight(emoji: "⚠️", title: "", description: errorMessage)
+                    InsightCard(insight: errorInsight)
+                } else {
+                    LazyVStack(spacing: 12) {
+                        ForEach(insights.indices, id: \.self) { index in
+                            InsightCard(insight: insights[index])
                         }
-                        .padding(.horizontal)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.top, 2)
             }
-            .padding(.vertical, 8)
+            .padding(.horizontal)
+            .padding(.bottom)  // Only padding at the bottom
         }
         .background(Color(.systemGroupedBackground))
         .navigationBarBackButtonHidden(true)
@@ -108,11 +104,12 @@ struct EmotionsAnalyticsView: View {
             }
             print("Response Data:", String(data: data, encoding: .utf8) ?? "nil")
 
-            // Decode backend response
+            /*// Decode backend response
             struct InsightsResponse: Decodable {
                 let success: Bool
                 let insights: [Insight]
             }
+            */
             let insightsResponse = try JSONDecoder().decode(InsightsResponse.self, from: data)
 
             guard insightsResponse.success else {
@@ -121,7 +118,7 @@ struct EmotionsAnalyticsView: View {
 
             // Create insights with generated IDs
             let insights = insightsResponse.insights.map { insight in
-                Insight(title: insight.title, description: insight.description)
+                Insight(emoji: insight.emoji, title: insight.title, description: insight.description)
             }
 
             await MainActor.run {
@@ -135,30 +132,34 @@ struct EmotionsAnalyticsView: View {
 
     struct InsightCard: View {
         let insight: Insight
-
+        
         var body: some View {
             HStack(spacing: 16) {
-                // Content
+                // Emoji Column
+                Text(insight.emoji)
+                    .font(.title)
+                    .padding(12)
+                
+                // Content Column
                 VStack(alignment: .leading, spacing: 4) {
-                    if !insight.title.isEmpty {
-                        Text(insight.title)
-                            .font(.body)
-                            .foregroundColor(.primary)
-                    }
+                    Text(insight.title)
+                        .font(.body)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    
                     Text(insight.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                
                 Spacer()
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color(.systemBackground))
-                    .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
             )
+            // Removed the extra .padding(.horizontal) here
         }
     }
 }

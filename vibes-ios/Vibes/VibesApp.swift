@@ -1,22 +1,36 @@
-//
-//  VibesApp.swift
-//  Vibes
-//
-//  Created by Peter Yoon on 1/1/25.
-//
-
 import SwiftUI
+import FirebaseCore
+import FirebaseDatabase
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        
+        // Test Firebase connection
+        let ref = Database.database().reference()
+        ref.child("test").setValue(["message": "Hello Firebase!"]) { error, _ in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+            } else {
+                print("Successfully connected to Firebase!")
+            }
+        }
+        
+        return true
+    }
+}
 
 @main
 struct VibesApp: App {
-    init() {
-        // Set the global accent color for the app
-        UINavigationBar.appearance().tintColor = UIColor(Color.appAccent)
-    }
+    // register app delegate for Firebase setup
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationView {
+                ContentView()
+            }
         }
     }
 }

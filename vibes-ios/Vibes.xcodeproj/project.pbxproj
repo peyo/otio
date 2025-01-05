@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D0079EB42D2B27F600E0F36E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EB32D2B27F600E0F36E /* FirebaseAuth */; };
+		D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EB52D2B27F600E0F36E /* FirebaseDatabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		D064A4DD2D2646460001C402 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +57,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */,
+				D0079EB42D2B27F600E0F36E /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +119,8 @@
 			);
 			name = Vibes;
 			packageProductDependencies = (
+				D0079EB32D2B27F600E0F36E /* FirebaseAuth */,
+				D0079EB52D2B27F600E0F36E /* FirebaseDatabase */,
 			);
 			productName = Vibes;
 			productReference = D064A4CC2D2646450001C402 /* Vibes.app */;
@@ -195,6 +204,9 @@
 			);
 			mainGroup = D064A4C32D2646450001C402;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D064A4CD2D2646450001C402 /* Products */;
 			projectDirPath = "";
@@ -403,6 +415,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -431,6 +444,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -552,6 +566,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D0079EB32D2B27F600E0F36E /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		D0079EB52D2B27F600E0F36E /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D064A4C42D2646450001C402 /* Project object */;
 }
