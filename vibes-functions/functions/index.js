@@ -47,22 +47,31 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
             .map(e => `- ${e.type} (Intensity: ${e.intensity}) on ${e.date}`)
             .join('\n');
 
-        const prompt = `As an empathetic AI, analyze these emotions deeply:
+            const prompt = `As an empathetic AI, analyze these emotions deeply:
 
-${emotionsText}
-
-Consider:
-- Patterns and relationships between emotions
-- Intensity levels and their significance
-- Daily emotional balance
-- Potential impacts on well-being
-
-Provide 3 insights that are specific, empathetic, and actionable. Each should reference the actual emotions shown.
-
-Format: emoji|title|description
-Example: 🌊|Emotional Balance|Your mix of joy (3) and anxiety (2) shows emotional complexity...
-
-Keep descriptions personal and include gentle guidance.`;
+            ${emotionsText}
+            
+            Focus on these areas for your insights:
+            
+            1. **Trend-Based Feedback**: Identify explicit temporal patterns in the data, such as daily or weekly trends.
+               - Use specific language to make insights relatable (e.g., "over the past week," "in the evenings").
+               - Highlight trends in emotion frequency, intensity, or timing.
+            
+            2. **Prompt Self-Reflection**: Pose general, open-ended questions to encourage self-awareness and exploration.
+               - Frame questions to help users connect with their experiences (e.g., "What was happening when you felt this way?" or "What helped you feel calmer during similar times?").
+            
+            3. **General Tips**: Provide universal, actionable advice tailored to the emotions recorded for the week.
+               - Align tips with recorded emotions (e.g., for anxiety: "Try a short breathing exercise," for happiness: "Reflect on what brought you joy today").
+               - Avoid assumptions about specific triggers, focusing on practical and empathetic guidance.
+            
+            **Instruction**: Generate exactly **three** insights, one for each focus area above.
+            
+            **Format**:
+            emoji|title|description
+            Example: 🌊|Evening Reflections|Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.
+            
+            Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.`
+        ;    
 
         console.log('Debug: 📤 Sending request to OpenAI');
         
