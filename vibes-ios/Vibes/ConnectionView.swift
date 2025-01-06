@@ -97,12 +97,12 @@ struct ConnectionView: View {
             } label: {
                 Text(connectionButtonTitle)
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.appAccent)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.appAccent)
+                            .fill(Color.appAccent.opacity(0.15))
                             .shadow(color: Color.appAccent.opacity(0.2), radius: 5, y: 2)
                     )
             }

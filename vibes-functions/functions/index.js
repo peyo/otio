@@ -47,24 +47,22 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
             .map(e => `- ${e.type} (Intensity: ${e.intensity}) on ${e.date}`)
             .join('\n');
 
-        const prompt = `You are an empathetic AI trained to analyze emotional patterns and provide meaningful insights. 
-        
-        Analyze these emotions:
-        ${emotionsText}
+        const prompt = `As an empathetic AI, analyze these emotions deeply:
 
-        Based on this emotional data, provide exactly 3 insights that are:
-        - Keep titles concise (2-4 words)
-        - Make descriptions personal and supportive
-        - Focus on patterns, growth, and emotional intelligence
-        - Provide actionable suggestions when appropriate
+${emotionsText}
 
-        Format each insight EXACTLY as follows (with emoji, title, and description separated by | characters):
-        emoji|title|description
+Consider:
+- Patterns and relationships between emotions
+- Intensity levels and their significance
+- Daily emotional balance
+- Potential impacts on well-being
 
-        Example format:
-        🌱|Growth Mindset|Your emotional awareness is growing stronger each day.
+Provide 3 insights that are specific, empathetic, and actionable. Each should reference the actual emotions shown.
 
-        Respond with exactly 3 insights, one per line, in the specified format.`;
+Format: emoji|title|description
+Example: 🌊|Emotional Balance|Your mix of joy (3) and anxiety (2) shows emotional complexity...
+
+Keep descriptions personal and include gentle guidance.`;
 
         console.log('Debug: 📤 Sending request to OpenAI');
         
@@ -74,7 +72,7 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
                 model: 'gpt-3.5-turbo',
                 messages: [{ role: 'user', content: prompt }],
                 temperature: 0.7,
-                max_tokens: 200,
+                max_tokens: 400,
             },
             {
                 headers: {
