@@ -5,26 +5,30 @@ struct SignInView: View {
     @EnvironmentObject var userService: UserService
     
     var body: some View {
-        VStack(spacing: 40) {
-            // Logo/Brand Section
-            VStack(spacing: 20) {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 16) {
                 Image(systemName: "heart.fill")
                     .font(.system(size: 60))
                     .foregroundColor(.appAccent)
                 
-                Text("Welcome to Vibes")
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                Text("Turn emotions into insights")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
+                VStack(spacing: 4) {
+                    Text("Welcome to Vibes")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    
+                    Text("Turn emotions into insights")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
             }
+            .padding(.top, 60)
             
-            // Sign In Button
+            Spacer()
+            
+            // Sign in button
             Button(action: {
+                print("Debug: 🔵 Starting Google Sign In")
                 userService.signInWithGoogle()
             }) {
                 HStack(spacing: 12) {
@@ -33,9 +37,6 @@ struct SignInView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 24, height: 24)
-                            .padding(6)
-                            .background(Color.white)
-                            .clipShape(Circle())
                     } else {
                         Image(systemName: "g.circle.fill")
                             .resizable()
@@ -46,16 +47,15 @@ struct SignInView: View {
                     
                     Text("Continue with Google")
                         .font(.headline)
-                        .foregroundColor(Color.appAccent)
                 }
+                .foregroundColor(Color.appAccent)
                 .frame(width: 280, height: 55)
                 .background(Color.appAccent.opacity(0.15))
                 .cornerRadius(16)
-                .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
             }
-            .padding()
+            .padding(.horizontal, 24)
+            .padding(.bottom, 40)
         }
-        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemGroupedBackground))
     }

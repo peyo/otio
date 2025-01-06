@@ -7,7 +7,7 @@ struct EmotionsResponse: Codable {
 }
 
 struct EmotionData: Identifiable, Codable {
-    let id: Int
+    let id: String
     let type: String
     let intensity: Int
     let createdAt: Date

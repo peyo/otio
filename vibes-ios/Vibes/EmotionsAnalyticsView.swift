@@ -1,11 +1,15 @@
 import SwiftUI
+import FirebaseFunctions
+import FirebaseCore
+import FirebaseAuth
 
 struct EmotionsAnalyticsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isLoading = false
-    var emotions: [EmotionData]
+    let emotions: [EmotionData]
     @State private var insights: [Insight] = []
     @State private var errorMessage: String? // For error handling
+    @State private var currentTask: Task<Void, Never>?
 
     var body: some View {
         ScrollView {
@@ -27,11 +31,19 @@ struct EmotionsAnalyticsView: View {
                     ProgressView()
                         .tint(.appAccent)
                         .frame(maxWidth: .infinity)
-                } else if insights.isEmpty {
-                    let defaultInsight = Insight(emoji: "❓", title: "", description: "Track more to see this week's insights.")
-                    InsightCard(insight: defaultInsight)
+                } else if emotions.isEmpty, let message = errorMessage {
+                    let emptyInsight = Insight(
+                        emoji: "✏️",
+                        title: "",
+                        description: message
+                    )
+                    InsightCard(insight: emptyInsight)
                 } else if let errorMessage = errorMessage {
-                    let errorInsight = Insight(emoji: "⚠️", title: "", description: errorMessage)
+                    let errorInsight = Insight(
+                        emoji: "⚠️",
+                        title: "",
+                        description: errorMessage
+                    )
                     InsightCard(insight: errorInsight)
                 } else {
                     LazyVStack(spacing: 12) {
@@ -42,7 +54,7 @@ struct EmotionsAnalyticsView: View {
                 }
             }
             .padding(.horizontal)
-            .padding(.bottom)  // Only padding at the bottom
+            .padding(.bottom)
         }
         .background(Color(.systemGroupedBackground))
         .navigationBarBackButtonHidden(true)
@@ -57,7 +69,17 @@ struct EmotionsAnalyticsView: View {
             }
         }
         .task {
-            await fetchInsights()
+            // Cancel previous task if it exists
+            currentTask?.cancel()
+            
+            // Create and store new task
+            let task = Task {
+                await fetchInsights()
+            }
+            currentTask = task
+            
+            // Wait for completion
+            await task.value
         }
     }
 
@@ -65,62 +87,110 @@ struct EmotionsAnalyticsView: View {
         isLoading = true
         defer { isLoading = false }
 
-        guard let url = URL(string: "http://localhost:3000/api/insights") else {
-            print("Invalid URL")
+        // Check for cancellation
+        if Task.isCancelled { return }
+
+        // Check authentication first
+        guard let user = Auth.auth().currentUser else {
+            print("Debug: ❌ No authenticated user")
+            errorMessage = "Please sign in to view insights"
             return
         }
 
+        // Print full auth state
+        print("Debug: 👤 Full auth state:")
+        print("- UID:", user.uid)
+        print("- Email:", user.email ?? "none")
+        print("- Anonymous:", user.isAnonymous)
+        print("- Provider IDs:", user.providerData.map { $0.providerID })
+
         if emotions.isEmpty {
-            print("Emotions array is empty. Cannot send request.")
-            errorMessage = "No emotions data available to analyze insights. Start logging your emotions!"
+            print("Debug: ⚠️ No emotions to analyze")
+            errorMessage = "No emotions data available to analyze insights. Start logging your emotions."
             return
         }
 
         do {
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-            // Ensure date formatting for the payload
-            let isoFormatter = ISO8601DateFormatter()
-            let payload: [String: Any] = [
-                "emotions": emotions.map { emotion in
-                    [
-                        "type": emotion.type,
-                        "intensity": emotion.intensity,
-                        "date": isoFormatter.string(from: emotion.date)
-                    ]
-                }
-            ]
-            request.httpBody = try JSONSerialization.data(withJSONObject: payload)
-
-            print("Payload sent:", String(data: request.httpBody!, encoding: .utf8) ?? "nil")
-
-            let (data, response) = try await URLSession.shared.data(for: request)
-
-            // Debugging: Print raw response
-            if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP Status Code:", httpResponse.statusCode)
+            // Get a fresh token first
+            let token = try await user.getIDToken(forcingRefresh: true)
+            print("Debug: 🎫 Using fresh token:", token.prefix(20))
+            
+            // Create a new Functions instance for each call
+            let functions = Functions.functions(app: FirebaseApp.app()!, region: "us-central1")
+            
+            // Format emotions
+            let formattedEmotions = emotions.map { emotion in
+                [
+                    "type": emotion.type,
+                    "intensity": emotion.intensity,
+                    "date": relativeTimeString(from: emotion.date)
+                ]
             }
-            print("Response Data:", String(data: data, encoding: .utf8) ?? "nil")
-
-            let insightsResponse = try JSONDecoder().decode(InsightsResponse.self, from: data)
-
-            guard insightsResponse.success else {
+            
+            print("Debug: 📤 Cloud Function payload:")
+            print(formattedEmotions)
+            
+            // Call function with timeout
+            let callable = functions.httpsCallable("generateInsights")
+            let result = try await withTimeout(seconds: 30) {
+                try await callable.call(["emotions": formattedEmotions])
+            }
+            
+            print("Debug: 📥 Cloud Function response:")
+            print(String(describing: result.data))
+            
+            // Parse response
+            guard let data = result.data as? [String: Any],
+                  let success = data["success"] as? Bool,
+                  success,
+                  let insightsData = data["insights"] as? [[String: Any]] else {
                 throw URLError(.badServerResponse)
             }
-
-            let insights = insightsResponse.insights.map { insight in
-                Insight(emoji: insight.emoji, title: insight.title, description: insight.description)
+            
+            let insights = insightsData.map { dict in
+                Insight(
+                    emoji: dict["emoji"] as? String ?? "❓",
+                    title: dict["title"] as? String ?? "",
+                    description: dict["description"] as? String ?? ""
+                )
             }
-
+            
+            print("Debug: ✅ Processed \(insights.count) insights")
+            
             await MainActor.run {
                 self.insights = insights
+                self.errorMessage = nil
             }
         } catch {
-            print("Error fetching insights:", error)
+            print("Debug: ❌ Error fetching insights:", error)
+            print("Debug: 🔍 Detailed error:", (error as NSError).userInfo)
             errorMessage = "Unable to fetch insights at this time. Please try again later."
         }
+    }
+
+    // Helper function to add timeout
+    private func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async throws -> T) async throws -> T {
+        try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask {
+                try await operation()
+            }
+            
+            group.addTask {
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                throw URLError(.timedOut)
+            }
+            
+            let result = try await group.next()!
+            group.cancelAll()
+            return result
+        }
+    }
+
+    // Helper function to format date in a human-readable way
+    private func relativeTimeString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
 
     struct InsightCard: View {

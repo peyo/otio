@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		D0079EB42D2B27F600E0F36E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EB32D2B27F600E0F36E /* FirebaseAuth */; };
 		D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EB52D2B27F600E0F36E /* FirebaseDatabase */; };
+		D0079EBC2D2B372800E0F36E /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBB2D2B372800E0F36E /* GoogleSignIn */; };
+		D0079EBE2D2B372800E0F36E /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */; };
+		D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = D0834F102D2B9406000200C7 /* FirebaseFunctions */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,9 +37,22 @@
 		D064A4E62D2646460001C402 /* VibesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VibesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D0834F0F2D2B57E0000200C7 /* Exceptions for "Vibes" folder in "Vibes" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D064A4CB2D2646450001C402 /* Vibes */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D064A4CE2D2646450001C402 /* Vibes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D0834F0F2D2B57E0000200C7 /* Exceptions for "Vibes" folder in "Vibes" target */,
+			);
 			path = Vibes;
 			sourceTree = "<group>";
 		};
@@ -59,6 +75,9 @@
 			files = (
 				D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */,
 				D0079EB42D2B27F600E0F36E /* FirebaseAuth in Frameworks */,
+				D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */,
+				D0079EBC2D2B372800E0F36E /* GoogleSignIn in Frameworks */,
+				D0079EBE2D2B372800E0F36E /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,6 +140,9 @@
 			packageProductDependencies = (
 				D0079EB32D2B27F600E0F36E /* FirebaseAuth */,
 				D0079EB52D2B27F600E0F36E /* FirebaseDatabase */,
+				D0079EBB2D2B372800E0F36E /* GoogleSignIn */,
+				D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */,
+				D0834F102D2B9406000200C7 /* FirebaseFunctions */,
 			);
 			productName = Vibes;
 			productReference = D064A4CC2D2646450001C402 /* Vibes.app */;
@@ -206,6 +228,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D064A4CD2D2646450001C402 /* Products */;
@@ -410,6 +433,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Vibes/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Vibes/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -439,6 +463,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Vibes/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Vibes/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -576,6 +601,14 @@
 				minimumVersion = 11.6.0;
 			};
 		};
+		D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -588,6 +621,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
+		};
+		D0079EBB2D2B372800E0F36E /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		D0834F102D2B9406000200C7 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
