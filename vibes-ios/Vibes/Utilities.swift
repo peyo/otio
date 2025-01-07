@@ -15,7 +15,7 @@ struct EmotionData: Identifiable, Codable {
     var date: Date { createdAt }
 }
 
-struct Insight: Decodable {
+struct Insight: Decodable, Hashable {
     let emoji: String
     let title: String
     let description: String
@@ -48,6 +48,7 @@ struct Insight: Decodable {
 struct InsightsResponse: Decodable {
     let success: Bool
     let insights: [Insight]
+    let cooldownRemaining: Int
 }
 
 // Extensions for Emotion Colors and Emojis

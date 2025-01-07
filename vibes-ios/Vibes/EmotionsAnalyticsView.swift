@@ -10,6 +10,7 @@ struct EmotionsAnalyticsView: View {
     @State private var insights: [Insight] = []
     @State private var errorMessage: String? // For error handling
     @State private var currentTask: Task<Void, Never>?
+    @State private var cooldownTime: Int = 0
 
     var body: some View {
         ScrollView {
@@ -31,13 +32,6 @@ struct EmotionsAnalyticsView: View {
                     ProgressView()
                         .tint(.appAccent)
                         .frame(maxWidth: .infinity)
-                } else if emotions.isEmpty, let message = errorMessage {
-                    let emptyInsight = Insight(
-                        emoji: "✏️",
-                        title: "",
-                        description: message
-                    )
-                    InsightCard(insight: emptyInsight)
                 } else if let errorMessage = errorMessage {
                     let errorInsight = Insight(
                         emoji: "⚠️",
@@ -47,10 +41,16 @@ struct EmotionsAnalyticsView: View {
                     InsightCard(insight: errorInsight)
                 } else {
                     LazyVStack(spacing: 12) {
-                        ForEach(insights.indices, id: \.self) { index in
-                            InsightCard(insight: insights[index])
+                        ForEach(insights.prefix(3), id: \.self) { insight in
+                            InsightCard(insight: insight)
                         }
                     }
+                }
+                
+                if cooldownTime > 0 {
+                    Text("Next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
                 }
             }
             .padding(.horizontal)
@@ -97,13 +97,6 @@ struct EmotionsAnalyticsView: View {
             return
         }
 
-        // Print full auth state
-        print("Debug: 👤 Full auth state:")
-        print("- UID:", user.uid)
-        print("- Email:", user.email ?? "none")
-        print("- Anonymous:", user.isAnonymous)
-        print("- Provider IDs:", user.providerData.map { $0.providerID })
-
         if emotions.isEmpty {
             print("Debug: ⚠️ No emotions to analyze")
             errorMessage = "No emotions data available to analyze insights. Start logging your emotions."
@@ -143,7 +136,9 @@ struct EmotionsAnalyticsView: View {
             guard let data = result.data as? [String: Any],
                   let success = data["success"] as? Bool,
                   success,
-                  let insightsData = data["insights"] as? [[String: Any]] else {
+                  let insightsData = data["insights"] as? [[String: Any]],
+                  let cooldownRemainingMs = data["cooldownRemaining"] as? Int else {
+                print("Debug: ❌ Invalid server response")
                 throw URLError(.badServerResponse)
             }
             
@@ -159,7 +154,9 @@ struct EmotionsAnalyticsView: View {
             
             await MainActor.run {
                 self.insights = insights
+                self.cooldownTime = cooldownRemainingMs / 1000  // Convert milliseconds to seconds
                 self.errorMessage = nil
+                print("Debug: ✅ Insights updated successfully")
             }
         } catch {
             print("Debug: ❌ Error fetching insights:", error)

@@ -29,10 +29,7 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
         console.log('Debug: 📊 Processing emotions:', JSON.stringify(emotions));
         
         if (!Array.isArray(emotions) || emotions.length === 0) {
-            throw new functions.https.HttpsError(
-                'invalid-argument',
-                'Valid emotions data is required'
-            );
+            throw new functions.https.HttpsError('invalid-argument', 'Valid emotions data is required');
         }
 
         // Get OpenAI key directly from process.env
@@ -42,12 +39,58 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
             throw new functions.https.HttpsError('failed-precondition', 'OpenAI API key not configured');
         }
 
+        const db = admin.database();
+        const userRef = db.ref(`users/${auth.uid}/insights`);
+
+        // Check the latest insights and their timestamp
+        const snapshot = await userRef.orderByChild('timestamp').limitToLast(3).once('value');
+        let lastTimestamp = 0;
+        let insights = [];
+        snapshot.forEach(childSnapshot => {
+            const insight = childSnapshot.val();
+            lastTimestamp = Math.max(lastTimestamp, insight.timestamp); // Get the most recent timestamp
+            insights.push(insight);
+        });
+
+        const currentTime = Date.now();
+        const cooldownPeriod = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+
+        // Fix: Check if there's a valid lastTimestamp and if we're within cooldown period
+        if (lastTimestamp > 0 && currentTime - lastTimestamp < cooldownPeriod) {
+            const cooldownRemaining = cooldownPeriod - (currentTime - lastTimestamp);
+            console.log('Debug: ⏳ Cooldown active, returning existing insights');
+            console.log('Debug: Cooldown remaining:', cooldownRemaining);
+            return { 
+                success: true, 
+                insights: insights.slice(-3), // Return last 3 insights
+                cooldownRemaining 
+            };
+        }
+
+        // If there are fewer than three insights, generate new ones
+        if (insights.length < 3) {
+            console.log('Debug: Generating new insights to ensure three are available');
+            // Call the function to generate new insights here
+            // Example: const newInsights = await generateNewInsights();
+            // insights.push(...newInsights);
+        }
+
+        // Ensure there are exactly three insights
+        while (insights.length < 3) {
+            insights.push({
+                emoji: '🔍',
+                title: 'Generated Insight',
+                description: 'This is a generated insight to ensure three insights are always returned.',
+                timestamp: currentTime
+            });
+        }
+
         // Format emotions for the prompt
         const emotionsText = emotions
             .map(e => `- ${e.type} (Intensity: ${e.intensity}) on ${e.date}`)
             .join('\n');
 
-            const prompt = `As an empathetic AI, analyze these emotions deeply:
+        const prompt = `As an empathetic AI, analyze these emotions deeply:
 
             ${emotionsText}
             
@@ -70,8 +113,7 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
             emoji|title|description
             Example: 🌊|Evening Reflections|Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.
             
-            Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.`
-        ;    
+            Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.`;    
 
         console.log('Debug: 📤 Sending request to OpenAI');
         
@@ -96,16 +138,19 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
         const rawOutput = openAIResponse.data.choices[0].message.content.trim();
         console.log('Debug: 📝 Processing output:', rawOutput);
 
-        const insights = rawOutput
+        insights = rawOutput
             .split('\n')
             .map(line => {
                 const [emoji, title, description] = line.split('|').map(part => part.trim());
-                return { emoji, title, description };
+                return { emoji, title, description, timestamp: currentTime };
             })
             .filter(insight => insight.emoji && insight.title && insight.description);
 
+        // Store the new insights in the database
+        await userRef.set(insights);
+
         console.log('Debug: ✅ Final insights:', JSON.stringify(insights));
-        return { success: true, insights };
+        return { success: true, insights, cooldownRemaining: 0 };
 
     } catch (error) {
         console.error('Function error:', error.message);

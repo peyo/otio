@@ -59,29 +59,6 @@ class UserService: ObservableObject {
                     print("Authentication state changed: isAuthenticated = true")
                 }
                 
-                self?.createUserInDatabase(userId: user.uid, email: user.email ?? "")
-            }
-        }
-    }
-    
-    private func createUserInDatabase(userId: String, email: String) {
-        print("Debug: 📝 Updating user profile for:", userId)
-        let ref = Database.database().reference()
-        let userProfileData: [String: Any] = [
-            "profile": [
-                "randomUsername": "User_\(Int.random(in: 1000...9999))",
-                "email": email,
-                "status": "searching",
-                "connectionId": ""
-            ]
-        ]
-        
-        // Update only the profile data, preserving other nodes
-        ref.child("users").child(userId).updateChildValues(userProfileData) { error, _ in
-            if let error = error {
-                print("Debug: ❌ Error updating user profile:", error)
-            } else {
-                print("Debug: ✅ User profile updated successfully")
             }
         }
     }
