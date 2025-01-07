@@ -16,49 +16,66 @@ class UserService: ObservableObject {
     @Published var isAuthenticated = false
     @Published var userEmail: String?
     
-    func signInWithGoogle() {
-        guard let clientID = FirebaseApp.app()?.options.clientID else { return }
-        
-        // Get the root view controller
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let rootViewController = windowScene.windows.first?.rootViewController else {
-            print("No root view controller found")
-            return
-        }
-        
-        // Configure Google Sign In
-        GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
-        
-        // Start the sign in flow
-        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { [weak self] result, error in
-            if let error = error {
-                print("Error: \(error.localizedDescription)")
-                return
+    func signInWithGoogle(completion: @escaping (Bool) -> Void = { _ in }) {
+        // Move the Firebase configuration check to background thread
+        Task {
+            guard let clientID = await (Task { FirebaseApp.app()?.options.clientID }).value else { 
+                completion(false)
+                return 
             }
             
-            guard let user = result?.user,
-                  let idToken = user.idToken?.tokenString else {
-                return
-            }
-            
-            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                         accessToken: user.accessToken.tokenString)
-            
-            // Sign in with Firebase
-            Auth.auth().signIn(with: credential) { result, error in
-                if let error = error {
-                    print("Firebase sign in error: \(error.localizedDescription)")
+            // Get back to main thread for UI operations
+            await MainActor.run {
+                // Get the root view controller
+                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                      let rootViewController = windowScene.windows.first?.rootViewController else {
+                    print("No root view controller found")
+                    completion(false)
                     return
                 }
                 
-                guard let user = result?.user else { return }
-                DispatchQueue.main.async {
-                    self?.userId = user.uid
-                    self?.userEmail = user.email
-                    self?.isAuthenticated = true
-                    print("Authentication state changed: isAuthenticated = true")
-                }
+                // Configure Google Sign In
+                GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
                 
+                // Start the sign in flow
+                GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { [weak self] result, error in
+                    if let error = error {
+                        print("Error: \(error.localizedDescription)")
+                        completion(false)
+                        return
+                    }
+                    
+                    guard let user = result?.user,
+                          let idToken = user.idToken?.tokenString else {
+                        completion(false)
+                        return
+                    }
+                    
+                    let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                                 accessToken: user.accessToken.tokenString)
+                    
+                    // Sign in with Firebase
+                    Auth.auth().signIn(with: credential) { result, error in
+                        if let error = error {
+                            print("Firebase sign in error: \(error.localizedDescription)")
+                            completion(false)
+                            return
+                        }
+                        
+                        guard let user = result?.user else { 
+                            completion(false)
+                            return 
+                        }
+                        
+                        DispatchQueue.main.async {
+                            self?.userId = user.uid
+                            self?.userEmail = user.email
+                            self?.isAuthenticated = true
+                            print("Authentication state changed: isAuthenticated = true")
+                            completion(true)
+                        }
+                    }
+                }
             }
         }
     }

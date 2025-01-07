@@ -130,6 +130,7 @@ struct ContentView: View {
 
             if isLoading {
                 ProgressView()
+                    .tint(.appAccent)
                     .frame(maxWidth: .infinity)
             } else if recentEmotions.isEmpty {
                 RoundedRectangle(cornerRadius: 12)
