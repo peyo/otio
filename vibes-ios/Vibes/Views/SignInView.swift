@@ -6,32 +6,33 @@ struct SignInView: View {
     @State private var isLoading = false
     
     var body: some View {
-        VStack(spacing: 24) {
-            // Header
+        VStack {
             if isLoading {
                 ProgressView()
                     .tint(.appAccent)
                     .frame(maxWidth: .infinity)
                     .padding()
             } else {
-                VStack(spacing: 16) {
+                Spacer()  // Push content to center
+                
+                // Logo and Title section
+                VStack(spacing: 24) {
                     Image(systemName: "heart.fill")
                         .font(.system(size: 60))
                         .foregroundColor(.appAccent)
                     
                     VStack(spacing: 4) {
-                        Text("Welcome to Vibes")
+                        Text("Vibes")
                             .font(.title)
                             .fontWeight(.bold)
                         
-                        Text("Turn emotions into insights")
+                        Text("Emotions into insights")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
                 }
-                .padding(.top, 60)
                 
-                Spacer()
+                Spacer()  // Center between top and button
                 
                 // Sign in button
                 Button(action: {
@@ -40,7 +41,6 @@ struct SignInView: View {
                     userService.signInWithGoogle { success in
                         DispatchQueue.main.async {
                             if !success {
-                                // Handle sign-in failure if needed
                                 print("Debug: ❌ Sign in failed")
                             }
                             isLoading = false
@@ -70,8 +70,8 @@ struct SignInView: View {
                     .cornerRadius(16)
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 40)
-                .disabled(isLoading)
+                
+                Spacer()  // Push content to center
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

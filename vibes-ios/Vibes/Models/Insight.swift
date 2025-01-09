@@ -1,19 +1,4 @@
-import SwiftUI
-
-// API Response Models
-struct EmotionsResponse: Codable {
-    let success: Bool
-    let data: [EmotionData]
-}
-
-struct EmotionData: Identifiable, Codable {
-    let id: String
-    let type: String
-    let intensity: Int
-    let createdAt: Date
-    
-    var date: Date { createdAt }
-}
+import Foundation
 
 struct Insight: Decodable, Hashable {
     let emoji: String
@@ -49,29 +34,4 @@ struct InsightsResponse: Decodable {
     let success: Bool
     let insights: [Insight]
     let cooldownRemaining: Int
-}
-
-// Extensions for Emotion Colors and Emojis
-extension Color {
-    static func forEmotion(_ type: String) -> Color {
-        switch type {
-        case "Happy": return .green
-        case "Sad": return .blue
-        case "Anxious": return .yellow
-        case "Angry": return .red
-        case "Neutral": return .gray
-        default: return .gray
-        }
-    }
-}
-
-public func emojiFor(_ emotion: String) -> String {
-    switch emotion {
-    case "Happy": return "😊"
-    case "Sad": return "😢"
-    case "Anxious": return "😰"
-    case "Angry": return "😠"
-    case "Neutral": return "😐"
-    default: return "❓"
-    }
 }

@@ -1,5 +1,4 @@
 import SwiftUI
-import Foundation
 
 extension Color {
     static let appAccent = Color(hex: "8A4FFF")  // Deep purple

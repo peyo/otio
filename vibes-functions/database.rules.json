@@ -1,0 +1,36 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        
+        "emotions": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid",
+          ".indexOn": ["timestamp"]
+        },
+        
+        "insights": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid",
+          ".indexOn": ["timestamp"],
+          "$insightId": {
+            ".validate": "newData.hasChildren(['emoji', 'title', 'description'])"
+          }
+        },
+        
+        "profile": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid",
+          "username": {
+            ".validate": "newData.isString()"
+          },
+          "email": {
+            ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$/)"
+          }
+        }
+      }
+    }
+  }
+} 

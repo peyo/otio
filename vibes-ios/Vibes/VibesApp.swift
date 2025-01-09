@@ -69,10 +69,8 @@ struct VibesApp: App {
     
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                ContentView()
-                    .environmentObject(userService)
-            }
+            EmotionsView()
+                .environmentObject(userService)
         }
     }
 }

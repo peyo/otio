@@ -8,7 +8,7 @@ struct EmotionOption: Identifiable {
     let icon: String
 }
 
-struct ContentView: View {
+struct EmotionsView: View {
     @EnvironmentObject var userService: UserService
     private let emotions = ["Happy", "Sad", "Anxious", "Angry", "Neutral"]
     private let buttonSpacing: CGFloat = 12
@@ -25,24 +25,22 @@ struct ContentView: View {
         Group {
             if userService.isAuthenticated {
                 NavigationStack {
-                    ScrollView {
+                    ZStack {
+                        Color(.systemGroupedBackground)
+                            .ignoresSafeArea()  // This extends the background behind the navigation bar
+                        
                         VStack(spacing: 32) {
                             emotionInputSection
+                                .padding(.top, 8)
+                            
                             recentEmotionsSection
+                                .padding(.bottom, 24)
                         }
                     }
-                    .background(Color(.systemGroupedBackground))
                     .navigationTitle("Vibes")
                     .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) {
+                        ToolbarItem(placement: .primaryAction) {
                             HStack(spacing: 16) {
-                                NavigationLink {
-                                    ConnectionView()
-                                } label: {
-                                    Image(systemName: "person.2.fill")
-                                        .foregroundColor(.appAccent)
-                                }
-                                
                                 NavigationLink(destination: {
                                     print("Debug: 📊 Passing \(weekEmotions.count) emotions to analytics")
                                     print("Debug: 📝 Week emotions content:")
@@ -50,11 +48,18 @@ struct ContentView: View {
                                         print("- \(emotion.type) (Intensity: \(emotion.intensity)) at \(emotion.date)")
                                     }
                                     
-                                    return EmotionsAnalyticsView(emotions: weekEmotions)
+                                    return InsightsView(emotions: weekEmotions)
                                 }, label: {
                                     Image(systemName: "eye")
                                         .foregroundColor(.appAccent)
                                 })
+
+                                NavigationLink {
+                                    ListeningView()
+                                } label: {
+                                    Image(systemName: "ear")
+                                        .foregroundColor(.appAccent)
+                                }
                                 
                                 Button {
                                     do {
@@ -119,7 +124,6 @@ struct ContentView: View {
                 Spacer()
             }
         }
-        .padding(.top, 16)
     }
 
     private var recentEmotionsSection: some View {
@@ -478,5 +482,5 @@ struct IntensitySelectionView: View {
 }
 
 #Preview {
-    ContentView()
+    EmotionsView()
 }

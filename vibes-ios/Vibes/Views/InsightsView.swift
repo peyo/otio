@@ -3,7 +3,7 @@ import FirebaseFunctions
 import FirebaseCore
 import FirebaseAuth
 
-struct EmotionsAnalyticsView: View {
+struct InsightsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isLoading = false
     let emotions: [EmotionData]
@@ -13,51 +13,70 @@ struct EmotionsAnalyticsView: View {
     @State private var cooldownTime: Int = 0
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Title and Subtitle
-                VStack(spacing: 2) {
-                    Text("Insights")
-                        .font(.title2)
-                        .fontWeight(.semibold)
+        GeometryReader { geometry in
+            ScrollView {
+                // Pull to refresh with cooldown check
+                RefreshControl(
+                    coordinateSpace: CoordinateSpace.named("refresh"),
+                    onRefresh: fetchInsights,
+                    isInCooldown: cooldownTime > 0
+                )
+                
+                VStack(spacing: 16) {
+                    // Title section
+                    VStack(spacing: 2) {
+                        Text("Insights")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        
+                        Text("Your emotional journey")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, geometry.size.height * 0.05)  // Breathing room at top
+                    .padding(.bottom, 24)  // Space before content
                     
-                    Text("Your emotional journey")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-
-                // Insights Section
-                if isLoading {
-                    ProgressView()
-                        .tint(.appAccent)
-                        .frame(maxWidth: .infinity)
-                } else if let errorMessage = errorMessage {
-                    let errorInsight = Insight(
-                        emoji: "⚠️",
-                        title: "",
-                        description: errorMessage
-                    )
-                    InsightCard(insight: errorInsight)
-                } else {
-                    LazyVStack(spacing: 12) {
-                        ForEach(insights.prefix(3), id: \.self) { insight in
-                            InsightCard(insight: insight)
+                    if isLoading {
+                        VStack {
+                            Spacer()
+                            ProgressView()
+                                .tint(.appAccent)
+                            Spacer()
+                        }
+                        .frame(height: geometry.size.height * 0.7)  // Center in remaining space
+                    } else {
+                        // Insights content
+                        VStack(spacing: 16) {
+                            if let errorMessage = errorMessage {
+                                let errorInsight = Insight(
+                                    emoji: "⚠️",
+                                    title: "",
+                                    description: errorMessage
+                                )
+                                InsightCard(insight: errorInsight)
+                            } else {
+                                ForEach(insights.prefix(3), id: \.self) { insight in
+                                    InsightCard(insight: insight)
+                                }
+                                
+                                if cooldownTime > 0 {
+                                    Text("Next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
+                                        .font(.footnote)
+                                        .foregroundColor(.gray)
+                                        .padding(.top, 8)
+                                }
+                            }
                         }
                     }
                 }
-                
-                if cooldownTime > 0 {
-                    Text("Next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                }
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal)
-            .padding(.bottom)
+            .coordinateSpace(name: "refresh")
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
         }
-        .background(Color(.systemGroupedBackground))
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
@@ -153,9 +172,11 @@ struct EmotionsAnalyticsView: View {
             print("Debug: ✅ Processed \(insights.count) insights")
             
             await MainActor.run {
-                self.insights = insights
-                self.cooldownTime = cooldownRemainingMs / 1000  // Convert milliseconds to seconds
-                self.errorMessage = nil
+                withAnimation {
+                    self.insights = insights
+                    self.cooldownTime = cooldownRemainingMs / 1000
+                    self.errorMessage = nil
+                }
                 print("Debug: ✅ Insights updated successfully")
             }
         } catch {

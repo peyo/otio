@@ -67,15 +67,52 @@ class UserService: ObservableObject {
                             return 
                         }
                         
-                        DispatchQueue.main.async {
-                            self?.userId = user.uid
-                            self?.userEmail = user.email
-                            self?.isAuthenticated = true
-                            print("Authentication state changed: isAuthenticated = true")
-                            completion(true)
+                        // Generate a unique username
+                        generateUniqueUsername { result in
+                            switch result {
+                            case .success(let username):
+                                // Update the user's profile with the generated username
+                                self?.updateUserProfile(user: user, username: username) { updateResult in
+                                    switch updateResult {
+                                    case .success:
+                                        DispatchQueue.main.async {
+                                            self?.userId = user.uid
+                                            self?.userEmail = user.email
+                                            self?.isAuthenticated = true
+                                            print("Authentication state changed: isAuthenticated = true")
+                                            completion(true)
+                                        }
+                                    case .failure(let error):
+                                        print("Error updating user profile: \(error.localizedDescription)")
+                                        completion(false)
+                                    }
+                                }
+                            case .failure(let error):
+                                print("Error generating unique username: \(error.localizedDescription)")
+                                completion(false)
+                            }
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    private func updateUserProfile(user: User, username: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        let ref = Database.database().reference().child("users").child(user.uid)
+        let profileData: [String: Any] = [
+            "profile": [
+                "username": username,
+                "email": user.email ?? "",
+                "lastUpdated": ServerValue.timestamp()
+            ]
+        ]
+        
+        ref.updateChildValues(profileData) { error, _ in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
             }
         }
     }

@@ -12,6 +12,10 @@
 		D0079EBC2D2B372800E0F36E /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBB2D2B372800E0F36E /* GoogleSignIn */; };
 		D0079EBE2D2B372800E0F36E /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */; };
 		D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = D0834F102D2B9406000200C7 /* FirebaseFunctions */; };
+		D08350162D2F1BC0000200C7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D08350152D2F1BC0000200C7 /* FirebaseFirestore */; };
+		D08350192D2F1C15000200C7 /* Fakery in Frameworks */ = {isa = PBXBuildFile; productRef = D08350182D2F1C15000200C7 /* Fakery */; };
+		D083501E2D2F32DB000200C7 /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = D083501D2D2F32DB000200C7 /* AudioKit */; };
+		D083502C2D2F48F8000200C7 /* SoundpipeAudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,11 +77,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D08350192D2F1C15000200C7 /* Fakery in Frameworks */,
 				D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */,
+				D083501E2D2F32DB000200C7 /* AudioKit in Frameworks */,
 				D0079EB42D2B27F600E0F36E /* FirebaseAuth in Frameworks */,
 				D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */,
+				D083502C2D2F48F8000200C7 /* SoundpipeAudioKit in Frameworks */,
 				D0079EBC2D2B372800E0F36E /* GoogleSignIn in Frameworks */,
 				D0079EBE2D2B372800E0F36E /* GoogleSignInSwift in Frameworks */,
+				D08350162D2F1BC0000200C7 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +151,10 @@
 				D0079EBB2D2B372800E0F36E /* GoogleSignIn */,
 				D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */,
 				D0834F102D2B9406000200C7 /* FirebaseFunctions */,
+				D08350152D2F1BC0000200C7 /* FirebaseFirestore */,
+				D08350182D2F1C15000200C7 /* Fakery */,
+				D083501D2D2F32DB000200C7 /* AudioKit */,
+				D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */,
 			);
 			productName = Vibes;
 			productReference = D064A4CC2D2646450001C402 /* Vibes.app */;
@@ -229,6 +241,9 @@
 			packageReferences = (
 				D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				D08350172D2F1C15000200C7 /* XCRemoteSwiftPackageReference "Fakery" */,
+				D083501C2D2F32DB000200C7 /* XCRemoteSwiftPackageReference "AudioKit" */,
+				D083502A2D2F48F8000200C7 /* XCRemoteSwiftPackageReference "SoundpipeAudioKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D064A4CD2D2646450001C402 /* Products */;
@@ -609,6 +624,30 @@
 				minimumVersion = 8.0.0;
 			};
 		};
+		D08350172D2F1C15000200C7 /* XCRemoteSwiftPackageReference "Fakery" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vadymmarkov/Fakery";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+		D083501C2D2F32DB000200C7 /* XCRemoteSwiftPackageReference "AudioKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AudioKit/AudioKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.4;
+			};
+		};
+		D083502A2D2F48F8000200C7 /* XCRemoteSwiftPackageReference "SoundpipeAudioKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AudioKit/SoundpipeAudioKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.6.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -636,6 +675,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFunctions;
+		};
+		D08350152D2F1BC0000200C7 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		D08350182D2F1C15000200C7 /* Fakery */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D08350172D2F1C15000200C7 /* XCRemoteSwiftPackageReference "Fakery" */;
+			productName = Fakery;
+		};
+		D083501D2D2F32DB000200C7 /* AudioKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D083501C2D2F32DB000200C7 /* XCRemoteSwiftPackageReference "AudioKit" */;
+			productName = AudioKit;
+		};
+		D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D083502A2D2F48F8000200C7 /* XCRemoteSwiftPackageReference "SoundpipeAudioKit" */;
+			productName = SoundpipeAudioKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
