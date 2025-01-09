@@ -29,30 +29,83 @@ struct EmotionsView: View {
                         Color(.systemGroupedBackground)
                             .ignoresSafeArea()  // This extends the background behind the navigation bar
                         
-                        VStack(spacing: 32) {
+                        VStack(spacing: 0) {
                             emotionInputSection
-                                .padding(.top, 8)
+                                .padding(.top, 16)
                             
-                            recentEmotionsSection
-                                .padding(.bottom, 24)
+                            // Reduce the Spacer height to move Recent up
+                            Spacer()
+                                .frame(minHeight: 32, maxHeight: 48)  // Reduced from 48-64 to 32-48
+                            
+                            // Recent section as a separate VStack
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Recent")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                    .padding(.horizontal)
+                                    .padding(.bottom, 21)
+                                
+                                // Cards container
+                                VStack(spacing: 12) {
+                                    if isLoading {
+                                        Spacer()
+                                        ProgressView()
+                                            .tint(.appAccent)
+                                        Spacer()
+                                    } else if recentEmotions.isEmpty {
+                                        Spacer()
+                                        HStack(spacing: 16) {
+                                            Image(systemName: "heart.text.square")
+                                                .font(.system(size: 24))
+                                                .foregroundColor(.appAccent)
+                                                .frame(width: 40)
+                                            
+                                            Text("Track your first emotion to see it here.")
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                            
+                                            Spacer()
+                                        }
+                                        .padding()
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .fill(Color(.systemBackground))
+                                        )
+                                        Spacer()
+                                    } else {
+                                        ForEach(Array(recentEmotions.prefix(3))) { emotion in
+                                            EmotionCard(
+                                                emotion: emotion,
+                                                timeString: relativeTimeString
+                                            )
+                                        }
+                                    }
+                                }
+                                .frame(height: 240)
+                                .padding(.horizontal)
+                            }
+                            .padding(.top, 8)
+                            
+                            Spacer(minLength: 16)
                         }
+                        .padding(.top, -8)
                     }
-                    .navigationTitle("Vibes")
+                    .navigationBarTitleDisplayMode(.large)
                     .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Text("Vibes")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                        }
+                        
                         ToolbarItem(placement: .primaryAction) {
                             HStack(spacing: 16) {
-                                NavigationLink(destination: {
-                                    print("Debug: 📊 Passing \(weekEmotions.count) emotions to analytics")
-                                    print("Debug: 📝 Week emotions content:")
-                                    weekEmotions.forEach { emotion in
-                                        print("- \(emotion.type) (Intensity: \(emotion.intensity)) at \(emotion.date)")
-                                    }
-                                    
-                                    return InsightsView(emotions: weekEmotions)
-                                }, label: {
+                                NavigationLink {
+                                    InsightsView(emotions: weekEmotions)
+                                } label: {
                                     Image(systemName: "eye")
                                         .foregroundColor(.appAccent)
-                                })
+                                }
 
                                 NavigationLink {
                                     ListeningView()
@@ -124,50 +177,7 @@ struct EmotionsView: View {
                 Spacer()
             }
         }
-    }
-
-    private var recentEmotionsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Recent")
-                .font(.headline)
-                .padding(.horizontal)
-
-            if isLoading {
-                ProgressView()
-                    .tint(.appAccent)
-                    .frame(maxWidth: .infinity)
-            } else if recentEmotions.isEmpty {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.systemBackground))
-                    .overlay(
-                        HStack(spacing: 16) {
-                            Image(systemName: "heart.text.square")
-                                .font(.system(size: 24))
-                                .foregroundColor(.appAccent)
-                                .frame(width: 40)
-                            
-                            Text("Track your first emotion to see it here.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            Spacer()
-                        }
-                        .padding()
-                    )
-                    .frame(height: 80)
-                    .padding(.horizontal)
-            } else {
-                LazyVStack(spacing: 12) {
-                    ForEach(Array(recentEmotions.prefix(3))) { emotion in
-                        EmotionCard(
-                            emotion: emotion,
-                            timeString: relativeTimeString(from:)
-                        )
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
+        .padding(.horizontal)  // Add horizontal padding here if needed
     }
 
     private func handleEmotionTap(_ type: String) {
@@ -283,7 +293,7 @@ struct EmotionsView: View {
                    let intensity = dict["intensity"] as? Int,
                    let timestamp = dict["timestamp"] as? TimeInterval {
                     let date = Date(timeIntervalSince1970: timestamp/1000)
-                    let emotion = EmotionData(id: snapshot.key, type: type, intensity: intensity, createdAt: date)
+                    let emotion = EmotionData(id: snapshot.key, type: type, intensity: intensity, date: date)
                     allEmotions.append(emotion)
                 }
             }
@@ -296,7 +306,7 @@ struct EmotionsView: View {
                    let intensity = dict["intensity"] as? Int,
                    let timestamp = dict["timestamp"] as? TimeInterval {
                     let date = Date(timeIntervalSince1970: timestamp/1000)
-                    let emotion = EmotionData(id: snapshot.key, type: type, intensity: intensity, createdAt: date)
+                    let emotion = EmotionData(id: snapshot.key, type: type, intensity: intensity, date: date)
                     recentEmotions.append(emotion)
                 }
             }

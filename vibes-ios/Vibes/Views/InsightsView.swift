@@ -74,7 +74,7 @@ struct InsightsView: View {
             }
             .coordinateSpace(name: "refresh")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemBackground))
+            .background(Color(.systemGroupedBackground))
         }
         .navigationBarBackButtonHidden()
         .toolbar {

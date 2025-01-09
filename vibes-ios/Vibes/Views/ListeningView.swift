@@ -21,7 +21,7 @@ struct ListeningView: View {
             VStack {
                 // Title and Subtitle at the top
                 VStack(spacing: 2) {
-                    Text("Listening")
+                    Text("Meditate")
                         .font(.title2)
                         .fontWeight(.semibold)
                     
@@ -55,6 +55,7 @@ struct ListeningView: View {
                     HStack(spacing: 16) {
                         ForEach(SoundType.allCases, id: \.self) { sound in
                             SoundCard(sound: sound, isSelected: currentSound == sound) {
+                                print("Selected sound: \(sound.rawValue)")
                                 currentSound = sound
                                 if isPlaying {
                                     soundManager.startSound(type: currentSound)
@@ -70,7 +71,7 @@ struct ListeningView: View {
                 Button {
                     toggleSound()
                 } label: {
-                    Text(isPlaying ? "Stop Meditation" : "Start Meditation")
+                    Text(isPlaying ? "Stop" : "Start")
                         .foregroundColor(Color.appAccent)
                         .frame(width: geometry.size.width * 0.7, height: 55)
                         .background(Color.appAccent.opacity(0.15))
@@ -103,9 +104,11 @@ struct ListeningView: View {
 
     func toggleSound() {
         if isPlaying {
+            print("Stopping sound.")
             soundManager.stopAllSounds()
             isPlaying = false
         } else {
+            print("Starting sound.")
             soundManager.startSound(type: currentSound)
             isPlaying = true
         }
@@ -171,13 +174,17 @@ struct SoundCard: View {
             Text(sound.rawValue)
                 .foregroundColor(.appAccent)
                 .padding()
-                .background(isSelected ? Color.appAccent.opacity(0.2) : Color.clear)
-                .cornerRadius(8)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(isSelected ? Color.appAccent.opacity(0.2) : Color.clear)
+                )
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? Color.appAccent : Color.clear, lineWidth: 2)
+                        .stroke(Color.appAccent, lineWidth: isSelected ? 2 : 0)
                 )
         }
+        .padding(.horizontal, 4)
     }
 }
 
