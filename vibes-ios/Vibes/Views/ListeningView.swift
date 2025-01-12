@@ -1,95 +1,103 @@
 import SwiftUI
 
 enum SoundType: String, CaseIterable {
-    case harmonicSeries = "Harmonic Series"
-    case binauralBeats = "Binaural Beats"
-    case pinkNoise = "Pink Noise"
-    case isochronicTone = "Isochronic Tone"
+    case binauralBeats = "binaural beats"
+    case pinkNoise = "pink noise"
+    case isochronicTone = "isochronic tone"
+    case natureSound = "rancheria falls"
 }
 
 struct ListeningView: View {
     @Environment(\.dismiss) private var dismiss
-    let soundManager = SoundManager()
+    @StateObject private var soundManager = SoundManager.shared
     @State private var isPlaying = false
-    @State private var currentSound: SoundType = .harmonicSeries
+    @State private var currentSound: SoundType = .binauralBeats
     @State private var amplitude: Float = 0.1
     @State private var phase: Double = 0
     private let sampleCount = 100
 
     var body: some View {
         GeometryReader { geometry in
-            VStack {
-                // Title and Subtitle at the top
-                VStack(spacing: 2) {
-                    Text("Meditate")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Catch the wave")
+            ZStack {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 24) {
+                    Text("catch the wave")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.top)
-                
-                Spacer()
-                
-                ZStack {
-                    Circle()
-                        .stroke(Color.appAccent.opacity(0.2), lineWidth: 2)
-                        .frame(width: 200, height: 200)
+                        .padding(.top, 10)
                     
-                    WaveformCircle(
-                        sampleCount: sampleCount,
-                        phase: phase,
-                        amplitude: amplitude,
-                        color: Color.appAccent
-                    )
-                    .frame(width: 200, height: 200)
-                }
-                .frame(height: 200)
-                
-                Spacer()
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        ForEach(SoundType.allCases, id: \.self) { sound in
-                            SoundCard(sound: sound, isSelected: currentSound == sound) {
-                                print("Selected sound: \(sound.rawValue)")
-                                currentSound = sound
-                                if isPlaying {
-                                    soundManager.startSound(type: currentSound)
+                    Spacer()
+                    
+                    // Waveform visualization
+                    ZStack {
+                        Circle()
+                            .stroke(Color.appAccent.opacity(0.2), lineWidth: 2)
+                            .frame(width: 200, height: 200)
+                        
+                        DynamicWaveformCircle(
+                            sampleCount: sampleCount,
+                            phase: phase,
+                            amplitude: amplitude,
+                            color: Color.appAccent
+                        )
+                        .frame(width: 200, height: 200)
+                    }
+                    .frame(height: 200)
+                    .offset(y: -20) // Shifted up by y points
+
+                    Spacer() // Add a spacer to push content down
+                    
+                    // Sound selection cards
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(SoundType.allCases, id: \.self) { sound in
+                                SoundCard(sound: sound, isSelected: currentSound == sound) {
+                                    currentSound = sound
+                                    if isPlaying {
+                                        if sound == .natureSound {
+                                            soundManager.fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { url in
+                                                if let url = url {
+                                                    soundManager.playAudioFromURL(url)
+                                                } else {
+                                                    print("Failed to get download URL")
+                                                }
+                                            }
+                                        } else {
+                                            soundManager.startSound(type: currentSound)
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                     .padding(.horizontal)
+                    
+                    // Play/Stop Button
+                    Button(action: toggleSound) {
+                        Image(systemName: isPlaying ? "stop.fill" : "play.fill")
+                            .font(.system(size: 24))
+                            .foregroundColor(.appAccent) // Symbol color
+                            .frame(width: 50, height: 50)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(0)
+                    }
+                    .padding(.top, 30)
+                    
+                    Spacer()
                 }
-                
-                Spacer(minLength: 20)
-                
-                Button {
-                    toggleSound()
-                } label: {
-                    Text(isPlaying ? "Stop" : "Start")
-                        .foregroundColor(Color.appAccent)
-                        .frame(width: geometry.size.width * 0.7, height: 55)
-                        .background(Color.appAccent.opacity(0.15))
-                        .cornerRadius(16)
-                }
-                
-                Spacer(minLength: 40)
+                .padding(.horizontal, 20)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear {
-                startVisualUpdates()
-            }
-            .onDisappear {
-                soundManager.stopAllSounds()
-            }
-            .background(Color(.systemGroupedBackground))
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("meditate")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                }
+                
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         dismiss()
@@ -99,19 +107,22 @@ struct ListeningView: View {
                     }
                 }
             }
+            .onAppear {
+                startVisualUpdates()
+            }
+            .onDisappear {
+                soundManager.stopAllSounds()
+            }
         }
     }
 
     func toggleSound() {
         if isPlaying {
-            print("Stopping sound.")
             soundManager.stopAllSounds()
-            isPlaying = false
         } else {
-            print("Starting sound.")
             soundManager.startSound(type: currentSound)
-            isPlaying = true
         }
+        isPlaying.toggle()
     }
 
     func startVisualUpdates() {
@@ -128,7 +139,7 @@ struct ListeningView: View {
     }
 }
 
-struct WaveformCircle: View {
+struct DynamicWaveformCircle: View {
     let sampleCount: Int
     let phase: Double
     let amplitude: Float
@@ -160,6 +171,7 @@ struct WaveformCircle: View {
             .stroke(color, lineWidth: 2)
             .frame(width: size, height: size)
             .position(x: geometry.size.width/2, y: geometry.size.height/2)
+            .animation(.easeInOut(duration: 0.5), value: amplitude) // Add animation
         }
     }
 }
@@ -172,19 +184,20 @@ struct SoundCard: View {
     var body: some View {
         Button(action: action) {
             Text(sound.rawValue)
-                .foregroundColor(.appAccent)
+                .foregroundColor(.appAccent) // Text color
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(isSelected ? Color.appAccent.opacity(0.2) : Color.clear)
+                    Rectangle()
+                        .fill(isSelected ? Color.gray.opacity(0.1) : Color.clear) // Background color\
+                        .cornerRadius(0) // Rounded corners
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.appAccent, lineWidth: isSelected ? 2 : 0)
+                    Rectangle()
+                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 2) // Border color
+                        .cornerRadius(0) // Rounded corners
                 )
         }
         .padding(.horizontal, 4)
     }
 }
-

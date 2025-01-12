@@ -16,6 +16,7 @@
 		D08350192D2F1C15000200C7 /* Fakery in Frameworks */ = {isa = PBXBuildFile; productRef = D08350182D2F1C15000200C7 /* Fakery */; };
 		D083501E2D2F32DB000200C7 /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = D083501D2D2F32DB000200C7 /* AudioKit */; };
 		D083502C2D2F48F8000200C7 /* SoundpipeAudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */; };
+		D0FF13D32D33594700CD1359 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = D0FF13D22D33594700CD1359 /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +81,7 @@
 				D08350192D2F1C15000200C7 /* Fakery in Frameworks */,
 				D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */,
 				D083501E2D2F32DB000200C7 /* AudioKit in Frameworks */,
+				D0FF13D32D33594700CD1359 /* FirebaseStorage in Frameworks */,
 				D0079EB42D2B27F600E0F36E /* FirebaseAuth in Frameworks */,
 				D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */,
 				D083502C2D2F48F8000200C7 /* SoundpipeAudioKit in Frameworks */,
@@ -155,6 +157,7 @@
 				D08350182D2F1C15000200C7 /* Fakery */,
 				D083501D2D2F32DB000200C7 /* AudioKit */,
 				D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */,
+				D0FF13D22D33594700CD1359 /* FirebaseStorage */,
 			);
 			productName = Vibes;
 			productReference = D064A4CC2D2646450001C402 /* Vibes.app */;
@@ -229,7 +232,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D064A4C72D2646450001C402 /* Build configuration list for PBXProject "Vibes" */;
+			buildConfigurationList = D064A4C72D2646450001C402 /* Build configuration list for PBXProject "vibes" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -449,6 +452,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vibes/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = vibes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -479,6 +483,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Vibes/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = vibes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -569,7 +574,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D064A4C72D2646450001C402 /* Build configuration list for PBXProject "Vibes" */ = {
+		D064A4C72D2646450001C402 /* Build configuration list for PBXProject "vibes" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4EE2D2646460001C402 /* Debug */,
@@ -695,6 +700,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D083502A2D2F48F8000200C7 /* XCRemoteSwiftPackageReference "SoundpipeAudioKit" */;
 			productName = SoundpipeAudioKit;
+		};
+		D0FF13D22D33594700CD1359 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

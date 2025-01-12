@@ -8,97 +8,101 @@ struct InsightsView: View {
     @State private var isLoading = false
     let emotions: [EmotionData]
     @State private var insights: [Insight] = []
-    @State private var errorMessage: String? // For error handling
+    @State private var errorMessage: String?
     @State private var currentTask: Task<Void, Never>?
     @State private var cooldownTime: Int = 0
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
-                // Pull to refresh with cooldown check
-                RefreshControl(
-                    coordinateSpace: CoordinateSpace.named("refresh"),
-                    onRefresh: fetchInsights,
-                    isInCooldown: cooldownTime > 0
-                )
+            ZStack {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
                 
-                VStack(spacing: 16) {
-                    // Title section
-                    VStack(spacing: 2) {
-                        Text("Insights")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        
-                        Text("Your emotional journey")
+                ScrollView {
+                    // Pull to refresh with cooldown check
+                    RefreshControl(
+                        coordinateSpace: .named("refresh"),
+                        onRefresh: fetchInsights,
+                        isInCooldown: cooldownTime > 0
+                    )
+                    
+                    VStack(spacing: 24) {
+                        // Subtitle only
+                        Text("navigate your emotions")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, geometry.size.height * 0.05)  // Breathing room at top
-                    .padding(.bottom, 24)  // Space before content
-                    
-                    if isLoading {
-                        VStack {
-                            Spacer()
-                            ProgressView()
-                                .tint(.appAccent)
-                            Spacer()
-                        }
-                        .frame(height: geometry.size.height * 0.7)  // Center in remaining space
-                    } else {
-                        // Insights content
-                        VStack(spacing: 16) {
-                            if let errorMessage = errorMessage {
-                                let errorInsight = Insight(
-                                    emoji: "⚠️",
-                                    title: "",
-                                    description: errorMessage
-                                )
-                                InsightCard(insight: errorInsight)
-                            } else {
-                                ForEach(insights.prefix(3), id: \.self) { insight in
-                                    InsightCard(insight: insight)
-                                }
-                                
-                                if cooldownTime > 0 {
-                                    Text("Next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
-                                        .font(.footnote)
-                                        .foregroundColor(.gray)
-                                        .padding(.top, 8)
+                            .padding(.top, 0)
+                        
+                        if isLoading {
+                            VStack {
+                                Spacer()
+                                ProgressView()
+                                    .tint(.appAccent)
+                                Spacer()
+                            }
+                            .frame(height: geometry.size.height * 0.7)
+                        } else if emotions.isEmpty {
+                            EmptyStateView()
+                        } else {
+                            // Insights content
+                            VStack(spacing: 16) {
+                                if let errorMessage = errorMessage {
+                                    let errorInsight = Insight(
+                                        emojiName: "zen",
+                                        title: "digital detour",
+                                        description: errorMessage
+                                    )
+                                    InsightCard(insight: errorInsight)
+                                } else {
+                                    ForEach(insights.prefix(3), id: \.self) { insight in
+                                        InsightCard(insight: insight)
+                                    }
+                                    
+                                    if cooldownTime > 0 {
+                                        Text("next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
+                                            .font(.footnote)
+                                            .foregroundColor(.gray)
+                                            .padding(.top, 8)
+                                    }
                                 }
                             }
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
+                .coordinateSpace(name: "refresh")
             }
-            .coordinateSpace(name: "refresh")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemGroupedBackground))
-        }
-        .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.appAccent)
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden()
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("understand")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                }
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.appAccent)
+                    }
                 }
             }
-        }
-        .task {
-            // Cancel previous task if it exists
-            currentTask?.cancel()
-            
-            // Create and store new task
-            let task = Task {
-                await fetchInsights()
+            .task {
+                // Cancel previous task if it exists
+                currentTask?.cancel()
+                
+                // Create and store new task
+                let task = Task {
+                    await fetchInsights()
+                }
+                currentTask = task
+                
+                // Wait for completion
+                await task.value
             }
-            currentTask = task
-            
-            // Wait for completion
-            await task.value
         }
     }
 
@@ -112,13 +116,13 @@ struct InsightsView: View {
         // Check authentication first
         guard let user = Auth.auth().currentUser else {
             print("Debug: ❌ No authenticated user")
-            errorMessage = "Please sign in to view insights"
+            errorMessage = "please sign in to view insights."
             return
         }
 
         if emotions.isEmpty {
-            print("Debug: ⚠️ No emotions to analyze")
-            errorMessage = "No emotions data available to analyze insights. Start logging your emotions."
+            print("Debug: ⚠️ no emotions to analyze")
+            errorMessage = "no emotions data available to analyze insights. start logging your feelings."
             return
         }
 
@@ -163,7 +167,7 @@ struct InsightsView: View {
             
             let insights = insightsData.map { dict in
                 Insight(
-                    emoji: dict["emoji"] as? String ?? "❓",
+                    emojiName: dict["emojiName"] as? String ?? "",
                     title: dict["title"] as? String ?? "",
                     description: dict["description"] as? String ?? ""
                 )
@@ -182,7 +186,7 @@ struct InsightsView: View {
         } catch {
             print("Debug: ❌ Error fetching insights:", error)
             print("Debug: 🔍 Detailed error:", (error as NSError).userInfo)
-            errorMessage = "Unable to fetch insights at this time. Please try again later."
+            errorMessage = "hmm, looks like this page is taking a breather. try returning and refreshing."
         }
     }
 
@@ -215,25 +219,52 @@ struct InsightsView: View {
         let insight: Insight
         
         var body: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(insight.emoji)
-                        .font(.title2)
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .center) {
+                    Image(insight.emojiName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 28, height: 28)
                     Text(insight.title)
-                        .font(.headline)
+                        .font(.callout)
                 }
                 
                 Text(insight.description)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-            .padding()
+            .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 16)
+                Rectangle()
                     .fill(Color(.systemBackground))
                     .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
             )
+        }
+    }
+
+    private struct EmptyStateView: View {
+        var body: some View {
+            VStack(spacing: 16) {
+                Image(systemName: "chart.bar.doc.horizontal")
+                    .font(.system(size: 40))
+                    .foregroundColor(.appAccent)
+                
+                Text("no emotions to analyze")
+                    .font(.headline)
+                
+                Text("start tracking your emotions to get insights about your emotional patterns.")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(
+                Rectangle()
+                    .fill(Color(.systemBackground))
+            )
+            .padding(.horizontal)
         }
     }
 }

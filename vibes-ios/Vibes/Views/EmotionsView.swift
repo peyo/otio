@@ -10,7 +10,7 @@ struct EmotionOption: Identifiable {
 
 struct EmotionsView: View {
     @EnvironmentObject var userService: UserService
-    private let emotions = ["Happy", "Sad", "Anxious", "Angry", "Neutral"]
+    private let emotions = ["happy", "sad", "anxious", "angry", "balanced"]
     private let buttonSpacing: CGFloat = 12
 
     @State private var selectedEmotion: String?
@@ -39,7 +39,7 @@ struct EmotionsView: View {
                             
                             // Recent section as a separate VStack
                             VStack(alignment: .leading, spacing: 16) {
-                                Text("Recent")
+                                Text("recent")
                                     .font(.headline)
                                     .foregroundColor(.primary)
                                     .padding(.horizontal)
@@ -48,19 +48,18 @@ struct EmotionsView: View {
                                 // Cards container
                                 VStack(spacing: 12) {
                                     if isLoading {
-                                        Spacer()
                                         ProgressView()
                                             .tint(.appAccent)
-                                        Spacer()
+                                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                            .padding(.vertical, 50) // Adjust padding to center the ProgressView
                                     } else if recentEmotions.isEmpty {
-                                        Spacer()
                                         HStack(spacing: 16) {
                                             Image(systemName: "heart.text.square")
                                                 .font(.system(size: 24))
                                                 .foregroundColor(.appAccent)
                                                 .frame(width: 40)
                                             
-                                            Text("Track your first emotion to see it here.")
+                                            Text("track your first emotion to see it here.")
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                             
@@ -68,10 +67,11 @@ struct EmotionsView: View {
                                         }
                                         .padding()
                                         .background(
-                                            RoundedRectangle(cornerRadius: 12)
+                                            Rectangle()
                                                 .fill(Color(.systemBackground))
                                         )
-                                        Spacer()
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .padding(.vertical, 50) // Adjust padding to center the message
                                     } else {
                                         ForEach(Array(recentEmotions.prefix(3))) { emotion in
                                             EmotionCard(
@@ -93,7 +93,7 @@ struct EmotionsView: View {
                     .navigationBarTitleDisplayMode(.large)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Text("Vibes")
+                            Text("vibes")
                                 .font(.title2)
                                 .fontWeight(.semibold)
                         }
@@ -181,8 +181,8 @@ struct EmotionsView: View {
     }
 
     private func handleEmotionTap(_ type: String) {
-        if type == "Neutral" {
-            submitEmotion(type: "Neutral", intensity: 0)
+        if type == "balanced" {
+            submitEmotion(type: "balanced", intensity: 0)
         } else {
             selectedEmotion = type
             showingIntensitySheet = true
@@ -366,16 +366,18 @@ struct EmotionButton: View {
     var body: some View {
         Button(action: onTap) {
             VStack {
-                Text(emojiFor(type))
-                    .font(.system(size: 40))
+                Image(emojiFor(type))
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 40, height: 40)
                 Text(type)
                     .font(.caption)
             }
             .frame(width: 100, height: 100)
             .background(Color.forEmotion(type).opacity(0.1))
-            .cornerRadius(12)
+            .cornerRadius(0)
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                Rectangle()
                     .stroke(isSelected ? Color.forEmotion(type) : .clear, lineWidth: 2)
             )
         }
@@ -389,12 +391,14 @@ struct EmotionCard: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            // Emoji Circle
-            Text(emojiFor(emotion.type))
-                .font(.title)
-                .padding(12)
+            // Emoji Square with colored background
+            Image(emojiFor(emotion.type))
+                .resizable()
+                .scaledToFit()
+                .frame(width: 28, height: 28)
+                .padding(12)  // Add padding back
                 .background(
-                    Circle()
+                    Rectangle()
                         .fill(Color.forEmotion(emotion.type).opacity(0.1))
                 )
 
@@ -403,10 +407,10 @@ struct EmotionCard: View {
                 HStack {
                     Text(emotion.type)
                         .fontWeight(.medium)
-                    if emotion.type != "Neutral" {
+                    if emotion.type != "balanced" {
                         Text("•")
                             .foregroundColor(.secondary)
-                        Text("Intensity \(emotion.intensity)")
+                        Text("intensity \(emotion.intensity)")
                             .foregroundColor(.secondary)
                     }
                 }
@@ -420,77 +424,9 @@ struct EmotionCard: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            Rectangle()
                 .fill(Color(.systemBackground))
                 .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
         )
     }
-}
-
-struct IntensitySelectionView: View {
-    let emotion: String
-    let onSelect: (Int) -> Void
-    @Environment(\.dismiss) var dismiss
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 32) {
-                VStack(spacing: 16) {
-                    Text(emojiFor(emotion))
-                        .font(.system(size: 60))
-
-                    Text("How \(emotion.lowercased()) are you feeling?")
-                        .font(.headline)
-                }
-                .padding(.top, 40)
-
-                HStack(spacing: 20) {
-                    ForEach(1...3, id: \.self) { intensity in
-                        Button {
-                            onSelect(intensity)
-                            dismiss()
-                        } label: {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.forEmotion(emotion).opacity(Double(intensity) / 3.0))
-                                .frame(width: 100, height: 100)
-                                .overlay(
-                                    VStack(spacing: 4) {
-                                        Text("\(intensity)")
-                                            .font(.title2)
-                                        Text(intensityLabel(for: intensity))
-                                            .font(.caption)
-                                    }
-                                        .foregroundColor(.primary)
-                                )
-                        }
-                    }
-                }
-
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Select Intensity")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-
-    private func intensityLabel(for intensity: Int) -> String {
-        switch intensity {
-        case 1: return "A little"
-        case 2: return "Somewhat"
-        case 3: return "Very"
-        default: return ""
-        }
-    }
-}
-
-#Preview {
-    EmotionsView()
 }

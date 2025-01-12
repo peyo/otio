@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension Color {
-    static let appAccent = Color(hex: "8A4FFF")  // Deep purple
+    static let appAccent = Color(hex: "000000")
     
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -16,7 +16,7 @@ extension Color {
         case 8: // ARGB (32-bit)
             (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
         default:
-            (a, r, g, b) = (255, 0, 0, 0)
+            (a, r, g, b) = (255, 0, 0, 0)  // Changed from (255, 255, 0, 0) to (255, 0, 0, 0)
         }
         self.init(
             .sRGB,
@@ -26,4 +26,4 @@ extension Color {
             opacity: Double(a) / 255
         )
     }
-} 
+}

@@ -1,20 +1,20 @@
 import Foundation
 
 struct Insight: Decodable, Hashable {
-    let emoji: String
+    let emojiName: String
     let title: String
     let description: String
     
     // Regular initializer for creating Insight instances
-    init(emoji: String, title: String, description: String) {
-        self.emoji = emoji
+    init(emojiName: String, title: String, description: String) {
+        self.emojiName = emojiName
         self.title = title
         self.description = description
     }
     
     // Define the coding keys
     private enum CodingKeys: String, CodingKey {
-        case emoji
+        case emojiName = "emoji"
         case title
         case description
     }
@@ -26,7 +26,8 @@ struct Insight: Decodable, Hashable {
         self.description = try container.decode(String.self, forKey: .description)
         
         // Try to decode emoji if present, otherwise use a default
-        self.emoji = try container.decodeIfPresent(String.self, forKey: .emoji) ?? "💡"
+        self.emojiName = try container.decodeIfPresent(String.self, forKey: .emojiName) ?? "defaultImage"
+
     }
 }
 

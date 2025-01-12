@@ -78,7 +78,6 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
         // Ensure there are exactly three insights
         while (insights.length < 3) {
             insights.push({
-                emoji: '🔍',
                 title: 'Generated Insight',
                 description: 'This is a generated insight to ensure three insights are always returned.',
                 timestamp: currentTime
@@ -90,32 +89,32 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
             .map(e => `- ${e.type} (Intensity: ${e.intensity}) on ${e.date}`)
             .join('\n');
 
-        const prompt = `As an empathetic AI, analyze these emotions deeply:
+            const prompt = `As an empathetic AI, analyze these emotions deeply:
 
-            ${emotionsText}
+                ${emotionsText}
+                
+                Focus on these areas for your insights:
+                
+                1. **Trend-based feedback**: Identify explicit temporal patterns in the data, such as daily or weekly trends.
+                - Use specific language to make insights relatable (e.g., "over the past week," "in the evenings").
+                - Highlight trends in emotion frequency, intensity, or timing.
+                
+                2. **Self-reflection**: Pose general, open-ended questions to encourage self-awareness and exploration.
+                - Frame questions to help users connect with their experiences (e.g., "What was happening when you felt this way?" or "What helped you feel calmer during similar times?").
+                
+                3. **General tips**: Provide universal, actionable advice tailored to the emotions recorded for the week.
+                - Align tips with recorded emotions (e.g., for anxiety: "Try a short breathing exercise," for happiness: "Reflect on what brought you joy today").
+                - Avoid assumptions about specific triggers, focusing on practical and empathetic guidance.
+                
+                **Instruction**: Generate exactly **three** insights, one for each focus area above.
+                
+                **Format**:
+                description
+                Example: Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.
+                
+                Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.`;    
             
-            Focus on these areas for your insights:
-            
-            1. **Trend-Based Feedback**: Identify explicit temporal patterns in the data, such as daily or weekly trends.
-               - Use specific language to make insights relatable (e.g., "over the past week," "in the evenings").
-               - Highlight trends in emotion frequency, intensity, or timing.
-            
-            2. **Prompt Self-Reflection**: Pose general, open-ended questions to encourage self-awareness and exploration.
-               - Frame questions to help users connect with their experiences (e.g., "What was happening when you felt this way?" or "What helped you feel calmer during similar times?").
-            
-            3. **General Tips**: Provide universal, actionable advice tailored to the emotions recorded for the week.
-               - Align tips with recorded emotions (e.g., for anxiety: "Try a short breathing exercise," for happiness: "Reflect on what brought you joy today").
-               - Avoid assumptions about specific triggers, focusing on practical and empathetic guidance.
-            
-            **Instruction**: Generate exactly **three** insights, one for each focus area above.
-            
-            **Format**:
-            emoji|title|description
-            Example: 🌊|Evening Reflections|Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.
-            
-            Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.`;    
-
-        console.log('Debug: 📤 Sending request to OpenAI');
+            console.log('Debug: 📤 Sending request to OpenAI');
         
         const openAIResponse = await axios.post(
             'https://api.openai.com/v1/chat/completions',
@@ -140,11 +139,17 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
 
         insights = rawOutput
             .split('\n')
-            .map(line => {
-                const [emoji, title, description] = line.split('|').map(part => part.trim());
-                return { emoji, title, description, timestamp: currentTime };
+            .map((line, index) => {
+                const [_, description] = line.split('|').map(part => part.trim().toLowerCase());
+                const emojiNames = ['emotional-pattern', 'self-reflection', 'encouraging-tip'];
+                const titles = ['weekly emotional pattern', 'self-reflection', 'encouraging tip'];
+                
+                const emojiName = emojiNames[index % emojiNames.length];
+                const title = titles[index % titles.length];
+                
+                return { emojiName, title, description, timestamp: currentTime };
             })
-            .filter(insight => insight.emoji && insight.title && insight.description);
+            .filter(insight => insight.emojiName && insight.title && insight.description);
 
         // Store the new insights in the database
         await userRef.set(insights);

@@ -1,36 +1,46 @@
 import Foundation
 import AudioKit
 import SoundpipeAudioKit
+import AVFoundation
+import FirebaseStorage
 
-class SoundManager {
+class SoundManager: ObservableObject {
+    static let shared = SoundManager()
     private let engine = AudioEngine()
-    private let harmonicOscillators: [Oscillator]
-    private let binauralOscillators: [Oscillator]
-    private let pinkNoise: PinkNoise
+    private var harmonicOscillators: [Oscillator] = []
+    private var binauralOscillators: [Oscillator] = []
+    private var pinkNoise: PinkNoise
     private var isochronicOscillator: Oscillator?
     private var currentTimer: Timer?
     private var amplitudeModulationTimer: Timer?
+    private var audioPlayerManager = AudioPlayerManager()
     
     private static let baseFrequency: Float = 110
     private static let harmonicRatios: [Float] = [1, 2, 3, 4, 5]
     
     init() {
+        // Initialize harmonic oscillators
         harmonicOscillators = SoundManager.harmonicRatios.map { ratio in
             Oscillator(waveform: Table(.sine), frequency: SoundManager.baseFrequency * ratio, amplitude: 0.5)
         }
         
+        // Initialize binaural oscillators
         binauralOscillators = [
             Oscillator(waveform: Table(.sine), frequency: 100, amplitude: 0.5),
             Oscillator(waveform: Table(.sine), frequency: 104, amplitude: 0.5)
         ]
         
+        // Initialize pink noise
         pinkNoise = PinkNoise(amplitude: 0.5)
         
+        // Initialize isochronic oscillator
         let carrierFrequency: Float = 440 // A4 note, within audible range
         isochronicOscillator = Oscillator(waveform: Table(.sine), frequency: carrierFrequency, amplitude: 0.8)
         
+        // Set the initial output
         engine.output = Mixer(harmonicOscillators)
         
+        // Start the audio engine
         do {
             try engine.start()
             print("Audio engine started successfully.")
@@ -43,9 +53,6 @@ class SoundManager {
         stopAllSounds()
         
         switch type {
-        case .harmonicSeries:
-            engine.output = Mixer(harmonicOscillators)
-            startHarmonicSeries()
         case .binauralBeats:
             engine.output = Mixer(binauralOscillators)
             startBinauralBeats()
@@ -57,54 +64,28 @@ class SoundManager {
                 engine.output = isochronicOscillator
                 startIsochronicTone()
             }
-        }
-    }
-    
-    func stopAllSounds() {
-        harmonicOscillators.forEach { $0.stop() }
-        binauralOscillators.forEach { $0.stop() }
-        pinkNoise.stop()
-        isochronicOscillator?.stop()
-        amplitudeModulationTimer?.invalidate()
-    }
-    
-    private func startHarmonicSeries() {
-        print("Starting harmonic series.")
-        harmonicOscillators.forEach { $0.stop() } // Ensure all oscillators are stopped initially
-        harmonicOscillators[0].start() // Start with the base frequency
-        var currentIndex = 1
-        var isAscending = true
-        
-        currentTimer = Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true) { [weak self] timer in
-            guard let self = self else { return }
-            
-            if isAscending {
-                if currentIndex < self.harmonicOscillators.count {
-                    self.harmonicOscillators[currentIndex].start()
-                    self.adjustHarmonicAmplitudes(activeCount: currentIndex + 1)
-                    currentIndex += 1
+        case .natureSound:
+            // Handle nature sound case
+            fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { url in
+                if let url = url {
+                    self.playAudioFromURL(url)
                 } else {
-                    isAscending = false
-                }
-            } else {
-                if currentIndex > 0 {
-                    self.harmonicOscillators[currentIndex - 1].stop()
-                    currentIndex -= 1
-                    self.adjustHarmonicAmplitudes(activeCount: currentIndex)
-                } else {
-                    isAscending = true
+                    print("Failed to get download URL")
                 }
             }
         }
     }
     
-    private func adjustHarmonicAmplitudes(activeCount: Int) {
-        let baseAmplitude: Float = 0.5
-        let adjustedAmplitude = baseAmplitude / Float(activeCount)
-        
-        for i in 0..<activeCount {
-            harmonicOscillators[i].amplitude = adjustedAmplitude
-        }
+    func stopAllSounds() {
+        print("Stopping all sounds")
+        harmonicOscillators.forEach { $0.stop() }
+        binauralOscillators.forEach { $0.stop() }
+        pinkNoise.stop()
+        isochronicOscillator?.stop()
+        amplitudeModulationTimer?.invalidate()
+        currentTimer?.invalidate()
+        audioPlayerManager.stopAudio()
+        print("All sounds stopped")
     }
     
     private func startBinauralBeats() {
@@ -127,5 +108,38 @@ class SoundManager {
             self.isochronicOscillator?.amplitude = AUValue(newAmplitude)
             print("Isochronic amplitude: \(newAmplitude)")
         }
+    }
+    
+    func playAudioFromURL(_ url: URL) {
+        audioPlayerManager.playAudio(from: url)
+    }
+    
+    func fetchDownloadURL(for fileName: String, completion: @escaping (URL?) -> Void) {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let fileRef = storageRef.child("nature/\(fileName)")
+
+        fileRef.downloadURL { url, error in
+            if let error = error {
+                print("Error fetching download URL: \(error.localizedDescription)")
+                completion(nil)
+            } else {
+                completion(url)
+            }
+        }
+    }
+}
+
+class AudioPlayerManager {
+    private var player: AVPlayer?
+
+    func playAudio(from url: URL) {
+        player = AVPlayer(url: url)
+        player?.play()
+    }
+
+    func stopAudio() {
+        player?.pause()
+        player = nil
     }
 }

@@ -3,58 +3,71 @@ import FirebaseCore
 import FirebaseAuth
 import FirebaseDatabase
 import FirebaseFunctions
+import FirebaseStorage
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     var authListener: AuthStateDidChangeListenerHandle?
     
     func application(_ application: UIApplication,
                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        // Essential Firebase configuration
         FirebaseApp.configure()
         
-        // Print initial auth state
-        if let currentUser = Auth.auth().currentUser {
-            print("Debug: 🚀 Initial auth state:")
-            print("- UID:", currentUser.uid)
-            print("- Email:", currentUser.email ?? "none")
-            print("- Anonymous:", currentUser.isAnonymous)
-            print("- Provider IDs:", currentUser.providerData.map { $0.providerID })
-        } else {
-            print("Debug: 🚀 No user at launch")
-        }
-        
-        // Store the listener handle
-        authListener = Auth.auth().addStateDidChangeListener { auth, user in
-            if let user = user {
-                print("Debug: 👤 Auth state changed:")
-                print("- UID:", user.uid)
-                print("- Email:", user.email ?? "none")
-                print("- Anonymous:", user.isAnonymous)
-                print("- Provider IDs:", user.providerData.map { $0.providerID })
-                
-                // Try to get token
-                Task {
-                    do {
-                        let token = try await user.getIDToken()
-                        print("Debug: 🎫 Token available (first 20):", String(token.prefix(20)))
-                    } catch {
-                        print("Debug: ❌ Token error:", error)
-                    }
-                }
-                
-                let userRef = Database.database().reference().child("users").child(user.uid)
-                userRef.observe(.value) { snapshot in
-                    print("Debug: 🔍 Database access at user path: \(snapshot.ref.description())")
-                }
-            } else {
-                print("Debug: 👤 User signed out")
-            }
+        // Defer non-essential tasks to improve startup time
+        DispatchQueue.global(qos: .background).async {
+            self.setupAuthListener()
         }
         
         return true
     }
     
-    // Add cleanup when app terminates
+    private func setupAuthListener() {
+        // Store the listener handle
+        authListener = Auth.auth().addStateDidChangeListener { auth, user in
+            if let user = user {
+                self.handleUserSignIn(user)
+            } else {
+                #if DEBUG
+                print("Debug: 👤 User signed out")
+                #endif
+            }
+        }
+    }
+    
+    private func handleUserSignIn(_ user: User) {
+        #if DEBUG
+        print("Debug: 👤 Auth state changed:")
+        print("- UID:", user.uid)
+        print("- Email:", user.email ?? "none")
+        print("- Anonymous:", user.isAnonymous)
+        print("- Provider IDs:", user.providerData.map { $0.providerID })
+        #endif
+        
+        // Try to get token
+        Task {
+            do {
+                let token = try await user.getIDToken()
+                #if DEBUG
+                print("Debug: 🎫 Token available (first 20):", String(token.prefix(20)))
+                #endif
+            } catch {
+                #if DEBUG
+                print("Debug: ❌ Token error:", error)
+                #endif
+            }
+        }
+        
+        // Observe user data in the database
+        let userRef = Database.database().reference().child("users").child(user.uid)
+        userRef.observe(.value) { snapshot in
+            #if DEBUG
+            print("Debug: 🔍 Database access at user path: \(snapshot.ref.description())")
+            #endif
+        }
+    }
+    
     func applicationWillTerminate(_ application: UIApplication) {
+        // Cleanup: Remove the auth state listener
         if let listener = authListener {
             Auth.auth().removeStateDidChangeListener(listener)
         }
@@ -69,7 +82,7 @@ struct VibesApp: App {
     
     var body: some Scene {
         WindowGroup {
-            EmotionsView()
+            SplashScreenView()
                 .environmentObject(userService)
         }
     }

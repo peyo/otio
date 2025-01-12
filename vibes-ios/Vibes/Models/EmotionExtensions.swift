@@ -4,24 +4,30 @@ import SwiftUI
 extension Color {
     static func forEmotion(_ type: String) -> Color {
         switch type {
-        case "Happy": return .green
-        case "Sad": return .blue
-        case "Anxious": return .yellow
-        case "Angry": return .red
-        case "Neutral": return .gray
+        case "happy": return .green
+        case "sad": return .blue
+        case "anxious": return .yellow
+        case "angry": return .red
+        case "balanced": return .gray
         default: return .gray
         }
     }
 }
 
 public func emojiFor(_ emotion: String) -> String {
-    switch emotion {
-    case "Happy": return "😊"
-    case "Sad": return "😢"
-    case "Anxious": return "😰"
-    case "Angry": return "😠"
-    case "Neutral": return "😐"
-    default: return "❓"
+    switch emotion.lowercased() {
+    case "happy":
+        return "happy-face"
+    case "sad":
+        return "sad-face"
+    case "anxious":
+        return "anxious-face"
+    case "angry":
+        return "angry-face"
+    case "balanced":
+        return "balanced-face"
+    default:
+        return "unknown-face"
     }
 }
 
