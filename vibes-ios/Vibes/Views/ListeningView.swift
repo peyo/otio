@@ -1,20 +1,21 @@
 import SwiftUI
 
-enum SoundType: String, CaseIterable {
-    case binauralBeats = "binaural beats"
-    case pinkNoise = "pink noise"
-    case isochronicTone = "isochronic tone"
-    case natureSound = "rancheria falls"
-}
-
 struct ListeningView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var soundManager = SoundManager.shared
     @State private var isPlaying = false
-    @State private var currentSound: SoundType = .binauralBeats
+    @State private var currentSound: SoundType
     @State private var amplitude: Float = 0.1
     @State private var phase: Double = 0
     private let sampleCount = 100
+    private let normalizedScore: Double
+
+    init(normalizedScore: Double) {
+        self.normalizedScore = normalizedScore
+        // Set the initial value of currentSound to .recommendedSound
+        _currentSound = State(initialValue: SoundType.recommendedSound)
+        print("Debug: Initialized ListeningView with normalizedScore: \(normalizedScore) and currentSound: \(SoundType.recommendedSound)")
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -54,18 +55,11 @@ struct ListeningView: View {
                         HStack(spacing: 12) {
                             ForEach(SoundType.allCases, id: \.self) { sound in
                                 SoundCard(sound: sound, isSelected: currentSound == sound) {
-                                    currentSound = sound
-                                    if isPlaying {
-                                        if sound == .natureSound {
-                                            soundManager.fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { url in
-                                                if let url = url {
-                                                    soundManager.playAudioFromURL(url)
-                                                } else {
-                                                    print("Failed to get download URL")
-                                                }
-                                            }
-                                        } else {
-                                            soundManager.startSound(type: currentSound)
+                                    if currentSound != sound {
+                                        currentSound = sound
+                                        if isPlaying {
+                                            soundManager.stopAllSounds()
+                                            startCurrentSound()
                                         }
                                     }
                                 }
@@ -109,6 +103,7 @@ struct ListeningView: View {
             }
             .onAppear {
                 startVisualUpdates()
+                print("Current sound on appear: \(currentSound)")
             }
             .onDisappear {
                 soundManager.stopAllSounds()
@@ -120,9 +115,17 @@ struct ListeningView: View {
         if isPlaying {
             soundManager.stopAllSounds()
         } else {
-            soundManager.startSound(type: currentSound)
+            startCurrentSound()
         }
         isPlaying.toggle()
+    }
+
+    func startCurrentSound() {
+        if currentSound == .recommendedSound {
+            soundManager.startSound(type: determineRecommendedSound(from: normalizedScore), normalizedScore: normalizedScore)
+        } else {
+            soundManager.startSound(type: currentSound)
+        }
     }
 
     func startVisualUpdates() {
@@ -136,68 +139,5 @@ struct ListeningView: View {
                 amplitude = 0.1
             }
         }
-    }
-}
-
-struct DynamicWaveformCircle: View {
-    let sampleCount: Int
-    let phase: Double
-    let amplitude: Float
-    let color: Color
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let size = min(geometry.size.width, geometry.size.height)
-            let radius = size / 2
-            Path { path in
-                for i in 0..<sampleCount {
-                    let angle = (Double(i) / Double(sampleCount)) * 2 * .pi
-                    let x = cos(angle)
-                    let y = sin(angle)
-                    let waveAmplitude = Double(amplitude) * sin(angle * 8 + phase)
-                    let point = CGPoint(
-                        x: radius + CGFloat(x * (1 + waveAmplitude)) * radius * 0.3,
-                        y: radius + CGFloat(y * (1 + waveAmplitude)) * radius * 0.3
-                    )
-                    
-                    if i == 0 {
-                        path.move(to: point)
-                    } else {
-                        path.addLine(to: point)
-                    }
-                }
-                path.closeSubpath()
-            }
-            .stroke(color, lineWidth: 2)
-            .frame(width: size, height: size)
-            .position(x: geometry.size.width/2, y: geometry.size.height/2)
-            .animation(.easeInOut(duration: 0.5), value: amplitude) // Add animation
-        }
-    }
-}
-
-struct SoundCard: View {
-    let sound: SoundType
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(sound.rawValue)
-                .foregroundColor(.appAccent) // Text color
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(
-                    Rectangle()
-                        .fill(isSelected ? Color.gray.opacity(0.1) : Color.clear) // Background color\
-                        .cornerRadius(0) // Rounded corners
-                )
-                .overlay(
-                    Rectangle()
-                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 2) // Border color
-                        .cornerRadius(0) // Rounded corners
-                )
-        }
-        .padding(.horizontal, 4)
     }
 }

@@ -232,7 +232,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D064A4C72D2646450001C402 /* Build configuration list for PBXProject "vibes" */;
+			buildConfigurationList = D064A4C72D2646450001C402 /* Build configuration list for PBXProject "Vibes" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -574,7 +574,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D064A4C72D2646450001C402 /* Build configuration list for PBXProject "vibes" */ = {
+		D064A4C72D2646450001C402 /* Build configuration list for PBXProject "Vibes" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4EE2D2646460001C402 /* Debug */,
