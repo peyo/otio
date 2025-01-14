@@ -12,6 +12,7 @@ class SoundManager: ObservableObject {
     private var anxiousChordOscillators: [Oscillator] = []
     private var angryOscillators: [Oscillator] = []
     private var audioPlayerManager = AudioPlayerManager()
+    private var naturePlayer: AVAudioPlayer?
     
     init(normalizedScore: Double = 0.0) {
         // Initialize oscillators for a happy melody
@@ -52,7 +53,6 @@ class SoundManager: ObservableObject {
         case .angrySound:
             engine.output = Mixer(angryOscillators)
         case .natureSound:
-            // Handle nature sound initialization if needed
             engine.output = Mixer() // Set a default empty mixer
         default:
             engine.output = Mixer(happyChordOscillators) // Fallback to happy sound
@@ -98,9 +98,7 @@ class SoundManager: ObservableObject {
                     print("Failed to get download URL")
                 }
             }
-        case .recommendedSound:
-            // This case should not be reached because soundToPlay should be resolved
-            print("Error: Recommended sound should have been resolved to a specific sound type.")
+        case .recommendedSound: break
         }
     }
     

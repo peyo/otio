@@ -12,9 +12,7 @@ struct ListeningView: View {
 
     init(normalizedScore: Double) {
         self.normalizedScore = normalizedScore
-        // Set the initial value of currentSound to .recommendedSound
         _currentSound = State(initialValue: SoundType.recommendedSound)
-        print("Debug: Initialized ListeningView with normalizedScore: \(normalizedScore) and currentSound: \(SoundType.recommendedSound)")
     }
 
     var body: some View {
@@ -54,15 +52,29 @@ struct ListeningView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(SoundType.allCases, id: \.self) { sound in
-                                SoundCard(sound: sound, isSelected: currentSound == sound) {
-                                    if currentSound != sound {
-                                        currentSound = sound
-                                        if isPlaying {
-                                            soundManager.stopAllSounds()
-                                            startCurrentSound()
+                                VStack {
+                                    if sound == .recommendedSound {
+                                        GeometryReader { geo in
+                                            Text("based on your week's\nemotional data")
+                                                .font(.footnote)
+                                                .foregroundColor(.secondary)
+                                                .multilineTextAlignment(.center)
+                                                .frame(width: geo.size.width) // Match button width
+                                        }
+                                        .frame(height: 40) // Adjust height as needed
+                                    }
+                                    Spacer() // Pushes the button to the bottom
+                                    SoundCard(sound: sound, isSelected: currentSound == sound) {
+                                        if currentSound != sound {
+                                            currentSound = sound
+                                            if isPlaying {
+                                                soundManager.stopAllSounds()
+                                                startCurrentSound()
+                                            }
                                         }
                                     }
                                 }
+                                .frame(height: 100) // Ensure consistent height
                             }
                         }
                     }
@@ -103,7 +115,6 @@ struct ListeningView: View {
             }
             .onAppear {
                 startVisualUpdates()
-                print("Current sound on appear: \(currentSound)")
             }
             .onDisappear {
                 soundManager.stopAllSounds()
