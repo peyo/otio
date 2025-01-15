@@ -111,7 +111,9 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
                 **Format**:
                 Example: Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.
                 
-                Keep insights specific, empathetic, and actionable, referencing the actual emotions provided. Do not number them.`;    
+                - Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.
+                - Do not number the insights.
+                - Do not lead the insights with any symbols.`;    
             
             console.log('Debug: 📤 Sending request to OpenAI');
         

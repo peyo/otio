@@ -19,7 +19,7 @@ struct IntensitySelectionView: View {
                             .frame(width: 60, height: 60)
 
                         Text("how \(emotion.lowercased()) are you feeling?")
-                            .font(.headline)
+                            .font(.custom("NewHeterodoxMono-Book", size: 17))
                     }
                     .padding(.top, 40)
 
@@ -35,9 +35,11 @@ struct IntensitySelectionView: View {
                                     .overlay(
                                         VStack(spacing: 4) {
                                             Text("\(intensity)")
-                                                .font(.title2)
+                                                .font(.custom("NewHeterodoxMono-Book", size: 22))
+                                                .fontWeight(.medium)
                                             Text(intensityLabel(for: intensity))
-                                                .font(.caption)
+                                                .font(.custom("NewHeterodoxMono-Book", size: 12))
+                                                .fontWeight(.medium)
                                         }
                                             .foregroundColor(.primary)
                                     )
@@ -49,12 +51,18 @@ struct IntensitySelectionView: View {
                 }
                 .padding()
             }
-            .navigationTitle("select intensity")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("select intensity")
+                        .font(.custom("NewHeterodoxMono-Book", size: 22))
+                        .fontWeight(.semibold)
+                }
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") {
+                    Button {
                         dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.appAccent)
                     }
                 }
             }

@@ -29,7 +29,8 @@ struct InsightsView: View {
                     VStack(spacing: 24) {
                         // Subtitle only
                         Text("navigate your emotions")
-                            .font(.subheadline)
+                            .font(.custom("NewHeterodoxMono-Book", size: 15))
+                            .fontWeight(.medium)
                             .foregroundColor(.secondary)
                             .padding(.top, 0)
                         
@@ -60,7 +61,8 @@ struct InsightsView: View {
                                     
                                     if cooldownTime > 0 {
                                         Text("next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
-                                            .font(.footnote)
+                                            .font(.custom("NewHeterodoxMono-Book", size: 13))
+                                            .fontWeight(.medium)
                                             .foregroundColor(.gray)
                                             .padding(.top, 8)
                                     }
@@ -77,7 +79,7 @@ struct InsightsView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("understand")
-                        .font(.title2)
+                        .font(.custom("NewHeterodoxMono-Book", size: 22))
                         .fontWeight(.semibold)
                 }
                 
@@ -226,11 +228,13 @@ struct InsightsView: View {
                         .scaledToFit()
                         .frame(width: 28, height: 28)
                     Text(insight.title)
-                        .font(.callout)
+                        .font(.custom("NewHeterodoxMono-Book", size: 16))
+                        .fontWeight(.medium)
                 }
                 
                 Text(insight.description)
-                    .font(.subheadline)
+                    .font(.custom("NewHeterodoxMono-Book", size: 15))
+                    .fontWeight(.medium)
                     .foregroundColor(.secondary)
             }
             .padding(18)
@@ -251,10 +255,12 @@ struct InsightsView: View {
                     .foregroundColor(.appAccent)
                 
                 Text("no emotions to analyze")
-                    .font(.headline)
+                    .font(.custom("NewHeterodoxMono-Book", size: 17))
+                    .fontWeight(.medium)
                 
                 Text("start tracking your emotions to get insights about your emotional patterns.")
-                    .font(.subheadline)
+                    .font(.custom("NewHeterodoxMono-Book", size: 15))
+                    .fontWeight(.medium)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }

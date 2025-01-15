@@ -23,7 +23,8 @@ struct ListeningView: View {
                 
                 VStack(spacing: 24) {
                     Text("catch the wave")
-                        .font(.subheadline)
+                        .font(.custom("NewHeterodoxMono-Book", size: 15))
+                        .fontWeight(.medium)
                         .foregroundColor(.secondary)
                         .padding(.top, 10)
                     
@@ -53,17 +54,6 @@ struct ListeningView: View {
                         HStack(spacing: 12) {
                             ForEach(SoundType.allCases, id: \.self) { sound in
                                 VStack {
-                                    if sound == .recommendedSound {
-                                        GeometryReader { geo in
-                                            Text("based on your week's\nemotional data")
-                                                .font(.footnote)
-                                                .foregroundColor(.secondary)
-                                                .multilineTextAlignment(.center)
-                                                .frame(width: geo.size.width) // Match button width
-                                        }
-                                        .frame(height: 40) // Adjust height as needed
-                                    }
-                                    Spacer() // Pushes the button to the bottom
                                     SoundCard(sound: sound, isSelected: currentSound == sound) {
                                         if currentSound != sound {
                                             currentSound = sound
@@ -73,6 +63,7 @@ struct ListeningView: View {
                                             }
                                         }
                                     }
+                                    .font(.custom("NewHeterodoxMono-Book", size: 17))
                                 }
                                 .frame(height: 100) // Ensure consistent height
                             }
@@ -95,12 +86,13 @@ struct ListeningView: View {
                 }
                 .padding(.horizontal, 20)
             }
+            
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("meditate")
-                        .font(.title2)
+                        .font(.custom("NewHeterodoxMono-Book", size: 22))
                         .fontWeight(.semibold)
                 }
                 

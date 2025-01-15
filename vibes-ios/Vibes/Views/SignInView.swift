@@ -7,7 +7,7 @@ struct SignInView: View {
     @State private var showFirstText = true
     private let firstText = "feeling into insight"
     private let secondText = "insight into sound"
-    private let animationDuration = 1.0
+    private let animationDuration = 0.5
     private let displayDuration = 2.0
     
     var body: some View {
@@ -26,14 +26,14 @@ struct SignInView: View {
                         VStack(spacing: 8) {
                             ZStack {
                                 Text(firstText)
-                                    .font(.title3)
+                                    .font(.custom("NewHeterodoxMono-Book", size: 20))
                                     .fontWeight(.semibold)
                                     .foregroundColor(.black)
                                     .opacity(showFirstText ? 1 : 0)
                                     .animation(.easeInOut(duration: animationDuration), value: showFirstText)
                                 
                                 Text(secondText)
-                                    .font(.title3)
+                                    .font(.custom("NewHeterodoxMono-Book", size: 20))
                                     .fontWeight(.semibold)
                                     .foregroundColor(.black)
                                     .opacity(showFirstText ? 0 : 1)
@@ -78,7 +78,8 @@ struct SignInView: View {
                                 }
                                 
                                 Text("continue with google")
-                                    .font(.subheadline)
+                                    .font(.custom("NewHeterodoxMono-Book", size: 15))
+                                    .fontWeight(.medium)
                             }
                             .foregroundColor(Color.appAccent)
                             .frame(width: 280, height: 55)

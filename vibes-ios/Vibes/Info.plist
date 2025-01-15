@@ -15,5 +15,9 @@
 			</array>
 		</dict>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+       <string>New-Heterodox-Mono.otf</string>
+	</array>
 </dict>
 </plist>

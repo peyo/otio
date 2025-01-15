@@ -41,7 +41,8 @@ struct EmotionsView: View {
                             // Recent section as a separate VStack
                             VStack(alignment: .leading, spacing: 16) {
                                 Text("recent")
-                                    .font(.headline)
+                                    .font(.custom("NewHeterodoxMono-Book", size: 17))
+                                    .fontWeight(.medium)
                                     .foregroundColor(.primary)
                                     .padding(.horizontal)
                                     .padding(.bottom, 21)
@@ -61,7 +62,8 @@ struct EmotionsView: View {
                                                 .frame(width: 40)
                                             
                                             Text("track your first emotion to see it here.")
-                                                .font(.subheadline)
+                                                .font(.custom("NewHeterodoxMono-Book", size: 15))
+                                                .fontWeight(.medium)
                                                 .foregroundColor(.secondary)
                                             
                                             Spacer()
@@ -95,7 +97,7 @@ struct EmotionsView: View {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Text("vibes")
-                                .font(.title2)
+                                .font(.custom("NewHeterodoxMono-Book", size: 22))
                                 .fontWeight(.semibold)
                         }
                         
@@ -400,78 +402,5 @@ struct EmotionsView: View {
         let actualScore = calculateWeeklyScore(emotions: weekEmotions)
         let maxScore = calculateMaxPossibleScore(maxEntries: 10, maxIntensity: 3) // Example values
         return normalizeScore(actualScore: actualScore, maxScore: maxScore)
-    }
-}
-
-struct EmotionButton: View {
-    let type: String
-    let isSelected: Bool
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            VStack {
-                Image(emojiFor(type))
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-                Text(type)
-                    .font(.caption)
-            }
-            .frame(width: 100, height: 100)
-            .background(Color.forEmotion(type).opacity(0.1))
-            .cornerRadius(0)
-            .overlay(
-                Rectangle()
-                    .stroke(isSelected ? Color.forEmotion(type) : .clear, lineWidth: 2)
-            )
-        }
-        .foregroundColor(.primary)
-    }
-}
-
-struct EmotionCard: View {
-    let emotion: EmotionData
-    let timeString: (Date) -> String
-
-    var body: some View {
-        HStack(spacing: 16) {
-            // Emoji Square with colored background
-            Image(emojiFor(emotion.type))
-                .resizable()
-                .scaledToFit()
-                .frame(width: 28, height: 28)
-                .padding(12)  // Add padding back
-                .background(
-                    Rectangle()
-                        .fill(Color.forEmotion(emotion.type).opacity(0.1))
-                )
-
-            // Content
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(emotion.type)
-                        .fontWeight(.medium)
-                    if emotion.type != "balanced" {
-                        Text("•")
-                            .foregroundColor(.secondary)
-                        Text("intensity \(emotion.intensity)")
-                            .foregroundColor(.secondary)
-                    }
-                }
-
-                Text(timeString(emotion.date))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
-        }
-        .padding()
-        .background(
-            Rectangle()
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
-        )
     }
 }
