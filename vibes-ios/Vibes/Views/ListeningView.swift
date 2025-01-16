@@ -7,6 +7,8 @@ struct ListeningView: View {
     @State private var currentSound: SoundType
     @State private var amplitude: Float = 0.1
     @State private var phase: Double = 0
+    @State private var elapsedSeconds: Int = 0
+    private var timerPublisher = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let sampleCount = 100
     private let normalizedScore: Double
 
@@ -46,6 +48,12 @@ struct ListeningView: View {
                     }
                     .frame(height: 200)
                     .offset(y: -20) // Shifted up by y points
+
+                    // Add timer display
+                    Text(timeString(from: elapsedSeconds))
+                        .font(.custom("NewHeterodoxMono-Book", size: 21))
+                        .foregroundColor(.secondary)
+                        .padding(.top, 8)  // Add some spacing
 
                     Spacer() // Add a spacer to push content down
                     
@@ -111,7 +119,18 @@ struct ListeningView: View {
             .onDisappear {
                 soundManager.stopAllSounds()
             }
+            .onReceive(timerPublisher) { _ in
+                if isPlaying {
+                    elapsedSeconds += 1
+                }
+            }
         }
+    }
+
+    private func timeString(from seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%02d:%02d", minutes, remainingSeconds)
     }
 
     func toggleSound() {
@@ -121,13 +140,25 @@ struct ListeningView: View {
             startCurrentSound()
         }
         isPlaying.toggle()
+        
+        // Reset timer when stopping
+        if !isPlaying {
+            elapsedSeconds = 0
+        }
     }
 
     func startCurrentSound() {
         if currentSound == .recommendedSound {
-            soundManager.startSound(type: determineRecommendedSound(from: normalizedScore), normalizedScore: normalizedScore)
+            soundManager.startSound(
+                type: determineRecommendedSound(from: normalizedScore),
+                normalizedScore: normalizedScore,
+                isRecommendedButton: true
+            )
         } else {
-            soundManager.startSound(type: currentSound)
+            soundManager.startSound(
+                type: currentSound,
+                normalizedScore: normalizedScore
+            )
         }
     }
 

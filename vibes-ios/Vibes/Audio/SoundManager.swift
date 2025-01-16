@@ -7,12 +7,17 @@ import FirebaseStorage
 class SoundManager: ObservableObject {
     static let shared = SoundManager()
     private let engine = AudioEngine()
+    private var isEngineRunning = false
     private var happyChordOscillators: [Oscillator] = []
     private var sadChordOscillators: [Oscillator] = []
     private var anxiousChordOscillators: [Oscillator] = []
     private var angryOscillators: [Oscillator] = []
     private var audioPlayerManager = AudioPlayerManager()
-    private var naturePlayer: AVAudioPlayer?
+    private var naturePlayer: AVPlayer?
+    
+    private var crossfadeTimer: Timer?
+    private var volumeIncreaseTimer: Timer?
+    private var oscillatorFadeTimer: Timer?
     
     init(normalizedScore: Double = 0.0) {
         // Initialize oscillators for a happy melody
@@ -67,49 +72,97 @@ class SoundManager: ObservableObject {
         }
     }
     
-    func startSound(type: SoundType, normalizedScore: Double? = nil) {
+    func startSound(type: SoundType, normalizedScore: Double? = nil, isRecommendedButton: Bool = false) {
         stopAllSounds()
-        
-        let soundToPlay: SoundType
-        if type == .recommendedSound, let score = normalizedScore {
-            soundToPlay = determineRecommendedSound(from: score)
-        } else {
-            soundToPlay = type
-        }
-        
-        switch soundToPlay {
-        case .happySound:
-            engine.output = Mixer(happyChordOscillators)
-            happyChordOscillators.forEach { $0.start() }
-        case .sadSound:
-            engine.output = Mixer(sadChordOscillators)
-            startSadChordProgression()
-        case .anxiousSound:
-            engine.output = Mixer(anxiousChordOscillators)
-            startAnxiousChordProgression()
-        case .angrySound:
-            engine.output = Mixer(angryOscillators)
-            startAngryOscillators()
-        case .natureSound:
-            fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { url in
-                if let url = url {
-                    self.playAudioFromURL(url)
-                } else {
-                    print("Failed to get download URL")
-                }
+        print("isRecommendedButton: \(isRecommendedButton)")
+
+        // Ensure the audio engine is running
+        if !isEngineRunning {
+            do {
+                try engine.start()
+                isEngineRunning = true
+                print("Audio engine started successfully.")
+            } catch {
+                print("Failed to start audio engine: \(error)")
             }
-        case .recommendedSound: break
+        }
+
+        // Check if the recommended button was pressed
+        if isRecommendedButton, let score = normalizedScore {
+            print("isRecommendedButton is true, determining recommended sound.")
+            let recommendedSound = determineRecommendedSound(from: score)
+            print("Determined recommended sound: \(recommendedSound)")
+            
+            // Start crossfade timer
+            print("Starting crossfade timer.")
+            startCrossfadeTimer()
+            
+            // Start the recommended sound
+            startSound(type: recommendedSound, normalizedScore: score, isRecommendedButton: false)
+        } else {
+            switch type {
+            case .happySound:
+                engine.output = Mixer(happyChordOscillators)
+                happyChordOscillators.forEach { $0.start() }
+            case .sadSound:
+                engine.output = Mixer(sadChordOscillators)
+                startSadChordProgression()
+            case .anxiousSound:
+                engine.output = Mixer(anxiousChordOscillators)
+                startAnxiousChordProgression()
+            case .angrySound:
+                engine.output = Mixer(angryOscillators)
+                startAngryOscillators()
+            case .natureSound:
+                fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { url in
+                    if let url = url {
+                        self.playAudioFromURL(url)
+                    } else {
+                        print("Failed to get download URL")
+                    }
+                }
+            case .recommendedSound: break
+            }
         }
     }
     
     func stopAllSounds() {
         print("Stopping all sounds")
-        happyChordOscillators.forEach { $0.stop() }
-        sadChordOscillators.forEach { $0.stop() }
-        anxiousChordOscillators.forEach { $0.stop() }
-        angryOscillators.forEach { $0.stop() }
+        
+        // Invalidate all timers including the crossfade timer
+        crossfadeTimer?.invalidate()
+        crossfadeTimer = nil
+        
+        volumeIncreaseTimer?.invalidate()
+        volumeIncreaseTimer = nil
+        
+        oscillatorFadeTimer?.invalidate()
+        oscillatorFadeTimer = nil
+        
+        // Stop all oscillators and reset their amplitudes
+        happyChordOscillators.forEach { 
+            $0.stop()
+            $0.amplitude = 0.5  // Reset to initial amplitude
+        }
+        sadChordOscillators.forEach { 
+            $0.stop()
+            $0.amplitude = 0.4  // Reset to initial amplitude
+        }
+        anxiousChordOscillators.forEach { 
+            $0.stop()
+            $0.amplitude = 0.3  // Reset to initial amplitude
+        }
+        angryOscillators.forEach { 
+            $0.stop()
+            $0.amplitude = 0.3  // Reset to initial amplitude
+        }
+        
+        // Stop and clear the nature player
+        naturePlayer?.pause()
+        naturePlayer = nil
+        
         audioPlayerManager.stopAudio()
-        print("All sounds stopped")
+        print("All sounds stopped and reset")
     }
     
     private func startSadChordProgression() {
@@ -129,7 +182,6 @@ class SoundManager: ObservableObject {
     }
     
     func fetchDownloadURL(for fileName: String, completion: @escaping (URL?) -> Void) {
-        stopAllSounds()
         print("Fetching download URL for \(fileName)")
         let storage = Storage.storage()
         let storageRef = storage.reference()
@@ -142,6 +194,79 @@ class SoundManager: ObservableObject {
             } else {
                 print("Download URL fetched successfully")
                 completion(url)
+            }
+        }
+    }
+
+    private func startCrossfadeTimer() {
+        crossfadeTimer?.invalidate() // Invalidate any existing timer
+        print("Starting crossfade timer")
+        crossfadeTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { [weak self] _ in
+            print("Crossfade timer triggered")
+            self?.crossfadeToRancheriaFalls()
+        }
+    }
+
+    private func crossfadeToRancheriaFalls() {
+        let crossfadeDuration: TimeInterval = 15.0
+        print("Starting crossfade to Rancheria Falls over \(crossfadeDuration) seconds")
+        
+        fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { [weak self] url in
+            guard let self = self, let url = url else {
+                print("Failed to get download URL")
+                return
+            }
+
+            self.naturePlayer = AVPlayer(url: url)
+            self.naturePlayer?.volume = 0.0
+            self.naturePlayer?.play()
+            print("Playing Rancheria Falls")
+
+            // Store reference to volume increase timer
+            self.volumeIncreaseTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+                guard let self = self, let player = self.naturePlayer else {
+                    timer.invalidate()
+                    return
+                }
+                
+                if player.rate == 0 {
+                    player.play()
+                }
+                player.volume += 0.1 / Float(crossfadeDuration)
+                print("Increasing Rancheria Falls volume to \(player.volume)")
+                if player.volume >= 1.0 {
+                    player.volume = 1.0
+                    timer.invalidate()
+                    print("Rancheria Falls volume reached maximum")
+                }
+            }
+
+            // Store reference to oscillator fade timer
+            self.oscillatorFadeTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+                guard let self = self else {
+                    timer.invalidate()
+                    return
+                }
+                
+                let allOscillators = self.happyChordOscillators + 
+                                   self.sadChordOscillators + 
+                                   self.anxiousChordOscillators + 
+                                   self.angryOscillators
+                
+                var allStopped = true
+                allOscillators.forEach { oscillator in
+                    oscillator.amplitude -= 0.1 / Float(crossfadeDuration)
+                    if oscillator.amplitude > 0 {
+                        allStopped = false
+                    } else {
+                        oscillator.stop()
+                    }
+                }
+                
+                if allStopped {
+                    timer.invalidate()
+                    print("All oscillators stopped")
+                }
             }
         }
     }

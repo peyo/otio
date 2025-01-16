@@ -13,7 +13,8 @@ struct EmotionButton: View {
                     .scaledToFit()
                     .frame(width: 40, height: 40)
                 Text(type)
-                    .font(.custom("NewHeterodoxMono-Book", size: 12))
+                    .font(.custom("NewHeterodoxMono-Book", size: 14))
+                    .fontWeight(.medium)
             }
             .frame(width: 100, height: 100)
             .background(Color.forEmotion(type).opacity(0.1))
