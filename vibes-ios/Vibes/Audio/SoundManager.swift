@@ -73,7 +73,9 @@ class SoundManager: ObservableObject {
     }
     
     func startSound(type: SoundType, normalizedScore: Double? = nil, isRecommendedButton: Bool = false) {
-        stopAllSounds()
+        if !isRecommendedButton {
+            stopAllSounds()
+        }
         print("isRecommendedButton: \(isRecommendedButton)")
 
         // Ensure the audio engine is running
@@ -87,42 +89,35 @@ class SoundManager: ObservableObject {
             }
         }
 
-        // Check if the recommended button was pressed
-        if isRecommendedButton, let score = normalizedScore {
-            print("isRecommendedButton is true, determining recommended sound.")
-            let recommendedSound = determineRecommendedSound(from: score)
-            print("Determined recommended sound: \(recommendedSound)")
-            
-            // Start crossfade timer
+        // Handle the actual sound playing
+        switch type {
+        case .happySound:
+            engine.output = Mixer(happyChordOscillators)
+            happyChordOscillators.forEach { $0.start() }
+        case .sadSound:
+            engine.output = Mixer(sadChordOscillators)
+            startSadChordProgression()
+        case .anxiousSound:
+            engine.output = Mixer(anxiousChordOscillators)
+            startAnxiousChordProgression()
+        case .angrySound:
+            engine.output = Mixer(angryOscillators)
+            startAngryOscillators()
+        case .natureSound:
+            fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { url in
+                if let url = url {
+                    self.playAudioFromURL(url)
+                } else {
+                    print("Failed to get download URL")
+                }
+            }
+        case .recommendedSound: break
+        }
+
+        // If it's the recommended button, start the crossfade timer after starting the sound
+        if isRecommendedButton {
             print("Starting crossfade timer.")
             startCrossfadeTimer()
-            
-            // Start the recommended sound
-            startSound(type: recommendedSound, normalizedScore: score, isRecommendedButton: false)
-        } else {
-            switch type {
-            case .happySound:
-                engine.output = Mixer(happyChordOscillators)
-                happyChordOscillators.forEach { $0.start() }
-            case .sadSound:
-                engine.output = Mixer(sadChordOscillators)
-                startSadChordProgression()
-            case .anxiousSound:
-                engine.output = Mixer(anxiousChordOscillators)
-                startAnxiousChordProgression()
-            case .angrySound:
-                engine.output = Mixer(angryOscillators)
-                startAngryOscillators()
-            case .natureSound:
-                fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { url in
-                    if let url = url {
-                        self.playAudioFromURL(url)
-                    } else {
-                        print("Failed to get download URL")
-                    }
-                }
-            case .recommendedSound: break
-            }
         }
     }
     
@@ -201,10 +196,26 @@ class SoundManager: ObservableObject {
     private func startCrossfadeTimer() {
         crossfadeTimer?.invalidate() // Invalidate any existing timer
         print("Starting crossfade timer")
-        crossfadeTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { [weak self] _ in
+        
+        // Create timer differently
+        let timer = Timer(timeInterval: 10, repeats: false) { [weak self] _ in
+            print("Timer exists and is firing")
+            guard let self = self else {
+                print("Self is nil in timer closure")
+                return
+            }
+            
             print("Crossfade timer triggered")
-            self?.crossfadeToRancheriaFalls()
+            self.crossfadeToRancheriaFalls()
         }
+        
+        // Store the reference
+        crossfadeTimer = timer
+        
+        // Schedule the timer on the main run loop
+        RunLoop.main.add(timer, forMode: .common)
+        
+        print("Timer was successfully created and scheduled")
     }
 
     private func crossfadeToRancheriaFalls() {
