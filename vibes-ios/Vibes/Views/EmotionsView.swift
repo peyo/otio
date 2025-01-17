@@ -104,6 +104,13 @@ struct EmotionsView: View {
                         ToolbarItem(placement: .primaryAction) {
                             HStack(spacing: 16) {
                                 NavigationLink {
+                                    BreathingView()
+                                } label: {
+                                    Image(systemName: "nose")
+                                        .foregroundColor(.appAccent)
+                                }
+                                
+                                NavigationLink {
                                     InsightsView(emotions: weekEmotions)
                                 } label: {
                                     Image(systemName: "eye")
