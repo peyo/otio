@@ -8,18 +8,17 @@ struct BreathingCard: View {
     var body: some View {
         Button(action: action) {
             Text(technique.name)
-                .foregroundColor(.appAccent) // Text color
+                .foregroundColor(.appAccent)
                 .padding()
-                .frame(maxWidth: .infinity)
                 .background(
                     Rectangle()
-                        .fill(isSelected ? Color.gray.opacity(0.1) : Color.clear) // Background color
-                        .cornerRadius(0) // Rounded corners
+                        .fill(isSelected ? Color.gray.opacity(0.1) : Color.clear)
+                        .cornerRadius(0)
                 )
                 .overlay(
                     Rectangle()
-                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 2) // Border color
-                        .cornerRadius(0) // Rounded corners
+                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 2)
+                        .cornerRadius(0)
                 )
         }
         .padding(.horizontal, 4)

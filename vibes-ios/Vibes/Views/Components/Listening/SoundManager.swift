@@ -172,8 +172,8 @@ class SoundManager: ObservableObject {
         angryOscillators.forEach { $0.start() }
     }
 
-    func playAudioFromURL(_ url: URL) {
-        audioPlayerManager.playAudio(from: url)
+    func playAudioFromURL(_ url: URL, completion: (() -> Void)? = nil) {
+        audioPlayerManager.playAudio(from: url, completion: completion)
     }
     
     func fetchDownloadURL(for fileName: String, completion: @escaping (URL?) -> Void) {
@@ -281,18 +281,120 @@ class SoundManager: ObservableObject {
             }
         }
     }
+
+    func stopAllAudio() {
+        print("SoundManager: stopAllAudio called")
+        audioPlayerManager.stopAudio()
+        print("SoundManager: audioPlayerManager stopped")
+        naturePlayer?.pause()
+        naturePlayer = nil
+        print("SoundManager: naturePlayer cleared")
+        
+        let allOscillators = happyChordOscillators + 
+                           sadChordOscillators + 
+                           anxiousChordOscillators + 
+                           angryOscillators
+        
+        allOscillators.forEach { oscillator in
+            oscillator.stop()
+        }
+        print("SoundManager: all oscillators stopped")
+    }
 }
 
-class AudioPlayerManager {
+class AudioPlayerManager: NSObject {
     private var player: AVPlayer?
-
-    func playAudio(from url: URL) {
+    private var isObserving = false
+    var onPlaybackFinished: (() -> Void)?
+    
+    func playAudio(from url: URL, completion: (() -> Void)? = nil) {
+        print("AudioPlayerManager: starting audio playback at \(Date())")
         player = AVPlayer(url: url)
+        
+        // Add observer for playback finished
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerDidFinishPlaying),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: player?.currentItem
+        )
+        
+        // Add observer for status changes
+        if let playerItem = player?.currentItem {
+            playerItem.addObserver(self, 
+                forKeyPath: "status", 
+                options: [.new], 
+                context: nil)
+            isObserving = true
+        }
+        
+        onPlaybackFinished = completion
         player?.play()
     }
-
+    
+    override func observeValue(forKeyPath keyPath: String?, 
+                             of object: Any?, 
+                             change: [NSKeyValueChangeKey : Any]?, 
+                             context: UnsafeMutableRawPointer?) {
+        if keyPath == "status" {
+            if let item = object as? AVPlayerItem {
+                switch item.status {
+                case .readyToPlay:
+                    print("AudioPlayerManager: Audio ready to play at \(Date())")
+                case .failed:
+                    print("AudioPlayerManager: Audio failed to load")
+                case .unknown:
+                    print("AudioPlayerManager: Audio status unknown")
+                @unknown default:
+                    break
+                }
+            }
+        }
+    }
+    
     func stopAudio() {
+        print("AudioPlayerManager: stopping audio")
+        
+        // Remove notification observer
+        NotificationCenter.default.removeObserver(
+            self,
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: player?.currentItem
+        )
+        
+        // Safely remove KVO observer
+        if isObserving {
+            player?.currentItem?.removeObserver(self, forKeyPath: "status")
+            isObserving = false
+        }
+        
         player?.pause()
         player = nil
+        print("AudioPlayerManager: player cleared")
+    }
+    
+    @objc private func playerDidFinishPlaying() {
+        print("AudioPlayerManager: audio finished playing at \(Date())")
+        DispatchQueue.main.async {
+            self.onPlaybackFinished?()
+        }
+        
+        // Remove observers
+        NotificationCenter.default.removeObserver(
+            self,
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: player?.currentItem
+        )
+        
+        if isObserving {
+            player?.currentItem?.removeObserver(self, forKeyPath: "status")
+            isObserving = false
+        }
+    }
+    
+    deinit {
+        if isObserving {
+            player?.currentItem?.removeObserver(self, forKeyPath: "status")
+        }
     }
 }
