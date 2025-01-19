@@ -106,14 +106,14 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
                 - Align tips with recorded emotions (e.g., for anxiety: "Try a short breathing exercise," for happiness: "Reflect on what brought you joy today").
                 - Avoid assumptions about specific triggers, focusing on practical and empathetic guidance.
                 
-                **Instruction**: Generate exactly **three** insights, one for each focus area above.
-                
-                **Format**:
-                Example: Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.
-                
+                **Instruction**:
+                - Generate exactly **three** insights, one for each focus area above.
                 - Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.
-                - Do not number the insights.
-                - Do not lead the insights with any symbols.`;    
+                - **Do not** number the insights.
+                - **Do not** lead the insights with any symbols.
+
+                **Format**:
+                Example: Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.`;    
             
             console.log('Debug: 📤 Sending request to OpenAI');
         

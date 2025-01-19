@@ -28,32 +28,30 @@ struct EmotionsView: View {
                 NavigationStack {
                     ZStack {
                         Color(.systemGroupedBackground)
-                            .ignoresSafeArea()  // This extends the background behind the navigation bar
+                            .ignoresSafeArea()
                         
                         VStack(spacing: 0) {
                             emotionInputSection
                                 .padding(.top, 16)
                             
-                            // Reduce the Spacer height to move Recent up
                             Spacer()
-                                .frame(minHeight: 32, maxHeight: 48)  // Reduced from 48-64 to 32-48
+                                .frame(minHeight: 32, maxHeight: 48)
                             
-                            // Recent section as a separate VStack
-                            VStack(alignment: .leading, spacing: 16) {
-                                Text("recent")
-                                    .font(.custom("NewHeterodoxMono-Book", size: 17))
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.primary)
-                                    .padding(.horizontal)
-                                    .padding(.bottom, 21)
-                                
-                                // Cards container
-                                VStack(spacing: 12) {
+                            // In the main VStack after emotionInputSection
+                            VStack(alignment: .leading, spacing: 24) {
+                                VStack(alignment: .leading, spacing: 24) {
+                                    Text("recent")
+                                        .font(.custom("NewHeterodoxMono-Book", size: 17))
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.primary)
+                                    
                                     if isLoading {
-                                        ProgressView()
-                                            .tint(.appAccent)
-                                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                            .padding(.vertical, 50) // Adjust padding to center the ProgressView
+                                        HStack {
+                                            Spacer()
+                                            ProgressView()
+                                                .tint(.appAccent)
+                                            Spacer()
+                                        }
                                     } else if recentEmotions.isEmpty {
                                         HStack(spacing: 16) {
                                             Image(systemName: "heart.text.square")
@@ -64,30 +62,34 @@ struct EmotionsView: View {
                                             Text("track your first emotion to see it here.")
                                                 .font(.custom("NewHeterodoxMono-Book", size: 15))
                                                 .fontWeight(.medium)
-                                                .foregroundColor(.secondary)
+                                                .foregroundColor(.primary)
                                             
                                             Spacer()
                                         }
                                         .padding()
-                                        .background(
-                                            Rectangle()
-                                                .fill(Color(.systemBackground))
-                                        )
-                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                        .padding(.vertical, 50) // Adjust padding to center the message
+                                        .background(Color(.systemBackground))
                                     } else {
-                                        ForEach(Array(recentEmotions.prefix(3))) { emotion in
-                                            EmotionCard(
-                                                emotion: emotion,
-                                                timeString: relativeTimeString
-                                            )
+                                        VStack(spacing: 16) {
+                                            ForEach(Array(recentEmotions.prefix(3))) { emotion in
+                                                EmotionCard(
+                                                    emotion: emotion,
+                                                    timeString: relativeTimeString
+                                                )
+                                            }
                                         }
                                     }
                                 }
-                                .frame(height: 240)
-                                .padding(.horizontal)
+                                .padding(.horizontal, 20)  // Standard padding
+                                .padding(.leading, UIApplication.shared.connectedScenes
+                                    .compactMap { $0 as? UIWindowScene }
+                                    .flatMap { $0.windows }
+                                    .first?.safeAreaInsets.left ?? 0)  // Safe area padding
+                                .padding(.trailing, UIApplication.shared.connectedScenes
+                                    .compactMap { $0 as? UIWindowScene }
+                                    .flatMap { $0.windows }
+                                    .first?.safeAreaInsets.right ?? 0)  // Safe area padding
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
-                            .padding(.top, 8)
                             
                             Spacer(minLength: 16)
                         }
@@ -140,23 +142,23 @@ struct EmotionsView: View {
                             }
                         }
                     }
-                    .sheet(isPresented: $showingIntensitySheet) {
-                        IntensitySelectionView(emotion: selectedEmotion!) { intensity in
-                            submitEmotion(type: selectedEmotion!, intensity: intensity)
-                        }
+                }
+                .sheet(isPresented: $showingIntensitySheet) {
+                    IntensitySelectionView(emotion: selectedEmotion!) { intensity in
+                        submitEmotion(type: selectedEmotion!, intensity: intensity)
                     }
-                    .task {
-                        await fetchEmotions()
-                        normalizedScore = calculateAndNormalizeWeeklyScore()
-                        print("Normalized Weekly Score: \(normalizedScore)")
-                    }
+                }
+                .task {
+                    await fetchEmotions()
+                    normalizedScore = calculateAndNormalizeWeeklyScore()
+                    print("Normalized Weekly Score: \(normalizedScore)")
                 }
             } else {
                 SignInView()
             }
         }
     }
-
+    
     private var emotionInputSection: some View {
         VStack(spacing: 16) {
             // First row: 3 buttons

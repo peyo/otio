@@ -79,7 +79,7 @@ struct SignInView: View {
                                 
                                 Text("continue with google")
                                     .font(.custom("NewHeterodoxMono-Book", size: 15))
-                                    .fontWeight(.medium)
+                                    .fontWeight(.semibold)
                             }
                             .foregroundColor(Color.appAccent)
                             .frame(width: 280, height: 55)

@@ -31,7 +31,7 @@ struct InsightsView: View {
                         Text("navigate your emotions")
                             .font(.custom("NewHeterodoxMono-Book", size: 15))
                             .fontWeight(.medium)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
                             .padding(.top, 0)
                         
                         if isLoading {
@@ -62,8 +62,8 @@ struct InsightsView: View {
                                     if cooldownTime > 0 {
                                         Text("next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
                                             .font(.custom("NewHeterodoxMono-Book", size: 13))
-                                            .fontWeight(.medium)
-                                            .foregroundColor(.gray)
+                                            .fontWeight(.semibold)
+                                            .foregroundColor(.primary)
                                             .padding(.top, 8)
                                     }
                                 }
@@ -81,6 +81,7 @@ struct InsightsView: View {
                     Text("understand")
                         .font(.custom("NewHeterodoxMono-Book", size: 22))
                         .fontWeight(.semibold)
+                        .foregroundColor(.primary)
                 }
                 
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -217,36 +218,6 @@ struct InsightsView: View {
         return formatter.string(from: date)
     }
 
-    struct InsightCard: View {
-        let insight: Insight
-        
-        var body: some View {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack(alignment: .center) {
-                    Image(insight.emojiName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 28, height: 28)
-                    Text(insight.title)
-                        .font(.custom("NewHeterodoxMono-Book", size: 16))
-                        .fontWeight(.medium)
-                }
-                
-                Text(insight.description)
-                    .font(.custom("NewHeterodoxMono-Book", size: 15))
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
-            }
-            .padding(18)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                Rectangle()
-                    .fill(Color(.systemBackground))
-                    .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
-            )
-        }
-    }
-
     private struct EmptyStateView: View {
         var body: some View {
             VStack(spacing: 16) {
@@ -257,11 +228,12 @@ struct InsightsView: View {
                 Text("no emotions to analyze")
                     .font(.custom("NewHeterodoxMono-Book", size: 17))
                     .fontWeight(.medium)
+                    .foregroundColor(.primary)
                 
                 Text("start tracking your emotions to get insights about your emotional patterns.")
                     .font(.custom("NewHeterodoxMono-Book", size: 15))
                     .fontWeight(.medium)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
             }
             .padding()

@@ -1,6 +1,7 @@
 {
   "projects": {
-    "staging": "vibes-dd23a"
+    "staging": "vibes-dd23a",
+    "default": "vibes-dd23a"
   },
   "targets": {},
   "etags": {}

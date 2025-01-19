@@ -27,16 +27,17 @@ struct ListeningView: View {
                     Text("catch the wave")
                         .font(.custom("NewHeterodoxMono-Book", size: 15))
                         .fontWeight(.medium)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                         .padding(.top, 10)
                     
                     Spacer()
                     
                     // Waveform visualization
                     ZStack {
-                        Circle()
+                        /* Circle()
                             .stroke(Color.appAccent.opacity(0.2), lineWidth: 2)
                             .frame(width: 200, height: 200)
+                        */
                         
                         DynamicWaveformCircle(
                             sampleCount: sampleCount,

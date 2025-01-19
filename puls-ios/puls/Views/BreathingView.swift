@@ -47,16 +47,17 @@ struct BreathingView: View {
                     Text("find your breath")
                         .font(.custom("NewHeterodoxMono-Book", size: 15))
                         .fontWeight(.medium)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                         .padding(.top, 10)
                     
                     Spacer()
                     
                     // Breathing visualization
                     ZStack {
-                        Circle()
+                        /* Circle()
                             .stroke(Color.appAccent.opacity(0.2), lineWidth: 2)
                             .frame(width: 200, height: 200)
+                        */
                         
                         // Inner box breathing animation
                         BoxBreathingView(
@@ -152,6 +153,7 @@ struct BreathingView: View {
                     Text("breathe")
                         .font(.custom("NewHeterodoxMono-Book", size: 22))
                         .fontWeight(.semibold)
+                        .foregroundColor(.primary)
                 }
                 
                 ToolbarItem(placement: .navigationBarLeading) {

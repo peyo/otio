@@ -105,16 +105,16 @@ class BreathManager: ObservableObject {
         switch currentPhase {
         case .inhale:
             currentPhase = .holdAfterInhale
-            currentPhaseTimeRemaining = technique.pattern[1] - 1  // Start one second earlier
+            currentPhaseTimeRemaining = technique.pattern[1]  // Start one second earlier
         case .holdAfterInhale:
             currentPhase = .exhale
-            currentPhaseTimeRemaining = technique.pattern[2] - 1  // Start one second earlier
+            currentPhaseTimeRemaining = technique.pattern[2]  // Start one second earlier
         case .exhale:
             currentPhase = .holdAfterExhale
-            currentPhaseTimeRemaining = technique.pattern[3] - 1  // Start one second earlier
+            currentPhaseTimeRemaining = technique.pattern[3]  // Start one second earlier
         case .holdAfterExhale:
             currentPhase = .inhale
-            currentPhaseTimeRemaining = technique.pattern[0] - 1  // Keep inhale at normal timing
+            currentPhaseTimeRemaining = technique.pattern[0]  // Keep inhale at normal timing
         }
         print("BreathManager: Phase changed to \(currentPhase)")
     }

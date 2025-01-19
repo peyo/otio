@@ -24,22 +24,28 @@ struct BoxBreathingView: View {
             
             ZStack {
                 // Base box (dimmed) - now with no corner radius
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(Color.appAccent.opacity(0.2), lineWidth: lineWidth)
+                Rectangle()
+                    .stroke(Color.appAccent, lineWidth: lineWidth)
                     .frame(width: size, height: size)
                     .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 
                 // Only show animated segment if breathing is active and intro is not playing
                 if isBreathingActive && !isIntroPlaying {
                     activeSegment(in: rect)
-                        .stroke(Color.appAccent, lineWidth: lineWidth)
+                        .stroke(Color.appAccent, lineWidth: lineWidth * 2)
+                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                         .animation(.linear(duration: 0.3), value: phase)
                         .animation(.linear(duration: 0.3), value: progress)
                 }
             }
-        }
-        .onChange(of: isIntroPlaying) { newValue in
-            print("BoxBreathingView: isIntroPlaying changed to \(newValue)")
+            .onChange(of: isBreathingActive) { newValue in
+                print("Debug: isBreathingActive changed to \(newValue)")
+                if newValue {
+                    print("Debug: Drawing animated segment - Phase: \(phase), Progress: \(progress)")
+                } else {
+                    print("Debug: Animation conditions not met - isBreathingActive: \(isBreathingActive), isIntroPlaying: \(isIntroPlaying)")
+                }
+            }
         }
     }
     
