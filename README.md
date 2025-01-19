@@ -1,8 +1,8 @@
-# puls
+# otio
 
 ## Project Overview
 
-puls is a mobile application designed to help users track and analyze their emotional states. The app provides insights into users' emotional journeys, allowing them to understand their feelings better and recognize patterns in their emotional well-being.
+otio is a mobile application designed to help users track and analyze their emotional states. The app provides insights into users' emotional journeys, allowing them to understand their feelings better and recognize patterns in their emotional well-being.
 
 ## Features
 

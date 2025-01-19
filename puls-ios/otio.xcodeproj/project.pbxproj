@@ -42,22 +42,9 @@
 		D064A4E62D2646460001C402 /* pulsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pulsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D0834F0F2D2B57E0000200C7 /* Exceptions for "puls" folder in "puls" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = D064A4CB2D2646450001C402 /* puls */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D064A4CE2D2646450001C402 /* puls */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				D0834F0F2D2B57E0000200C7 /* Exceptions for "puls" folder in "puls" target */,
-			);
 			path = puls;
 			sourceTree = "<group>";
 		};
@@ -214,7 +201,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D064A4C72D2646450001C402 /* Build configuration list for PBXProject "puls" */;
+			buildConfigurationList = D064A4C72D2646450001C402 /* Build configuration list for PBXProject "otio" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -447,7 +434,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.otio.puls;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -479,7 +466,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.otio.puls;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -496,7 +483,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.otio.pulsTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otioTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -514,7 +501,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.otio.pulsTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otioTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -530,7 +517,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.otio.pulsUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otioUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -546,7 +533,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.otio.pulsUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otioUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -558,7 +545,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D064A4C72D2646450001C402 /* Build configuration list for PBXProject "puls" */ = {
+		D064A4C72D2646450001C402 /* Build configuration list for PBXProject "otio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4EE2D2646460001C402 /* Debug */,
