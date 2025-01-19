@@ -1,8 +1,8 @@
-# vibes
+# puls
 
 ## Project Overview
 
-vibes is a mobile application designed to help users track and analyze their emotional states. The app provides insights into users' emotional journeys, allowing them to understand their feelings better and recognize patterns in their emotional well-being.
+puls is a mobile application designed to help users track and analyze their emotional states. The app provides insights into users' emotional journeys, allowing them to understand their feelings better and recognize patterns in their emotional well-being.
 
 ## Features
 
@@ -27,7 +27,7 @@ vibes is a mobile application designed to help users track and analyze their emo
 
 ### iOS App
 
-1. Open the `vibes.xcodeproj` in Xcode.
+1. Open the `puls.xcodeproj` in Xcode.
 2. Ensure you have the latest version of Xcode and the necessary iOS SDK.
 3. Run the app on a simulator or a physical device.
 

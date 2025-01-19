@@ -75,7 +75,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 
 @main
-struct VibesApp: App {
+struct pulsApp: App {
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var userService = UserService()

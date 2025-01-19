@@ -8,16 +8,16 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>Otio.Vibes</string>
+			<string>com.otio.puls</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.1088995511714-4dli4faitbt91l47in2u6m5k6ei8g7ce</string>
+				<string>com.googleusercontent.apps.1088995511714-7l1mlkogijq8cuujl6sfid3u34h7n8pm</string>
 			</array>
 		</dict>
 	</array>
 	<key>UIAppFonts</key>
 	<array>
-       <string>New-Heterodox-Mono.otf</string>
+		<string>New-Heterodox-Mono.otf</string>
 	</array>
 </dict>
 </plist>

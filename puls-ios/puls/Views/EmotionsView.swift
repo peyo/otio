@@ -96,7 +96,7 @@ struct EmotionsView: View {
                     .navigationBarTitleDisplayMode(.large)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Text("vibes")
+                            Text("puls")
                                 .font(.custom("NewHeterodoxMono-Book", size: 22))
                                 .fontWeight(.semibold)
                         }

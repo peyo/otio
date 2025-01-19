@@ -1,13 +1,13 @@
 //
-//  VibesUITestsLaunchTests.swift
-//  VibesUITests
+//  pulsUITestsLaunchTests.swift
+//  pulsUITests
 //
 //  Created by Peter Yoon on 1/1/25.
 //
 
 import XCTest
 
-final class VibesUITestsLaunchTests: XCTestCase {
+final class pulsUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

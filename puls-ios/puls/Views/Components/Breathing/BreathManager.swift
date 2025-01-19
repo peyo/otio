@@ -124,8 +124,8 @@ class BreathManager: ObservableObject {
         
         beepOscillator = Oscillator(
             waveform: Table(.sine),
-            frequency: 880.0,  // A5 note
-            amplitude: 0.5     // Increased amplitude
+            frequency: 440.0,  // Changed from 880.0 to 440.0 (A4 note, one octave lower)
+            amplitude: 0.3     // Also slightly reduced amplitude
         )
         
         if let beepOscillator = beepOscillator {

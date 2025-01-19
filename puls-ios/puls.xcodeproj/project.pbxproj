@@ -25,50 +25,40 @@
 			containerPortal = D064A4C42D2646450001C402 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D064A4CB2D2646450001C402;
-			remoteInfo = Vibes;
+			remoteInfo = puls;
 		};
 		D064A4E72D2646460001C402 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D064A4C42D2646450001C402 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D064A4CB2D2646450001C402;
-			remoteInfo = Vibes;
+			remoteInfo = puls;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D064A4CC2D2646450001C402 /* Vibes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vibes.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D064A4DC2D2646460001C402 /* VibesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VibesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D064A4E62D2646460001C402 /* VibesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VibesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D064A4CC2D2646450001C402 /* puls.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = puls.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D064A4DC2D2646460001C402 /* pulsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pulsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D064A4E62D2646460001C402 /* pulsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pulsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D0834F0F2D2B57E0000200C7 /* Exceptions for "Vibes" folder in "Vibes" target */ = {
+		D0834F0F2D2B57E0000200C7 /* Exceptions for "puls" folder in "puls" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = D064A4CB2D2646450001C402 /* Vibes */;
+			target = D064A4CB2D2646450001C402 /* puls */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D064A4CE2D2646450001C402 /* Vibes */ = {
+		D064A4CE2D2646450001C402 /* puls */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D0834F0F2D2B57E0000200C7 /* Exceptions for "Vibes" folder in "Vibes" target */,
+				D0834F0F2D2B57E0000200C7 /* Exceptions for "puls" folder in "puls" target */,
 			);
-			path = Vibes;
-			sourceTree = "<group>";
-		};
-		D064A4DF2D2646460001C402 /* VibesTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = VibesTests;
-			sourceTree = "<group>";
-		};
-		D064A4E92D2646460001C402 /* VibesUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = VibesUITests;
+			path = puls;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -111,9 +101,7 @@
 		D064A4C32D2646450001C402 = {
 			isa = PBXGroup;
 			children = (
-				D064A4CE2D2646450001C402 /* Vibes */,
-				D064A4DF2D2646460001C402 /* VibesTests */,
-				D064A4E92D2646460001C402 /* VibesUITests */,
+				D064A4CE2D2646450001C402 /* puls */,
 				D064A4CD2D2646450001C402 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -121,9 +109,9 @@
 		D064A4CD2D2646450001C402 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D064A4CC2D2646450001C402 /* Vibes.app */,
-				D064A4DC2D2646460001C402 /* VibesTests.xctest */,
-				D064A4E62D2646460001C402 /* VibesUITests.xctest */,
+				D064A4CC2D2646450001C402 /* puls.app */,
+				D064A4DC2D2646460001C402 /* pulsTests.xctest */,
+				D064A4E62D2646460001C402 /* pulsUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -131,9 +119,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D064A4CB2D2646450001C402 /* Vibes */ = {
+		D064A4CB2D2646450001C402 /* puls */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D064A4F02D2646460001C402 /* Build configuration list for PBXNativeTarget "Vibes" */;
+			buildConfigurationList = D064A4F02D2646460001C402 /* Build configuration list for PBXNativeTarget "puls" */;
 			buildPhases = (
 				D064A4C82D2646450001C402 /* Sources */,
 				D064A4C92D2646450001C402 /* Frameworks */,
@@ -144,9 +132,9 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D064A4CE2D2646450001C402 /* Vibes */,
+				D064A4CE2D2646450001C402 /* puls */,
 			);
-			name = Vibes;
+			name = puls;
 			packageProductDependencies = (
 				D0079EB32D2B27F600E0F36E /* FirebaseAuth */,
 				D0079EB52D2B27F600E0F36E /* FirebaseDatabase */,
@@ -159,13 +147,13 @@
 				D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */,
 				D0FF13D22D33594700CD1359 /* FirebaseStorage */,
 			);
-			productName = Vibes;
-			productReference = D064A4CC2D2646450001C402 /* Vibes.app */;
+			productName = puls;
+			productReference = D064A4CC2D2646450001C402 /* puls.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D064A4DB2D2646460001C402 /* VibesTests */ = {
+		D064A4DB2D2646460001C402 /* pulsTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D064A4F32D2646460001C402 /* Build configuration list for PBXNativeTarget "VibesTests" */;
+			buildConfigurationList = D064A4F32D2646460001C402 /* Build configuration list for PBXNativeTarget "pulsTests" */;
 			buildPhases = (
 				D064A4D82D2646460001C402 /* Sources */,
 				D064A4D92D2646460001C402 /* Frameworks */,
@@ -176,19 +164,16 @@
 			dependencies = (
 				D064A4DE2D2646460001C402 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				D064A4DF2D2646460001C402 /* VibesTests */,
-			);
-			name = VibesTests;
+			name = pulsTests;
 			packageProductDependencies = (
 			);
-			productName = VibesTests;
-			productReference = D064A4DC2D2646460001C402 /* VibesTests.xctest */;
+			productName = pulsTests;
+			productReference = D064A4DC2D2646460001C402 /* pulsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		D064A4E52D2646460001C402 /* VibesUITests */ = {
+		D064A4E52D2646460001C402 /* pulsUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D064A4F62D2646460001C402 /* Build configuration list for PBXNativeTarget "VibesUITests" */;
+			buildConfigurationList = D064A4F62D2646460001C402 /* Build configuration list for PBXNativeTarget "pulsUITests" */;
 			buildPhases = (
 				D064A4E22D2646460001C402 /* Sources */,
 				D064A4E32D2646460001C402 /* Frameworks */,
@@ -199,14 +184,11 @@
 			dependencies = (
 				D064A4E82D2646460001C402 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				D064A4E92D2646460001C402 /* VibesUITests */,
-			);
-			name = VibesUITests;
+			name = pulsUITests;
 			packageProductDependencies = (
 			);
-			productName = VibesUITests;
-			productReference = D064A4E62D2646460001C402 /* VibesUITests.xctest */;
+			productName = pulsUITests;
+			productReference = D064A4E62D2646460001C402 /* pulsUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -232,7 +214,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D064A4C72D2646450001C402 /* Build configuration list for PBXProject "Vibes" */;
+			buildConfigurationList = D064A4C72D2646450001C402 /* Build configuration list for PBXProject "puls" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -253,9 +235,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D064A4CB2D2646450001C402 /* Vibes */,
-				D064A4DB2D2646460001C402 /* VibesTests */,
-				D064A4E52D2646460001C402 /* VibesUITests */,
+				D064A4CB2D2646450001C402 /* puls */,
+				D064A4DB2D2646460001C402 /* pulsTests */,
+				D064A4E52D2646460001C402 /* pulsUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -311,12 +293,12 @@
 /* Begin PBXTargetDependency section */
 		D064A4DE2D2646460001C402 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D064A4CB2D2646450001C402 /* Vibes */;
+			target = D064A4CB2D2646450001C402 /* puls */;
 			targetProxy = D064A4DD2D2646460001C402 /* PBXContainerItemProxy */;
 		};
 		D064A4E82D2646460001C402 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D064A4CB2D2646450001C402 /* Vibes */;
+			target = D064A4CB2D2646450001C402 /* puls */;
 			targetProxy = D064A4E72D2646460001C402 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -448,11 +430,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Vibes/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"puls/Preview Content\"";
+				DEVELOPMENT_TEAM = 8TD422KYZU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Vibes/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = vibes;
+				INFOPLIST_FILE = puls/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = puls;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -464,7 +447,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Otio.Vibes;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.puls;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -479,11 +462,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Vibes/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"puls/Preview Content\"";
+				DEVELOPMENT_TEAM = 8TD422KYZU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Vibes/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = vibes;
+				INFOPLIST_FILE = puls/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = puls;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -495,7 +479,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Otio.Vibes;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.puls;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -512,12 +496,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Otio.VibesTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.pulsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vibes.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Vibes";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/puls.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/puls";
 			};
 			name = Debug;
 		};
@@ -530,12 +514,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Otio.VibesTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.pulsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Vibes.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Vibes";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/puls.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/puls";
 			};
 			name = Release;
 		};
@@ -546,12 +530,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Otio.VibesUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.pulsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Vibes;
+				TEST_TARGET_NAME = pulss;
 			};
 			name = Debug;
 		};
@@ -562,19 +546,19 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Otio.VibesUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.otio.pulsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Vibes;
+				TEST_TARGET_NAME = puls;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D064A4C72D2646450001C402 /* Build configuration list for PBXProject "Vibes" */ = {
+		D064A4C72D2646450001C402 /* Build configuration list for PBXProject "puls" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4EE2D2646460001C402 /* Debug */,
@@ -583,7 +567,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D064A4F02D2646460001C402 /* Build configuration list for PBXNativeTarget "Vibes" */ = {
+		D064A4F02D2646460001C402 /* Build configuration list for PBXNativeTarget "puls" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4F12D2646460001C402 /* Debug */,
@@ -592,7 +576,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D064A4F32D2646460001C402 /* Build configuration list for PBXNativeTarget "VibesTests" */ = {
+		D064A4F32D2646460001C402 /* Build configuration list for PBXNativeTarget "pulsTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4F42D2646460001C402 /* Debug */,
@@ -601,7 +585,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D064A4F62D2646460001C402 /* Build configuration list for PBXNativeTarget "VibesUITests" */ = {
+		D064A4F62D2646460001C402 /* Build configuration list for PBXNativeTarget "pulsUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4F72D2646460001C402 /* Debug */,
