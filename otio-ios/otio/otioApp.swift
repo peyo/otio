@@ -75,7 +75,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 
 @main
-struct pulsApp: App {
+struct otioApp: App {
     // register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var userService = UserService()

@@ -6,10 +6,12 @@ otio is a mobile application designed to help users track and analyze their emot
 
 ## Features
 
-- **Emotion Tracking**: Users can log their emotions, categorized by type (e.g., Happy, Sad, Anxious) and intensity. This data is stored securely in Firebase Realtime Database.
+- **Emotion Tracking**: Users can log their emotions, categorized by type (e.g., Happy, Sad, Anxious) and intensity. This data is securely stored in Firebase Realtime Database.
 - **AI-Powered Insights**: The app generates personalized insights using OpenAI's GPT model, providing users with meaningful feedback about their emotional patterns.
-- **Soundscapes for Focus and Calm**: The app includes carefully curated soundscapes designed to help users focus or relax. These include oscillator-generated tones for mental clarity and grounding, as well as a serene sound recording from Rancheria Falls, Yosemite, bringing nature's tranquility to your fingertips.
-- **User Interface**: The app features a clean and intuitive interface built with SwiftUI, allowing users to easily input their emotions and view insights.
+- **Breathing Techniques**: Includes guided breathing exercises, such as box breathing, to help users manage stress and anxiety. Each exercise is paired with an instructional intro and a calming animation to guide the practice effectively.
+- **Soundscapes**: The app features carefully curated soundscapes, including:
+  - Oscillator-generated tones for mental clarity and grounding.
+  - A serene sound recording from Rancheria Falls, Yosemite, bringing nature's tranquility to your fingertips.
 
 ## Technology Stack
 
@@ -27,7 +29,7 @@ otio is a mobile application designed to help users track and analyze their emot
 
 ### iOS App
 
-1. Open the `puls.xcodeproj` in Xcode.
+1. Open the `otio.xcodeproj` in Xcode.
 2. Ensure you have the latest version of Xcode and the necessary iOS SDK.
 3. Run the app on a simulator or a physical device.
 

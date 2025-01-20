@@ -8,10 +8,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.otio.puls</string>
+			<string>com.otio.otio</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.1088995511714-7l1mlkogijq8cuujl6sfid3u34h7n8pm</string>
+				<string>com.googleusercontent.apps.1088995511714-mmf6fc1v17d7le6qh701f9k5ciml9a54</string>
 			</array>
 		</dict>
 	</array>

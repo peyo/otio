@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D064A4CB2D2646450001C402"
-               BuildableName = "puls.app"
-               BlueprintName = "puls"
+               BuildableName = "otio.app"
+               BlueprintName = "otio"
                ReferencedContainer = "container:otio.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D064A4CB2D2646450001C402"
-            BuildableName = "puls.app"
-            BlueprintName = "puls"
+            BuildableName = "otio.app"
+            BlueprintName = "otio"
             ReferencedContainer = "container:otio.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -62,8 +62,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D064A4CB2D2646450001C402"
-            BuildableName = "puls.app"
-            BlueprintName = "puls"
+            BuildableName = "otio.app"
+            BlueprintName = "otio"
             ReferencedContainer = "container:otio.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

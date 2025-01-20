@@ -1,13 +1,13 @@
 //
-//  pulsUITestsLaunchTests.swift
-//  pulsUITests
+//  otioUITestsLaunchTests.swift
+//  otioUITests
 //
 //  Created by Peter Yoon on 1/1/25.
 //
 
 import XCTest
 
-final class pulsUITestsLaunchTests: XCTestCase {
+final class otioUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

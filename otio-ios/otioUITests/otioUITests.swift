@@ -1,13 +1,13 @@
 //
-//  pulsUITests.swift
-//  pulsUITests
+//  otioUITests.swift
+//  otioUITests
 //
 //  Created by Peter Yoon on 1/1/25.
 //
 
 import XCTest
 
-final class pulsUITests: XCTestCase {
+final class otioUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

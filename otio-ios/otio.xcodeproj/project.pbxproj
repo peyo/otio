@@ -11,6 +11,7 @@
 		D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EB52D2B27F600E0F36E /* FirebaseDatabase */; };
 		D0079EBC2D2B372800E0F36E /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBB2D2B372800E0F36E /* GoogleSignIn */; };
 		D0079EBE2D2B372800E0F36E /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */; };
+		D07F38F42D3DF46C00BDDD62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D07F38F32D3DF46C00BDDD62 /* Launch Screen.storyboard */; };
 		D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = D0834F102D2B9406000200C7 /* FirebaseFunctions */; };
 		D08350162D2F1BC0000200C7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D08350152D2F1BC0000200C7 /* FirebaseFirestore */; };
 		D08350192D2F1C15000200C7 /* Fakery in Frameworks */ = {isa = PBXBuildFile; productRef = D08350182D2F1C15000200C7 /* Fakery */; };
@@ -25,27 +26,41 @@
 			containerPortal = D064A4C42D2646450001C402 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D064A4CB2D2646450001C402;
-			remoteInfo = puls;
+			remoteInfo = otio;
 		};
 		D064A4E72D2646460001C402 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D064A4C42D2646450001C402 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D064A4CB2D2646450001C402;
-			remoteInfo = puls;
+			remoteInfo = otio;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D064A4CC2D2646450001C402 /* puls.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = puls.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D064A4DC2D2646460001C402 /* pulsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pulsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D064A4E62D2646460001C402 /* pulsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pulsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D064A4CC2D2646450001C402 /* otio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = otio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D064A4DC2D2646460001C402 /* otioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = otioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D064A4E62D2646460001C402 /* otioUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = otioUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D07F38F32D3DF46C00BDDD62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D07F38A52D3DC98500BDDD62 /* Exceptions for "otio" folder in "otio" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D064A4CB2D2646450001C402 /* otio */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D064A4CE2D2646450001C402 /* puls */ = {
+		D064A4CE2D2646450001C402 /* otio */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = puls;
+			exceptions = (
+				D07F38A52D3DC98500BDDD62 /* Exceptions for "otio" folder in "otio" target */,
+			);
+			path = otio;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,7 +103,8 @@
 		D064A4C32D2646450001C402 = {
 			isa = PBXGroup;
 			children = (
-				D064A4CE2D2646450001C402 /* puls */,
+				D07F38F32D3DF46C00BDDD62 /* Launch Screen.storyboard */,
+				D064A4CE2D2646450001C402 /* otio */,
 				D064A4CD2D2646450001C402 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,9 +112,9 @@
 		D064A4CD2D2646450001C402 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D064A4CC2D2646450001C402 /* puls.app */,
-				D064A4DC2D2646460001C402 /* pulsTests.xctest */,
-				D064A4E62D2646460001C402 /* pulsUITests.xctest */,
+				D064A4CC2D2646450001C402 /* otio.app */,
+				D064A4DC2D2646460001C402 /* otioTests.xctest */,
+				D064A4E62D2646460001C402 /* otioUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,9 +122,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D064A4CB2D2646450001C402 /* puls */ = {
+		D064A4CB2D2646450001C402 /* otio */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D064A4F02D2646460001C402 /* Build configuration list for PBXNativeTarget "puls" */;
+			buildConfigurationList = D064A4F02D2646460001C402 /* Build configuration list for PBXNativeTarget "otio" */;
 			buildPhases = (
 				D064A4C82D2646450001C402 /* Sources */,
 				D064A4C92D2646450001C402 /* Frameworks */,
@@ -119,9 +135,9 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D064A4CE2D2646450001C402 /* puls */,
+				D064A4CE2D2646450001C402 /* otio */,
 			);
-			name = puls;
+			name = otio;
 			packageProductDependencies = (
 				D0079EB32D2B27F600E0F36E /* FirebaseAuth */,
 				D0079EB52D2B27F600E0F36E /* FirebaseDatabase */,
@@ -134,13 +150,13 @@
 				D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */,
 				D0FF13D22D33594700CD1359 /* FirebaseStorage */,
 			);
-			productName = puls;
-			productReference = D064A4CC2D2646450001C402 /* puls.app */;
+			productName = otio;
+			productReference = D064A4CC2D2646450001C402 /* otio.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D064A4DB2D2646460001C402 /* pulsTests */ = {
+		D064A4DB2D2646460001C402 /* otioTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D064A4F32D2646460001C402 /* Build configuration list for PBXNativeTarget "pulsTests" */;
+			buildConfigurationList = D064A4F32D2646460001C402 /* Build configuration list for PBXNativeTarget "otioTests" */;
 			buildPhases = (
 				D064A4D82D2646460001C402 /* Sources */,
 				D064A4D92D2646460001C402 /* Frameworks */,
@@ -151,16 +167,16 @@
 			dependencies = (
 				D064A4DE2D2646460001C402 /* PBXTargetDependency */,
 			);
-			name = pulsTests;
+			name = otioTests;
 			packageProductDependencies = (
 			);
-			productName = pulsTests;
-			productReference = D064A4DC2D2646460001C402 /* pulsTests.xctest */;
+			productName = otioTests;
+			productReference = D064A4DC2D2646460001C402 /* otioTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		D064A4E52D2646460001C402 /* pulsUITests */ = {
+		D064A4E52D2646460001C402 /* otioUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D064A4F62D2646460001C402 /* Build configuration list for PBXNativeTarget "pulsUITests" */;
+			buildConfigurationList = D064A4F62D2646460001C402 /* Build configuration list for PBXNativeTarget "otioUITests" */;
 			buildPhases = (
 				D064A4E22D2646460001C402 /* Sources */,
 				D064A4E32D2646460001C402 /* Frameworks */,
@@ -171,11 +187,11 @@
 			dependencies = (
 				D064A4E82D2646460001C402 /* PBXTargetDependency */,
 			);
-			name = pulsUITests;
+			name = otioUITests;
 			packageProductDependencies = (
 			);
-			productName = pulsUITests;
-			productReference = D064A4E62D2646460001C402 /* pulsUITests.xctest */;
+			productName = otioUITests;
+			productReference = D064A4E62D2646460001C402 /* otioUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -187,6 +203,7 @@
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
+				ORGANIZATIONNAME = "Otio LLC";
 				TargetAttributes = {
 					D064A4CB2D2646450001C402 = {
 						CreatedOnToolsVersion = 16.2;
@@ -222,9 +239,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D064A4CB2D2646450001C402 /* puls */,
-				D064A4DB2D2646460001C402 /* pulsTests */,
-				D064A4E52D2646460001C402 /* pulsUITests */,
+				D064A4CB2D2646450001C402 /* otio */,
+				D064A4DB2D2646460001C402 /* otioTests */,
+				D064A4E52D2646460001C402 /* otioUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -234,6 +251,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D07F38F42D3DF46C00BDDD62 /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,12 +298,12 @@
 /* Begin PBXTargetDependency section */
 		D064A4DE2D2646460001C402 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D064A4CB2D2646450001C402 /* puls */;
+			target = D064A4CB2D2646450001C402 /* otio */;
 			targetProxy = D064A4DD2D2646460001C402 /* PBXContainerItemProxy */;
 		};
 		D064A4E82D2646460001C402 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D064A4CB2D2646450001C402 /* puls */;
+			target = D064A4CB2D2646450001C402 /* otio */;
 			targetProxy = D064A4E72D2646460001C402 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -325,7 +343,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -415,25 +433,28 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"puls/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"otio/Preview Content\"";
 				DEVELOPMENT_TEAM = 8TD422KYZU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = puls/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = puls;
+				INFOPLIST_FILE = otio/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = otio;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -447,25 +468,28 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"puls/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"otio/Preview Content\"";
 				DEVELOPMENT_TEAM = 8TD422KYZU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = puls/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = puls;
+				INFOPLIST_FILE = otio/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = otio;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -488,7 +512,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/puls.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/puls";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/otio.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/otio";
 			};
 			name = Debug;
 		};
@@ -506,7 +530,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/puls.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/puls";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/otio.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/otio";
 			};
 			name = Release;
 		};
@@ -522,7 +546,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = pulss;
+				TEST_TARGET_NAME = otios;
 			};
 			name = Debug;
 		};
@@ -538,7 +562,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = puls;
+				TEST_TARGET_NAME = otio;
 			};
 			name = Release;
 		};
@@ -554,7 +578,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D064A4F02D2646460001C402 /* Build configuration list for PBXNativeTarget "puls" */ = {
+		D064A4F02D2646460001C402 /* Build configuration list for PBXNativeTarget "otio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4F12D2646460001C402 /* Debug */,
@@ -563,7 +587,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D064A4F32D2646460001C402 /* Build configuration list for PBXNativeTarget "pulsTests" */ = {
+		D064A4F32D2646460001C402 /* Build configuration list for PBXNativeTarget "otioTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4F42D2646460001C402 /* Debug */,
@@ -572,7 +596,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D064A4F62D2646460001C402 /* Build configuration list for PBXNativeTarget "pulsUITests" */ = {
+		D064A4F62D2646460001C402 /* Build configuration list for PBXNativeTarget "otioUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D064A4F72D2646460001C402 /* Debug */,
