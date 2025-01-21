@@ -15,7 +15,7 @@ struct EmotionsView: View {
 
     @State private var selectedEmotion: String?
     @State private var showingIntensitySheet = false
-    @State private var weekEmotions: [EmotionData] = [] // Cache for a week's emotions
+    @State private var weekEmotions: [EmotionData] = []
     @State private var recentEmotions: [EmotionData] = []
     @State private var isLoading = false
     @State private var showError = false
@@ -27,7 +27,7 @@ struct EmotionsView: View {
             if userService.isAuthenticated {
                 NavigationStack {
                     ZStack {
-                        Color(.systemGroupedBackground)
+                        Color.appBackground
                             .ignoresSafeArea()
                         
                         VStack(spacing: 0) {
@@ -150,7 +150,7 @@ struct EmotionsView: View {
                 }
                 .task {
                     await fetchEmotions()
-                    normalizedScore = calculateAndNormalizeWeeklyScore()
+                    normalizedScore = EmotionCalculator.calculateAndNormalizeWeeklyScore(emotions: weekEmotions)
                     print("Normalized Weekly Score: \(normalizedScore)")
                 }
             } else {
@@ -205,37 +205,16 @@ struct EmotionsView: View {
 
     private func submitEmotion(type: String, intensity: Int) {
         guard let userId = userService.userId else { 
-            print("Debug: No userId found in submitEmotion")
             errorMessage = "No user logged in"
             showError = true
             return 
         }
-        print("Debug: Submitting emotion for userId:", userId)
         
         Task {
             do {
-                let ref = Database.database().reference()
-                let emotionRef = ref.child("users").child(userId).child("emotions").childByAutoId()
-                
-                let data: [String: Any] = [
-                    "type": type,
-                    "intensity": intensity,
-                    "timestamp": ServerValue.timestamp()
-                ]
-                
-                try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                    emotionRef.setValue(data) { error, _ in
-                        if let error = error {
-                            continuation.resume(throwing: error)
-                        } else {
-                            continuation.resume(returning: ())
-                        }
-                    }
-                }
-                
+                try await EmotionService.submitEmotion(type: type, intensity: intensity, userId: userId)
                 selectedEmotion = nil
                 await fetchEmotions()
-                
             } catch {
                 print("Error submitting emotion:", error)
                 errorMessage = error.localizedDescription
@@ -245,108 +224,20 @@ struct EmotionsView: View {
     }
 
     private func fetchEmotions() async {
-        guard let userId = userService.userId else { 
-            print("Debug: ❌ No userId found in fetchEmotions")
-            return 
-        }
-        print("Debug: 🔍 Starting fetch for userId:", userId)
+        guard let userId = userService.userId else { return }
         
         isLoading = true
         defer { isLoading = false }
         
-        let ref = Database.database().reference()
-        
-        // Fetch all emotions for analytics
-        let allEmotionsRef = ref.child("users").child(userId).child("emotions")
-            .queryOrdered(byChild: "timestamp")
-        print("Debug: 📱 Fetching all emotions with query:", allEmotionsRef.description)
-        
-        // Fetch only recent emotions, ordered by timestamp, limited to 3
-        let recentEmotionsRef = ref.child("users").child(userId).child("emotions")
-            .queryOrdered(byChild: "timestamp")
-            .queryLimited(toLast: 3)
-        print("Debug: 📱 Fetching recent emotions with query:", DatabaseQuery.description())
-        
         do {
-            // Fetch both in parallel
-            async let allSnapshotResult = withCheckedThrowingContinuation { (continuation: CheckedContinuation<DataSnapshot, Error>) in
-                allEmotionsRef.getData { error, snapshot in
-                    if let error = error {
-                        print("Debug: ❌ All emotions fetch error:", error.localizedDescription)
-                        continuation.resume(throwing: error)
-                    } else if let snapshot = snapshot {
-                        print("Debug: ✅ All emotions snapshot received")
-                        continuation.resume(returning: snapshot)
-                    }
-                }
-            }
-            
-            async let recentSnapshotResult = withCheckedThrowingContinuation { (continuation: CheckedContinuation<DataSnapshot, Error>) in
-                recentEmotionsRef.getData { error, snapshot in
-                    if let error = error {
-                        print("Debug: ❌ Recent emotions fetch error:", error.localizedDescription)
-                        continuation.resume(throwing: error)
-                    } else if let snapshot = snapshot {
-                        print("Debug: ✅ Recent emotions snapshot received")
-                        continuation.resume(returning: snapshot)
-                    }
-                }
-            }
-            
-            // Process snapshots
-            let (allSnapshot, recentSnapshot) = try await (allSnapshotResult, recentSnapshotResult)
-            
-            var allEmotions: [EmotionData] = []
-            var recentEmotions: [EmotionData] = []
-            
-            // Process all emotions
-            for child in allSnapshot.children {
-                if let snapshot = child as? DataSnapshot,
-                   let dict = snapshot.value as? [String: Any],
-                   let type = dict["type"] as? String,
-                   let intensity = dict["intensity"] as? Int,
-                   let timestamp = dict["timestamp"] as? TimeInterval {
-                    let date = Date(timeIntervalSince1970: timestamp/1000)
-                    let emotion = EmotionData(id: snapshot.key, type: type, intensity: intensity, date: date)
-                    allEmotions.append(emotion)
-                }
-            }
-            
-            // Process recent emotions
-            for child in recentSnapshot.children {
-                if let snapshot = child as? DataSnapshot,
-                   let dict = snapshot.value as? [String: Any],
-                   let type = dict["type"] as? String,
-                   let intensity = dict["intensity"] as? Int,
-                   let timestamp = dict["timestamp"] as? TimeInterval {
-                    let date = Date(timeIntervalSince1970: timestamp/1000)
-                    let emotion = EmotionData(id: snapshot.key, type: type, intensity: intensity, date: date)
-                    recentEmotions.append(emotion)
-                }
-            }
-            
-            // Sort both arrays by date (newest first)
-            allEmotions.sort { $0.date > $1.date }
-            recentEmotions.sort { $0.date > $1.date }
-            
-            print("Debug: 📊 Processed all emotions:", allEmotions.count)
-            print("Debug: 🎯 Processed recent emotions:", recentEmotions.count)
+            let (all, recent) = try await EmotionService.fetchEmotions(userId: userId)
             
             await MainActor.run {
-                print("Debug: 🔍 All emotions before setting:", allEmotions.map { "\($0.type) (\($0.intensity))" })
-                self.weekEmotions = allEmotions
-                self.recentEmotions = recentEmotions
-                print("Debug: 🔄 Updated UI - Recent:", self.recentEmotions.count, "All:", self.weekEmotions.count)
-                
-                // Add detailed debug logging for weekEmotions
-                print("Debug: 📊 Week emotions content:")
-                self.weekEmotions.forEach { emotion in
-                    print("- \(emotion.type) (Intensity: \(emotion.intensity)) at \(emotion.date)")
-                }
+                self.weekEmotions = all
+                self.recentEmotions = recent
+                self.normalizedScore = EmotionCalculator.calculateAndNormalizeWeeklyScore(emotions: all)
             }
-            
         } catch {
-            print("Debug: ❌ Fetch error:", error)
             errorMessage = error.localizedDescription
             showError = true
         }
@@ -369,47 +260,5 @@ struct EmotionsView: View {
         }
 
         return "just now"
-    }
-
-    private func calculateWeeklyScore(emotions: [EmotionData]) -> Double {
-        var totalScore = 0.0
-        for emotion in emotions {
-            let baseScore: Double
-            switch emotion.type {
-            case "happy":
-                baseScore = 2.0
-            case "sad":
-                baseScore = 1.0
-            case "anxious":
-                baseScore = -1.0
-            case "angry":
-                baseScore = -2.0
-            default:
-                baseScore = 0.0
-            }
-            let weightedScore = baseScore * Double(emotion.intensity)
-            totalScore += weightedScore
-            print("Debug: Emotion \(emotion.type) with intensity \(emotion.intensity) contributes \(weightedScore) to total score.")
-        }
-        print("Debug: Total Weekly Score: \(totalScore)")
-        return totalScore
-    }
-
-    private func normalizeScore(actualScore: Double, maxScore: Double) -> Double {
-        let normalized = actualScore / maxScore
-        print("Debug: Normalized Score: \(normalized) (Actual: \(actualScore), Max: \(maxScore))")
-        return normalized
-    }
-
-    private func calculateMaxPossibleScore(maxEntries: Int, maxIntensity: Int) -> Double {
-        let maxScore = Double(maxEntries * 2 * maxIntensity)
-        print("Debug: Max Possible Score: \(maxScore)")
-        return maxScore
-    }
-
-    private func calculateAndNormalizeWeeklyScore() -> Double {
-        let actualScore = calculateWeeklyScore(emotions: weekEmotions)
-        let maxScore = calculateMaxPossibleScore(maxEntries: 10, maxIntensity: 3) // Example values
-        return normalizeScore(actualScore: actualScore, maxScore: maxScore)
     }
 }

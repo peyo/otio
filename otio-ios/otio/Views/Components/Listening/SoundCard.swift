@@ -13,7 +13,7 @@ struct SoundCard: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     Rectangle()
-                        .fill(isSelected ? Color.gray.opacity(0.1) : Color.clear) // Background color
+                        .fill(isSelected ? Color(.systemGray5) : Color.clear) // Background color
                 )
                 .overlay(
                     Rectangle()

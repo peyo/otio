@@ -3,17 +3,19 @@ import SwiftUI
 struct EmotionCard: View {
     let emotion: EmotionData
     let timeString: (Date) -> String
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(alignment: .center, spacing: 16) {
+            HStack(alignment: .center, spacing: 24) {
                 Image(emojiFor(emotion.type))
                     .resizable()
                     .scaledToFit()
                     .frame(width: 28, height: 28)
+                    .brightness(colorScheme == .dark ? 1 : 0)  // Make white in dark mode
                     .background(
                         Rectangle()
-                            .fill(Color.forEmotion(emotion.type).opacity(0.1))
+                            .fill(Color.forEmotion(emotion.type))
                             .frame(width: 52, height: 52)  // Fixed size background
                     )
                 
@@ -45,8 +47,7 @@ struct EmotionCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             Rectangle()
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+                .fill(Color.appCardBackground)
         )
     }
 }

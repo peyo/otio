@@ -4,12 +4,12 @@ import SwiftUI
 extension Color {
     static func forEmotion(_ type: String) -> Color {
         switch type {
-        case "happy": return .green
-        case "sad": return .blue
-        case "anxious": return .yellow
-        case "angry": return .red
-        case "balanced": return .gray
-        default: return .gray
+        case "happy": return .happyColor
+        case "sad": return .sadColor
+        case "anxious": return .anxiousColor
+        case "angry": return .angryColor
+        case "balanced": return .balancedColor
+        default: return .appText
         }
     }
 }

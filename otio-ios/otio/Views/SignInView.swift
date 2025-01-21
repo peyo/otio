@@ -28,14 +28,14 @@ struct SignInView: View {
                                 Text(firstText)
                                     .font(.custom("NewHeterodoxMono-Book", size: 20))
                                     .fontWeight(.semibold)
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.primary)
                                     .opacity(showFirstText ? 1 : 0)
                                     .animation(.easeInOut(duration: animationDuration), value: showFirstText)
                                 
                                 Text(secondText)
                                     .font(.custom("NewHeterodoxMono-Book", size: 20))
                                     .fontWeight(.semibold)
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.primary)
                                     .opacity(showFirstText ? 0 : 1)
                                     .animation(.easeInOut(duration: animationDuration), value: showFirstText)
                             }
@@ -58,23 +58,17 @@ struct SignInView: View {
                             }
                         }) {
                             HStack(spacing: 12) {
-                                ZStack {
-                                    Circle()
-                                        .fill(Color.white)
-                                        .frame(width: 32, height: 32)
-                                    
-                                    if let image = UIImage(named: "google-logo") {
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 24, height: 24)
-                                    } else {
-                                        Image(systemName: "g.circle.fill")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 24, height: 24)
-                                            .foregroundColor(.white)
-                                    }
+                                if let image = UIImage(named: "google-logo") {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 24, height: 24)
+                                } else {
+                                    Image(systemName: "g.circle.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 24, height: 24)
+                                        .foregroundColor(.white)
                                 }
                                 
                                 Text("continue with google")
@@ -92,7 +86,7 @@ struct SignInView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemGroupedBackground))
+            .background(Color.appBackground)
         }
     }
     

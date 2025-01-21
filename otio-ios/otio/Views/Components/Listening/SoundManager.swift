@@ -104,7 +104,7 @@ class SoundManager: ObservableObject {
             engine.output = Mixer(angryOscillators)
             startAngryOscillators()
         case .natureSound:
-            fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav") { url in
+            fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav", directory: "nature") { url in
                 if let url = url {
                     self.playAudioFromURL(url)
                 } else {
@@ -176,20 +176,22 @@ class SoundManager: ObservableObject {
         audioPlayerManager.playAudio(from: url, completion: completion)
     }
     
-    func fetchDownloadURL(for fileName: String, completion: @escaping (URL?) -> Void) {
+    func fetchDownloadURL(for fileName: String, directory: String? = nil, completion: @escaping (URL?) -> Void) {
         print("Fetching download URL for \(fileName)")
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let fileRef = storageRef.child("nature/\(fileName)")
-
+        
+        // Use directory if provided, otherwise use root
+        let path = directory.map { "\($0)/\(fileName)" } ?? fileName
+        let fileRef = storageRef.child(path)
+        
         fileRef.downloadURL { url, error in
             if let error = error {
-                print("Error fetching download URL: \(error.localizedDescription)")
+                print("Error getting download URL: \(error)")
                 completion(nil)
-            } else {
-                print("Download URL fetched successfully")
-                completion(url)
+                return
             }
+            completion(url)
         }
     }
 

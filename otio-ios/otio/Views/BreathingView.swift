@@ -1,18 +1,5 @@
 import SwiftUI
 
-struct BreathingTechnique: Identifiable, Hashable {
-    let id = UUID()
-    let name: String
-    let pattern: [Int] // Array of seconds for each phase [inhale, hold, exhale, hold]
-    let introAudioFile: String? // Name of the intro audio file
-    
-    static let boxBreathing = BreathingTechnique(
-        name: "box breathing",
-        pattern: [4,4,4,4],
-        introAudioFile: "box-breathing-intro.wav"
-    )
-}
-
 struct BreathingView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var breathManager = BreathManager.shared
@@ -21,26 +8,17 @@ struct BreathingView: View {
     
     private let timerPublisher = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
-    private let breathingTechniques = [
-        BreathingTechnique(
-            name: "box breathing", 
-            pattern: [4,4,4,4],
-            introAudioFile: "box-breathing-intro.wav"
-        )
-    ]
+    // Use the predefined techniques
+    private let breathingTechniques = BreathingTechnique.allTechniques
 
     init() {
-        _currentTechnique = State(initialValue: BreathingTechnique(
-            name: "box breathing", 
-            pattern: [4,4,4,4],
-            introAudioFile: "box-breathing-intro.wav"
-        ))
+        _currentTechnique = State(initialValue: BreathingTechnique.boxBreathing)
     }
 
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(.systemGroupedBackground)
+                Color.appBackground
                     .ignoresSafeArea()
                 
                 VStack(spacing: 24) {
@@ -54,23 +32,28 @@ struct BreathingView: View {
                     
                     // Breathing visualization
                     ZStack {
-                        /* Circle()
-                            .stroke(Color.appAccent.opacity(0.2), lineWidth: 2)
-                            .frame(width: 200, height: 200)
-                        */
-                        
-                        // Inner box breathing animation
-                        BoxBreathingView(
-                            phase: breathManager.currentPhase,
-                            progress: breathManager.currentPhaseTimeRemaining <= 0 ? 1.0 : 
-                                1.0 - (CGFloat(breathManager.currentPhaseTimeRemaining) / 
-                                CGFloat(currentTechnique.pattern[Int(breathManager.currentPhase.rawValue)])),
-                            isIntroPlaying: breathManager.isIntroPlaying,
-                            isBreathingActive: breathManager.isActive
-                        )
-                        .frame(width: 200, height: 200)
+                        switch BreathingVisualization.forTechnique(currentTechnique.type) {
+                        case .box:
+                            BoxBreathingView(
+                                phase: breathManager.currentPhase,
+                                progress: breathManager.currentPhaseTimeRemaining <= 0 ? 1.0 : 
+                                    1.0 - (CGFloat(breathManager.currentPhaseTimeRemaining) / 
+                                    CGFloat(currentTechnique.pattern[Int(breathManager.currentPhase.rawValue)])),
+                                isIntroPlaying: breathManager.isIntroPlaying,
+                                isBreathingActive: breathManager.isActive
+                            )
+                        case .circle:
+                            FourSevenEightView(
+                                phase: breathManager.currentPhase,
+                                progress: breathManager.currentPhaseTimeRemaining <= 0 ? 1.0 : 
+                                    1.0 - (CGFloat(breathManager.currentPhaseTimeRemaining) / 
+                                    CGFloat(currentTechnique.pattern[Int(breathManager.currentPhase.rawValue)])),
+                                isIntroPlaying: breathManager.isIntroPlaying,
+                                isBreathingActive: breathManager.isActive
+                            )
+                        }
                     }
-                    .frame(height: 200)
+                    .frame(width: 200, height: 200)
                     .offset(y: -20)
                     .onChange(of: breathManager.isIntroPlaying) { newValue in
                         print("BreathingView: isIntroPlaying changed to \(newValue)")
@@ -85,53 +68,28 @@ struct BreathingView: View {
                     Spacer()
                     
                     // Breathing technique cards
-                    if breathingTechniques.count == 1 {
-                        // Single card - centered with content-based width
-                        HStack {
-                            Spacer()
-                            BreathingCard(
-                                technique: breathingTechniques[0],
-                                isSelected: currentTechnique.name == breathingTechniques[0].name
-                            ) {
-                                if currentTechnique.name != breathingTechniques[0].name {
-                                    currentTechnique = breathingTechniques[0]
-                                    if breathManager.isActive {
-                                        restartBreathing()
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(breathingTechniques) { technique in
+                                BreathingCard(
+                                    technique: technique,
+                                    isSelected: currentTechnique.type == technique.type
+                                ) {
+                                    if currentTechnique.type != technique.type {
+                                        currentTechnique = technique
+                                        if breathManager.isActive {
+                                            restartBreathing()
+                                        }
                                     }
                                 }
+                                .font(.custom("NewHeterodoxMono-Book", size: 17))
+                                .frame(height: 100)
                             }
-                            .font(.custom("NewHeterodoxMono-Book", size: 17))
-                            .frame(height: 100)
-                            Spacer()
                         }
                         .padding(.horizontal)
-                    } else {
-                        // Multiple cards - scrollable, left-aligned
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(breathingTechniques) { technique in
-                                    VStack {
-                                        BreathingCard(
-                                            technique: technique,
-                                            isSelected: currentTechnique.name == technique.name
-                                        ) {
-                                            if currentTechnique.name != technique.name {
-                                                currentTechnique = technique
-                                                if breathManager.isActive {
-                                                    restartBreathing()
-                                                }
-                                            }
-                                        }
-                                        .font(.custom("NewHeterodoxMono-Book", size: 17))
-                                    }
-                                    .frame(height: 100)
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
                     }
                     
-                    // Start/Stop Button - centered with content-based width
+                    // Start/Stop Button
                     Button(action: toggleBreathing) {
                         Image(systemName: breathManager.isActive ? "stop.fill" : "play.fill")
                             .font(.system(size: 24))

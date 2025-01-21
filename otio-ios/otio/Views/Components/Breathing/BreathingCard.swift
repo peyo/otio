@@ -8,17 +8,17 @@ struct BreathingCard: View {
     var body: some View {
         Button(action: action) {
             Text(technique.name)
-                .foregroundColor(.appAccent)
+                .foregroundColor(Color.appAccent)
+                .font(.custom("NewHeterodoxMono-Book", size: 17))
                 .padding()
+                .frame(maxWidth: .infinity)
                 .background(
                     Rectangle()
-                        .fill(isSelected ? Color.gray.opacity(0.1) : Color.clear)
-                        .cornerRadius(0)
+                        .fill(isSelected ? Color(.systemGray5) : Color.clear)
                 )
                 .overlay(
                     Rectangle()
                         .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 2)
-                        .cornerRadius(0)
                 )
         }
         .padding(.horizontal, 4)

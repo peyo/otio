@@ -20,7 +20,7 @@ struct ListeningView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(.systemGroupedBackground)
+                Color.appBackground
                     .ignoresSafeArea()
                 
                 VStack(spacing: 24) {
@@ -34,11 +34,6 @@ struct ListeningView: View {
                     
                     // Waveform visualization
                     ZStack {
-                        /* Circle()
-                            .stroke(Color.appAccent.opacity(0.2), lineWidth: 2)
-                            .frame(width: 200, height: 200)
-                        */
-                        
                         DynamicWaveformCircle(
                             sampleCount: sampleCount,
                             phase: phase,
@@ -84,9 +79,9 @@ struct ListeningView: View {
                     Button(action: toggleSound) {
                         Image(systemName: isPlaying ? "stop.fill" : "play.fill")
                             .font(.system(size: 24))
-                            .foregroundColor(.appAccent) // Symbol color
+                            .foregroundColor(.appAccent)
                             .frame(width: 50, height: 50)
-                            .background(Color.gray.opacity(0.1))
+                            .background(Color(.systemGray5))  // System color that adapts to light/dark
                             .cornerRadius(0)
                     }
                     .padding(.top, 30)

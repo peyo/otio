@@ -54,7 +54,7 @@ class BreathManager: ObservableObject {
         
         if let introFile = technique.introAudioFile {
             print("BreathManager: attempting to play intro audio: \(introFile)")
-            soundManager.fetchDownloadURL(for: introFile) { [weak self] url in
+            soundManager.fetchDownloadURL(for: introFile, directory: "breathing") { [weak self] url in
                 guard let self = self else { return }
                 
                 if let url = url {
@@ -100,21 +100,29 @@ class BreathManager: ObservableObject {
     
     private func moveToNextPhase(technique: BreathingTechnique) {
         print("BreathManager: Moving to next phase")
-        playPhaseTransitionBeep()  // Play beep before changing phase
+        
+        // Only play beep for phase transitions that have a duration
+        let nextPhaseIndex = (currentPhase.rawValue + 1) % 4
+        let nextPhaseDuration = technique.pattern[nextPhaseIndex]
+        
+        // Play beep only if the next phase has a duration (not 0)
+        if nextPhaseDuration > 0 {
+            playPhaseTransitionBeep()
+        }
         
         switch currentPhase {
         case .inhale:
             currentPhase = .holdAfterInhale
-            currentPhaseTimeRemaining = technique.pattern[1]  // Start one second earlier
+            currentPhaseTimeRemaining = technique.pattern[1]
         case .holdAfterInhale:
             currentPhase = .exhale
-            currentPhaseTimeRemaining = technique.pattern[2]  // Start one second earlier
+            currentPhaseTimeRemaining = technique.pattern[2]
         case .exhale:
             currentPhase = .holdAfterExhale
-            currentPhaseTimeRemaining = technique.pattern[3]  // Start one second earlier
+            currentPhaseTimeRemaining = technique.pattern[3]
         case .holdAfterExhale:
             currentPhase = .inhale
-            currentPhaseTimeRemaining = technique.pattern[0]  // Keep inhale at normal timing
+            currentPhaseTimeRemaining = technique.pattern[0]
         }
         print("BreathManager: Phase changed to \(currentPhase)")
     }

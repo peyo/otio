@@ -5,6 +5,7 @@ import FirebaseAuth
 
 struct InsightsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) var colorScheme
     @State private var isLoading = false
     let emotions: [EmotionData]
     @State private var insights: [Insight] = []
@@ -15,7 +16,7 @@ struct InsightsView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(.systemGroupedBackground)
+                Color.appBackground
                     .ignoresSafeArea()
                 
                 ScrollView {
@@ -213,7 +214,7 @@ struct InsightsView: View {
 
     // Helper function to format date in a human-readable way
     private func relativeTimeString(from date: Date) -> String {
-        let formatter = DateFormatter()
+        let formatter = Foundation.DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
     }
@@ -225,12 +226,12 @@ struct InsightsView: View {
                     .font(.system(size: 40))
                     .foregroundColor(.appAccent)
                 
-                Text("no emotions to analyze")
+                Text("no emotions to review")
                     .font(.custom("NewHeterodoxMono-Book", size: 17))
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
                 
-                Text("start tracking your emotions to get insights about your emotional patterns.")
+                Text("start tracking how you feel to get insights about your emotional patterns.")
                     .font(.custom("NewHeterodoxMono-Book", size: 15))
                     .fontWeight(.medium)
                     .foregroundColor(.primary)

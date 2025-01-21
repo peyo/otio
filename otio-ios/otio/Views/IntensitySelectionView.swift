@@ -4,11 +4,12 @@ struct IntensitySelectionView: View {
     let emotion: String
     let onSelect: (Int) -> Void
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground)
+                Color.appBackground
                     .ignoresSafeArea()
                 
                 VStack(spacing: 32) {
@@ -17,6 +18,7 @@ struct IntensitySelectionView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 60, height: 60)
+                            .brightness(colorScheme == .dark ? 1 : 0)
 
                         Text("how \(emotion.lowercased()) are you feeling?")
                             .font(.custom("NewHeterodoxMono-Book", size: 17))

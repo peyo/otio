@@ -7,6 +7,9 @@ struct SplashScreenView: View {
 
     var body: some View {
         ZStack {
+            Color.appBackground
+                .ignoresSafeArea()
+                
             if isActive {
                 SignInView()
                     .environmentObject(userService)
@@ -16,7 +19,7 @@ struct SplashScreenView: View {
                     
                     Image(systemName: "heart.fill")
                         .font(.system(size: 51))
-                        .foregroundColor(.black)
+                        .foregroundColor(.primary)
                         .scaleEffect(scaleEffect)
                         .onAppear {
                             withAnimation(Animation.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {

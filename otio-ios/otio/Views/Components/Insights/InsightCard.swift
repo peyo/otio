@@ -2,6 +2,7 @@ import SwiftUI
 
 struct InsightCard: View {
     let insight: Insight
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -10,6 +11,7 @@ struct InsightCard: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 28, height: 28)
+                    .brightness(colorScheme == .dark ? 1 : 0)
                 Text(insight.title)
                     .font(.custom("NewHeterodoxMono-Book", size: 16))
                     .fontWeight(.semibold)
@@ -25,8 +27,7 @@ struct InsightCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             Rectangle()
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+                .fill(Color.appCardBackground)
         )
     }
 }

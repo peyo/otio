@@ -1,8 +1,22 @@
 import SwiftUI
 
 extension Color {
-    static let appAccent = Color(hex: "000000")
+    // Main text and icon color that automatically adapts
+    static let appText = Color(.label)
     
+    // Background colors
+    static let appBackground = Color(.systemGray6)
+    static let appCardBackground = Color(.systemGray5)
+    
+    // For the emotion buttons, we'll use asset catalog colors
+    // Create these in Assets.xcassets with "Any Appearance" and "Dark Appearance" variants
+    static let happyColor = Color("HappyColor")
+    static let sadColor = Color("SadColor")
+    static let anxiousColor = Color("AnxiousColor")
+    static let angryColor = Color("AngryColor")
+    static let balancedColor = Color("BalancedColor")
+    
+    // If you still need the hex initializer for other purposes
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
@@ -16,7 +30,7 @@ extension Color {
         case 8: // ARGB (32-bit)
             (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
         default:
-            (a, r, g, b) = (255, 0, 0, 0)  // Changed from (255, 255, 0, 0) to (255, 0, 0, 0)
+            (a, r, g, b) = (255, 0, 0, 0)
         }
         self.init(
             .sRGB,
