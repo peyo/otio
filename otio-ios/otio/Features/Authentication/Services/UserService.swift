@@ -15,6 +15,18 @@ class UserService: ObservableObject {
     @Published var userId: String?
     @Published var isAuthenticated = false
     @Published var userEmail: String?
+
+    init() {
+        // Check if the user is already signed in
+        if let user = Auth.auth().currentUser {
+            self.userId = user.uid
+            self.userEmail = user.email
+            self.isAuthenticated = true
+            print("User is already signed in: \(user.uid)")
+        } else {
+            print("No user is signed in.")
+        }
+    }    
     
     func signInWithGoogle(completion: @escaping (Bool) -> Void = { _ in }) {
         Task {
