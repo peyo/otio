@@ -1,11 +1,14 @@
-const functions = require('firebase-functions');
+const functions = require('firebase-functions/v2');
+const { defineSecret } = require('firebase-functions/params');
 const axios = require('axios');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
-exports.generateInsights = functions.https.onCall(async (data, context) => {
+const openAIKey = defineSecret('OPENAI_API_KEY');
+
+exports.generateInsights = functions.https.onCall({secrets: [openAIKey]}, async (data, context) => {
     console.log('Function started');
     
     // Fix auth context handling - but don't try to log the entire data object
@@ -32,9 +35,9 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
             throw new functions.https.HttpsError('invalid-argument', 'Valid emotions data is required');
         }
 
-        // Get OpenAI key directly from process.env
-        const openAIKey = process.env.OPENAI_API_KEY;
-        if (!openAIKey) {
+        // Get OpenAI key from environment variables
+        const apiKey = await openAIKey.value();
+        if (!apiKey) {
             console.error('Debug: ❌ Missing OpenAI API key. Available env vars:', Object.keys(process.env));
             throw new functions.https.HttpsError('failed-precondition', 'OpenAI API key not configured');
         }
@@ -86,37 +89,37 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
 
         // Format emotions for the prompt
         const emotionsText = emotions
-            .map(e => `- ${e.type} (Intensity: ${e.intensity}) on ${e.date}`)
+            .map(e => `- ${e.type} on ${e.date}`)
             .join('\n');
 
-            const prompt = `As an empathetic AI, analyze these emotions deeply:
+        const prompt = `As an empathetic AI, analyze these emotions deeply:
 
-                ${emotionsText}
-                
-                Focus on these areas for your insights:
-
-                The first insight should be a trend-based feedback insight: Identify explicit temporal patterns in the data, such as daily or weekly trends.
-                - Use specific language to make insights relatable (e.g., "over the past week," "in the evenings").
-                - Highlight trends in emotion frequency, intensity, or timing.
-                
-                The second insight should be a self-reflection insight: Pose general, open-ended questions to encourage self-awareness and exploration.
-                - Frame questions to help users connect with their experiences (e.g., "What was happening when you felt this way?" or "What helped you feel calmer during similar times?").
-                
-                The third insight should be a general tips insight: Provide universal, actionable advice tailored to the emotions recorded for the week.
-                - Align tips with recorded emotions (e.g., for anxiety: "Try a short breathing exercise," for happiness: "Reflect on what brought you joy today").
-                - Avoid assumptions about specific triggers, focusing on practical and empathetic guidance.
-                
-                **Instruction**:
-                - Generate exactly **three** insights, one for each focus area above.
-                - Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.
-                - **Do not** number the insights.
-                - **Do not** lead the insights with any symbols.
-
-                **Format**:
-                Example: Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.`;    
+            ${emotionsText}
             
-            console.log('Debug: 📤 Sending request to OpenAI');
+            Focus on these areas for your insights:
+
+            The first insight should be a trend-based feedback insight: Identify explicit temporal patterns in the data, such as daily or weekly trends.
+            - Use specific language to make insights relatable (e.g., "over the past week," "in the evenings").
+            - Highlight trends in emotion frequency, intensity, or timing.
+            
+            The second insight should be a self-reflection insight: Pose general, open-ended questions to encourage self-awareness and exploration.
+            - Frame questions to help users connect with their experiences (e.g., "What was happening when you felt this way?" or "What helped you feel calmer during similar times?").
+            
+            The third insight should be a general tips insight: Provide universal, actionable advice tailored to the emotions recorded for the week.
+            - Align tips with recorded emotions (e.g., for anxiety: "Try a short breathing exercise," for happiness: "Reflect on what brought you joy today").
+            - Avoid assumptions about specific triggers, focusing on practical and empathetic guidance.
+            
+            **Instruction**:
+            - Generate exactly **three** insights, one for each focus area above.
+            - Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.
+            - **Do not** number the insights.
+            - **Do not** lead the insights with any symbols.
+
+            **Format**:
+            Example: Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.`;    
         
+        console.log('Debug: 📤 Sending request to OpenAI');
+    
         const openAIResponse = await axios.post(
             'https://api.openai.com/v1/chat/completions',
             {
@@ -127,7 +130,7 @@ exports.generateInsights = functions.https.onCall(async (data, context) => {
             },
             {
                 headers: {
-                    'Authorization': `Bearer ${openAIKey}`,
+                    'Authorization': `Bearer ${apiKey}`,
                     'Content-Type': 'application/json',
                 },
             }
