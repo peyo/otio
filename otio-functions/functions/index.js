@@ -38,7 +38,7 @@ exports.generateInsights = functions.https.onCall({secrets: [openAIKey]}, async 
         // Get OpenAI key from environment variables
         const apiKey = await openAIKey.value();
         if (!apiKey) {
-            console.error('Debug: ❌ Missing OpenAI API key. Available env vars:', Object.keys(process.env));
+            console.error('Debug: ❌ Missing OpenAI API key.');
             throw new functions.https.HttpsError('failed-precondition', 'OpenAI API key not configured');
         }
 
