@@ -7,7 +7,7 @@ struct SignInView: View {
     @State private var showFirstText = true
     private let firstText = "feeling into insight"
     private let secondText = "insight into sound"
-    private let animationDuration = 0.5
+    private let animationDuration = 1.0
     private let displayDuration = 2.0
     
     var body: some View {
