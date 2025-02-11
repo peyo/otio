@@ -17,7 +17,7 @@ struct SoundCard: View {
                 )
                 .overlay(
                     Rectangle()
-                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 2) // Border color
+                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 1) // Border color
                 )
         }
         .padding(.horizontal, 4)

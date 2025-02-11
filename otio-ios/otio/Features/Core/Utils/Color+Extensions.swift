@@ -9,13 +9,16 @@ extension Color {
     static let appCardBackground = Color(.systemGray5)
     
     // For the emotion buttons, we'll use asset catalog colors
-    // Create these in Assets.xcassets with "Any Appearance" and "Dark Appearance" variants
-    static let happyColor = Color("HappyColor")
-    static let sadColor = Color("SadColor")
-    static let anxiousColor = Color("AnxiousColor")
-    static let angryColor = Color("AngryColor")
-    static let balancedColor = Color("BalancedColor")
-    
+    static let happyColor = Color("HappyColor") // Soft Yellow
+    static let sadColor = Color("SadColor") // Light Sky Blue
+    static let angryColor = Color("AngryColor") // Coral Red
+    static let balancedColor = Color("BalancedColor") // Mint Green
+    static let scaredColor = Color("ScaredColor") // Blue Gray
+    static let embarrassedColor = Color("EmbarrassedColor") // Light Pink
+    static let playfulColor = Color("PlayfulColor") // Peach
+    static let lovedColor = Color("LovedColor") // Coral
+    static let confidentColor = Color("ConfidentColor") // Light Green
+
     // If you still need the hex initializer for other purposes
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)

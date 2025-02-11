@@ -19,7 +19,9 @@ class SoundManager: ObservableObject {
     private var volumeIncreaseTimer: Timer?
     private var oscillatorFadeTimer: Timer?
     
-    init(normalizedScore: Double = 0.0) {
+    private init(normalizedScore: Double = 0.0) {
+        configureAudioSession() // Configure the audio session during initialization
+        
         // Initialize oscillators for a happy melody
         let happyFrequencies: [Float] = [261.63, 329.63, 392.00] // C4, E4, G4 (C Major chord)
         happyChordOscillators = happyFrequencies.map { frequency in
@@ -49,15 +51,15 @@ class SoundManager: ObservableObject {
         
         // Set the initial output based on the recommended sound
         switch recommendedSound {
-        case .happySound:
+        case .upliftingSound:
             engine.output = Mixer(happyChordOscillators)
-        case .sadSound:
+        case .soothingSound:
             engine.output = Mixer(sadChordOscillators)
-        case .anxiousSound:
+        case .calmingSound:
             engine.output = Mixer(anxiousChordOscillators)
-        case .angrySound:
+        case .groundingSound:
             engine.output = Mixer(angryOscillators)
-        case .natureSound:
+        case .rancheriaFalls:
             engine.output = Mixer() // Set a default empty mixer
         default:
             engine.output = Mixer(happyChordOscillators) // Fallback to happy sound
@@ -69,6 +71,17 @@ class SoundManager: ObservableObject {
             print("Audio engine started successfully.")
         } catch {
             print("Failed to start audio engine: \(error)")
+        }
+    }
+    
+    private func configureAudioSession() {
+        do {
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default, options: [.allowAirPlay])
+            try audioSession.setActive(true)
+            print("Audio session configured successfully.")
+        } catch {
+            print("Failed to configure audio session: \(error)")
         }
     }
     
@@ -91,19 +104,19 @@ class SoundManager: ObservableObject {
 
         // Handle the actual sound playing
         switch type {
-        case .happySound:
+        case .upliftingSound:
             engine.output = Mixer(happyChordOscillators)
             happyChordOscillators.forEach { $0.start() }
-        case .sadSound:
+        case .soothingSound:
             engine.output = Mixer(sadChordOscillators)
             startSadChordProgression()
-        case .anxiousSound:
+        case .calmingSound:
             engine.output = Mixer(anxiousChordOscillators)
             startAnxiousChordProgression()
-        case .angrySound:
+        case .groundingSound:
             engine.output = Mixer(angryOscillators)
             startAngryOscillators()
-        case .natureSound:
+        case .rancheriaFalls:
             fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav", directory: "nature") { url in
                 if let url = url {
                     self.playAudioFromURL(url)

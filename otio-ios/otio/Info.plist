@@ -19,5 +19,9 @@
 	<array>
 		<string>IBMPlexMono-Light.ttf</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 </dict>
 </plist>

@@ -9,7 +9,7 @@ struct BreathingCard: View {
         Button(action: action) {
             Text(technique.name)
                 .foregroundColor(Color.appAccent)
-                .font(.custom("NewHeterodoxMono-Book", size: 17))
+                .font(.custom("IBMPlexMono-Light", size: 17))
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(
@@ -18,7 +18,7 @@ struct BreathingCard: View {
                 )
                 .overlay(
                     Rectangle()
-                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 2)
+                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 1)
                 )
         }
         .padding(.horizontal, 4)

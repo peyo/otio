@@ -5,7 +5,6 @@ import FirebaseAuth
 
 struct InsightsView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) var colorScheme
     @State private var isLoading = false
     let emotions: [EmotionData]
     @State private var insights: [Insight] = []
@@ -30,7 +29,7 @@ struct InsightsView: View {
                     VStack(spacing: 24) {
                         // Subtitle only
                         Text("navigate your emotions")
-                            .font(.custom("NewHeterodoxMono-Book", size: 15))
+                            .font(.custom("IBMPlexMono-Light", size: 15))
                             .fontWeight(.medium)
                             .foregroundColor(.primary)
                             .padding(.top, 0)
@@ -62,7 +61,7 @@ struct InsightsView: View {
                                     
                                     if cooldownTime > 0 {
                                         Text("next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
-                                            .font(.custom("NewHeterodoxMono-Book", size: 13))
+                                            .font(.custom("IBMPlexMono-Light", size: 13))
                                             .fontWeight(.semibold)
                                             .foregroundColor(.primary)
                                             .padding(.top, 8)
@@ -80,7 +79,7 @@ struct InsightsView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("understand")
-                        .font(.custom("NewHeterodoxMono-Book", size: 22))
+                        .font(.custom("IBMPlexMono-Light", size: 22))
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
                 }
@@ -138,12 +137,11 @@ struct InsightsView: View {
             // Create a new Functions instance for each call
             let functions = Functions.functions(app: FirebaseApp.app()!, region: "us-central1")
             
-            // Format emotions
+            // Format emotions without intensity
             let formattedEmotions = emotions.map { emotion in
                 [
                     "type": emotion.type,
-                    "intensity": emotion.intensity,
-                    "date": relativeTimeString(from: emotion.date)
+                    "date": relativeTimeString(from: emotion.date)  // Removed intensity
                 ]
             }
             
@@ -222,26 +220,24 @@ struct InsightsView: View {
     private struct EmptyStateView: View {
         var body: some View {
             VStack(spacing: 16) {
-                Image(systemName: "chart.bar.doc.horizontal")
-                    .font(.system(size: 40))
-                    .foregroundColor(.appAccent)
-                
-                Text("no emotions to review")
-                    .font(.custom("NewHeterodoxMono-Book", size: 17))
-                    .fontWeight(.medium)
+                Image("zen")
+                    .resizable()
+                    .renderingMode(.template)
+                    .scaledToFit()
+                    .frame(width: 40)
                     .foregroundColor(.primary)
                 
                 Text("start tracking how you feel to get insights about your emotional patterns.")
-                    .font(.custom("NewHeterodoxMono-Book", size: 15))
+                    .font(.custom("IBMPlexMono-Light", size: 15))
                     .fontWeight(.medium)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding()
             .frame(maxWidth: .infinity)
             .background(
                 Rectangle()
-                    .fill(Color(.systemBackground))
+                    .fill(Color.appCardBackground)
             )
             .padding(.horizontal)
         }

@@ -3,13 +3,12 @@ import FirebaseAuth
 import Foundation
 
 class EmotionService {
-    static func submitEmotion(type: String, intensity: Int, userId: String) async throws {
+    static func submitEmotion(type: String, userId: String) async throws {
         let ref = Database.database().reference()
         let emotionRef = ref.child("users").child(userId).child("emotions").childByAutoId()
         
         let data: [String: Any] = [
             "type": type,
-            "intensity": intensity,
             "timestamp": ServerValue.timestamp()
         ]
         
@@ -38,7 +37,7 @@ class EmotionService {
         // Get reference for most recent emotions
         let recentEmotionsRef = ref.child("users").child(userId).child("emotions")
             .queryOrdered(byChild: "timestamp")
-            .queryLimited(toLast: 3)
+            .queryLimited(toLast: 7)
         
         async let allEmotionsSnapshot = try await withCheckedThrowingContinuation { continuation in
             allEmotionsRef.observeSingleEvent(of: .value) { snapshot in
@@ -66,15 +65,13 @@ class EmotionService {
             if let snapshot = child as? DataSnapshot,
                let dict = snapshot.value as? [String: Any],
                let type = dict["type"] as? String,
-               let intensity = dict["intensity"] as? Int,
                let timestamp = dict["timestamp"] as? Double {
                 
                 let date = Date(timeIntervalSince1970: timestamp / 1000)
                 let emotion = EmotionData(
                     id: snapshot.key,
                     type: type,
-                    intensity: intensity,
-                    date: date  // Changed from timestamp to date
+                    date: date  // Removed intensity
                 )
                 allEmotions.append(emotion)
             }
@@ -85,15 +82,13 @@ class EmotionService {
             if let snapshot = child as? DataSnapshot,
                let dict = snapshot.value as? [String: Any],
                let type = dict["type"] as? String,
-               let intensity = dict["intensity"] as? Int,
                let timestamp = dict["timestamp"] as? Double {
                 
                 let date = Date(timeIntervalSince1970: timestamp / 1000)
                 let emotion = EmotionData(
                     id: snapshot.key,
                     type: type,
-                    intensity: intensity,
-                    date: date  // Changed from timestamp to date
+                    date: date  // Removed intensity
                 )
                 recentEmotions.append(emotion)
             }

@@ -5,13 +5,13 @@
                 "color-space": "srgb",
                 "components": {
                   "alpha": "1.000",
-                  "red": "0.300",
-                  "green": "0.500",
-                  "blue": "0.500"
+                  "red": "0.000",
+                  "green": "0.447",
+                  "blue": "0.733"
                 }
               },
               "idiom": "universal",
-              "name": "BalancedColor"
+              "name": "ConfidentColor"
         }
     ],
     "info": {

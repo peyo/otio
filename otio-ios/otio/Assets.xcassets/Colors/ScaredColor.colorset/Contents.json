@@ -4,14 +4,14 @@
             "color": {
                 "color-space": "srgb",
                 "components": {
-                  "alpha": "1.000",
-                  "red": "0.300",
-                  "green": "0.500",
-                  "blue": "0.500"
+                    "alpha": "1.000",
+                    "red": "0.400",
+                    "green": "0.200",
+                    "blue": "0.600"
                 }
               },
               "idiom": "universal",
-              "name": "BalancedColor"
+              "name": "ScaredColor"
         }
     ],
     "info": {

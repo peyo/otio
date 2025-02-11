@@ -13,13 +13,13 @@ struct InsightCard: View {
                     .frame(width: 28, height: 28)
                     .brightness(colorScheme == .dark ? 1 : 0)
                 Text(insight.title)
-                    .font(.custom("NewHeterodoxMono-Book", size: 16))
+                    .font(.custom("IBMPlexMono-Light", size: 16))
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
             }
             
             Text(insight.description)
-                .font(.custom("NewHeterodoxMono-Book", size: 15))
+                .font(.custom("IBMPlexMono-Light", size: 15))
                 .fontWeight(.medium)
                 .foregroundColor(.primary)
         }

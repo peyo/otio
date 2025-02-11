@@ -26,14 +26,14 @@ struct SignInView: View {
                         VStack(spacing: 8) {
                             ZStack {
                                 Text(firstText)
-                                    .font(.custom("NewHeterodoxMono-Book", size: 20))
+                                    .font(.custom("IBMPlexMono-Light", size: 20))
                                     .fontWeight(.semibold)
                                     .foregroundColor(.primary)
                                     .opacity(showFirstText ? 1 : 0)
                                     .animation(.easeInOut(duration: animationDuration), value: showFirstText)
                                 
                                 Text(secondText)
-                                    .font(.custom("NewHeterodoxMono-Book", size: 20))
+                                    .font(.custom("IBMPlexMono-Light", size: 20))
                                     .fontWeight(.semibold)
                                     .foregroundColor(.primary)
                                     .opacity(showFirstText ? 0 : 1)
@@ -72,7 +72,7 @@ struct SignInView: View {
                                 }
                                 
                                 Text("continue with google")
-                                    .font(.custom("NewHeterodoxMono-Book", size: 15))
+                                    .font(.custom("IBMPlexMono-Light", size: 15))
                                     .fontWeight(.semibold)
                             }
                             .foregroundColor(Color.appAccent)

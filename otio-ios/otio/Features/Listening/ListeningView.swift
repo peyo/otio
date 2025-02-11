@@ -25,7 +25,7 @@ struct ListeningView: View {
                 
                 VStack(spacing: 24) {
                     Text("catch the wave")
-                        .font(.custom("NewHeterodoxMono-Book", size: 15))
+                        .font(.custom("IBMPlexMono-Light", size: 15))
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                         .padding(.top, 10)
@@ -47,7 +47,7 @@ struct ListeningView: View {
 
                     // Add timer display
                     Text(timeString(from: elapsedSeconds))
-                        .font(.custom("NewHeterodoxMono-Book", size: 21))
+                        .font(.custom("IBMPlexMono-Light", size: 21))
                         .foregroundColor(.secondary)
                         .padding(.top, 8)  // Add some spacing
 
@@ -56,7 +56,23 @@ struct ListeningView: View {
                     // Sound selection cards
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
-                            ForEach(SoundType.allCases, id: \.self) { sound in
+                            // Show recommended sound first
+                            VStack {
+                                SoundCard(sound: .recommendedSound, isSelected: currentSound == .recommendedSound) {
+                                    if currentSound != .recommendedSound {
+                                        currentSound = .recommendedSound
+                                        if isPlaying {
+                                            soundManager.stopAllSounds()
+                                            startCurrentSound()
+                                        }
+                                    }
+                                }
+                                .font(.custom("IBMPlexMono-Light", size: 17))
+                            }
+                            .frame(height: 100)
+                            
+                            // Show remaining sounds
+                            ForEach(SoundType.allCases.filter { $0 != .recommendedSound }, id: \.self) { sound in
                                 VStack {
                                     SoundCard(sound: sound, isSelected: currentSound == sound) {
                                         if currentSound != sound {
@@ -67,9 +83,9 @@ struct ListeningView: View {
                                             }
                                         }
                                     }
-                                    .font(.custom("NewHeterodoxMono-Book", size: 17))
+                                    .font(.custom("IBMPlexMono-Light", size: 17))
                                 }
-                                .frame(height: 100) // Ensure consistent height
+                                .frame(height: 100)
                             }
                         }
                     }
@@ -96,7 +112,7 @@ struct ListeningView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("meditate")
-                        .font(.custom("NewHeterodoxMono-Book", size: 22))
+                        .font(.custom("IBMPlexMono-Light", size: 22))
                         .fontWeight(.semibold)
                 }
                 

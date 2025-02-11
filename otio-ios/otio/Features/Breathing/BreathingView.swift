@@ -23,7 +23,7 @@ struct BreathingView: View {
                 
                 VStack(spacing: 24) {
                     Text("find your breath")
-                        .font(.custom("NewHeterodoxMono-Book", size: 15))
+                        .font(.custom("IBMPlexMono-Light", size: 15))
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                         .padding(.top, 10)
@@ -61,7 +61,7 @@ struct BreathingView: View {
 
                     // Timer display
                     Text(timeString(from: elapsedSeconds))
-                        .font(.custom("NewHeterodoxMono-Book", size: 21))
+                        .font(.custom("IBMPlexMono-Light", size: 21))
                         .foregroundColor(.secondary)
                         .padding(.top, 8)
 
@@ -82,7 +82,7 @@ struct BreathingView: View {
                                         }
                                     }
                                 }
-                                .font(.custom("NewHeterodoxMono-Book", size: 17))
+                                .font(.custom("IBMPlexMono-Light", size: 17))
                                 .frame(height: 100)
                             }
                         }
@@ -109,7 +109,7 @@ struct BreathingView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("breathe")
-                        .font(.custom("NewHeterodoxMono-Book", size: 22))
+                        .font(.custom("IBMPlexMono-Light", size: 22))
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
                 }

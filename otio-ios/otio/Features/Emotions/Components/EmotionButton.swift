@@ -4,27 +4,43 @@ struct EmotionButton: View {
     let type: String
     let isSelected: Bool
     let onTap: () -> Void
-    @Environment(\.colorScheme) var colorScheme
-
-    var body: some View {
-        Button(action: onTap) {
-            VStack {
-                Image(emojiFor(type))
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-                    .brightness(colorScheme == .dark ? 1 : 0)
-                Text(type)
-                    .font(.custom("NewHeterodoxMono-Book", size: 14))
-                    .fontWeight(.medium)
-            }
-            .frame(width: 100, height: 100)
-            .background(Color.forEmotion(type))
-            .overlay(
-                Rectangle()
-                    .stroke(isSelected ? Color.forEmotion(type) : .clear, lineWidth: 2)
-            )
+    @State private var isHighlighted = false
+    
+    private func dynamicFontSize(for text: String) -> CGFloat {
+        switch text.count {
+        case 0...10:
+            return 14    // Default size for most words
+        default:
+            return 12    // Smaller size for words with 11+ characters
         }
-        .foregroundColor(.primary)
+    }
+    
+    var body: some View {
+        Button(action: {
+            isHighlighted = true
+            onTap()
+            
+            // Reset highlight after a brief delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                isHighlighted = false
+            }
+        }) {
+            Rectangle()
+                .fill(isHighlighted ? Color(.systemGray5) : Color.clear)  // Fill with systemGray5 when selected
+                .frame(width: 100, height: 100)
+                .overlay(
+                    Rectangle()
+                        .strokeBorder(Color.primary, lineWidth: 1)  // Primary color adapts to light/dark mode
+                )
+                .overlay(
+                    VStack(spacing: 4) {
+                        Text(type)
+                            .font(.custom("IBMPlexMono-Light", size: dynamicFontSize(for: type)))
+                            .fontWeight(.medium)
+                            .foregroundColor(.primary)  // Text color adapts to light/dark mode
+                    }
+                )
+                .animation(.easeInOut(duration: 0.15), value: isHighlighted)
+        }
     }
 }

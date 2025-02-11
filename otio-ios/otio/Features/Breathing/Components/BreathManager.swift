@@ -1,6 +1,7 @@
 import SwiftUI
 import AudioKit
 import SoundpipeAudioKit
+import AVFoundation
 
 enum BreathingPhase: Int {
     case inhale = 0
@@ -26,7 +27,7 @@ class BreathManager: ObservableObject {
     
     var isActive = false
     
-    init() {
+    private init() {
         print("BreathManager: Initializing...")
         
         // Create and set the main mixer first
@@ -42,8 +43,21 @@ class BreathManager: ObservableObject {
         } catch {
             print("BreathManager: Failed to start audio engine: \(error)")
         }
+
+        configureAudioSession() // Configure the audio session during initialization
     }
     
+    private func configureAudioSession() {
+        do {
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default, options: [.allowAirPlay])
+            try audioSession.setActive(true)
+            print("Audio session configured successfully.")
+        } catch {
+            print("Failed to configure audio session: \(error)")
+        }
+    }
+
     func startBreathing(technique: BreathingTechnique) {
         print("BreathManager: startBreathing called")
         isActive = true
