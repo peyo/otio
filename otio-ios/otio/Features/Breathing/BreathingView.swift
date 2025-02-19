@@ -22,7 +22,7 @@ struct BreathingView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 24) {
-                    Text("find your breath")
+                    Text("find your rhythm")
                         .font(.custom("IBMPlexMono-Light", size: 15))
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
@@ -34,20 +34,38 @@ struct BreathingView: View {
                     ZStack {
                         switch BreathingVisualization.forTechnique(currentTechnique.type) {
                         case .box:
+                            let progress = calculateProgress(
+                                timeRemaining: breathManager.currentPhaseTimeRemaining,
+                                pattern: currentTechnique.pattern,
+                                phase: breathManager.currentPhase
+                            )
                             BoxBreathingView(
                                 phase: breathManager.currentPhase,
-                                progress: breathManager.currentPhaseTimeRemaining <= 0 ? 1.0 : 
-                                    1.0 - (CGFloat(breathManager.currentPhaseTimeRemaining) / 
-                                    CGFloat(currentTechnique.pattern[Int(breathManager.currentPhase.rawValue)])),
+                                progress: progress,
                                 isIntroPlaying: breathManager.isIntroPlaying,
                                 isBreathingActive: breathManager.isActive
                             )
                         case .circle:
+                            let progress = calculateProgress(
+                                timeRemaining: breathManager.currentPhaseTimeRemaining,
+                                pattern: currentTechnique.pattern,
+                                phase: breathManager.currentPhase
+                            )
                             FourSevenEightView(
                                 phase: breathManager.currentPhase,
-                                progress: breathManager.currentPhaseTimeRemaining <= 0 ? 1.0 : 
-                                    1.0 - (CGFloat(breathManager.currentPhaseTimeRemaining) / 
-                                    CGFloat(currentTechnique.pattern[Int(breathManager.currentPhase.rawValue)])),
+                                progress: progress,
+                                isIntroPlaying: breathManager.isIntroPlaying,
+                                isBreathingActive: breathManager.isActive
+                            )
+                        case .wave:
+                            let progress = calculateProgress(
+                                timeRemaining: breathManager.currentPhaseTimeRemaining,
+                                pattern: currentTechnique.pattern,
+                                phase: breathManager.currentPhase
+                            )
+                            ResonanceView(
+                                breathingPhase: breathManager.currentPhase,
+                                progress: progress,
                                 isIntroPlaying: breathManager.isIntroPlaying,
                                 isBreathingActive: breathManager.isActive
                             )
@@ -160,5 +178,12 @@ struct BreathingView: View {
     private func restartBreathing() {
         breathManager.stopBreathing()
         elapsedSeconds = 0
+    }
+
+    private func calculateProgress(timeRemaining: Int, pattern: [Int], phase: BreathingPhase) -> CGFloat {
+        if timeRemaining <= 0 {
+            return 1.0
+        }
+        return 1.0 - (CGFloat(timeRemaining) / CGFloat(pattern[Int(phase.rawValue)]))
     }
 }

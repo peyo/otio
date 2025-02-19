@@ -23,6 +23,15 @@ class UserService: ObservableObject {
             self.userEmail = user.email
             self.isAuthenticated = true
             print("User is already signed in: \(user.uid)")
+            
+            // Verify profile exists
+            let ref = Database.database().reference().child("users").child(user.uid).child("profile")
+            ref.observeSingleEvent(of: .value) { [weak self] snapshot in
+                if !snapshot.exists() {
+                    print("No profile found, creating one...")
+                    self?.updateUserProfile(user: user, email: user.email) { _ in }
+                }
+            }
         } else {
             print("No user is signed in.")
         }
@@ -96,19 +105,33 @@ class UserService: ObservableObject {
     }
     
     private func updateUserProfile(user: User, email: String?, completion: @escaping (Result<Void, Error>) -> Void) {
+        print("Starting profile update for user:", user.uid)
+        
         let ref = Database.database().reference().child("users").child(user.uid)
         let profileData: [String: Any] = [
             "profile": [
                 "email": user.email ?? "",
                 "lastUpdated": ServerValue.timestamp()
-            ]
+            ],
+            "emotions": [:],
+            "insights": [:]
         ]
         
-        ref.updateChildValues(profileData) { error, _ in
+        print("Attempting to save profile data:", profileData)
+        
+        // Use setValue instead of updateChildValues
+        ref.setValue(profileData) { error, ref in
             if let error = error {
+                print("Error saving profile:", error.localizedDescription)
                 completion(.failure(error))
             } else {
-                completion(.success(()))
+                print("Successfully saved profile at path:", ref.url)
+                
+                // Verify the data was saved
+                ref.observeSingleEvent(of: .value) { snapshot in
+                    print("Verification - saved data:", snapshot.value ?? "nil")
+                    completion(.success(()))
+                }
             }
         }
     }

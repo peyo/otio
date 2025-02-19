@@ -1,8 +1,9 @@
 import Foundation
 
 enum BreathingType: String, CaseIterable {
-    case boxBreathing = "box breathing"
-    case fourSevenEight = "4-7-8 breathing"
+    case boxBreathing = "box"
+    case fourSevenEight = "4-7-8"
+    case resonance = "resonance"
 }
 
 struct BreathingTechnique: Identifiable, Hashable {
@@ -14,28 +15,37 @@ struct BreathingTechnique: Identifiable, Hashable {
     
     static let allTechniques: [BreathingTechnique] = [
         .boxBreathing,
-        .fourSevenEight
+        .fourSevenEight,
+        .resonance
     ]
     
     // Predefined techniques
     static let boxBreathing = BreathingTechnique(
         type: .boxBreathing,
-        name: "box breathing",
+        name: "box",
         pattern: [4,4,4,4],
         introAudioFile: "box-breathing-intro.wav"
     )
     
     static let fourSevenEight = BreathingTechnique(
         type: .fourSevenEight,
-        name: "4-7-8 breathing",
+        name: "4-7-8",
         pattern: [4,7,8,0], // Note: last 0 means no hold after exhale
         introAudioFile: "four-seven-eight-intro.wav"
+    )
+    
+    static let resonance = BreathingTechnique(
+        type: .resonance,
+        name: "resonance",
+        pattern: [5,0,5,0], // 5 seconds inhale, 5 seconds exhale, no holds
+        introAudioFile: "resonance-intro.wav"
     )
 }
 
 enum BreathingVisualization {
     case box
     case circle
+    case wave
     
     static func forTechnique(_ type: BreathingType) -> BreathingVisualization {
         switch type {
@@ -43,6 +53,8 @@ enum BreathingVisualization {
             return .box
         case .fourSevenEight:
             return .circle
+        case .resonance:
+            return .wave
         }
     }
 }

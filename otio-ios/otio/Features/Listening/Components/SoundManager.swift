@@ -8,10 +8,10 @@ class SoundManager: ObservableObject {
     static let shared = SoundManager()
     private let engine = AudioEngine()
     private var isEngineRunning = false
-    private var happyChordOscillators: [Oscillator] = []
-    private var sadChordOscillators: [Oscillator] = []
-    private var anxiousChordOscillators: [Oscillator] = []
-    private var angryOscillators: [Oscillator] = []
+    private var upliftingChordOscillators: [Oscillator] = []
+    private var soothingChordOscillators: [Oscillator] = []
+    private var calmingChordOscillators: [Oscillator] = []
+    private var groundingOscillators: [Oscillator] = []
     private var audioPlayerManager = AudioPlayerManager()
     private var naturePlayer: AVPlayer?
     
@@ -22,27 +22,27 @@ class SoundManager: ObservableObject {
     private init(normalizedScore: Double = 0.0) {
         configureAudioSession() // Configure the audio session during initialization
         
-        // Initialize oscillators for a happy melody
-        let happyFrequencies: [Float] = [261.63, 329.63, 392.00] // C4, E4, G4 (C Major chord)
-        happyChordOscillators = happyFrequencies.map { frequency in
+        // Initialize oscillators for a uplifting melody
+        let upliftingFrequencies: [Float] = [261.63, 329.63, 392.00] // C4, E4, G4 (C Major chord)
+        upliftingChordOscillators = upliftingFrequencies.map { frequency in
             Oscillator(waveform: Table(.sine), frequency: frequency, amplitude: 0.5)
         }
         
-        // Initialize oscillators for a sad melody using A minor chord
-        let sadFrequencies: [Float] = [220.00, 261.63, 329.63] // A3, C4, E4 (A Minor chord)
-        sadChordOscillators = sadFrequencies.map { frequency in
+        // Initialize oscillators for a soothing melody using A minor chord
+        let soothingFrequencies: [Float] = [220.00, 261.63, 329.63] // A3, C4, E4 (A Minor chord)
+        soothingChordOscillators = soothingFrequencies.map { frequency in
             Oscillator(waveform: Table(.sine), frequency: frequency, amplitude: 0.4)
         }
         
         // Initialize oscillators for a calming melody using D minor chord
-        let anxiousFrequencies: [Float] = [293.66, 349.23, 440.00] // D4, F4, A4 (D Minor chord)
-        anxiousChordOscillators = anxiousFrequencies.map { frequency in
+        let calmingFrequencies: [Float] = [293.66, 349.23, 440.00] // D4, F4, A4 (D Minor chord)
+        calmingChordOscillators = calmingFrequencies.map { frequency in
             Oscillator(waveform: Table(.sine), frequency: frequency, amplitude: 0.3)
         }
         
         // Initialize oscillators for a rhythmic pattern for anger
-        let angryFrequencies: [Float] = [110.00, 220.00, 330.00] // A2, A3, E4 (Rhythmic pattern)
-        angryOscillators = angryFrequencies.map { frequency in
+        let groundingFrequencies: [Float] = [110.00, 220.00, 330.00] // A2, A3, E4 (Rhythmic pattern)
+        groundingOscillators = groundingFrequencies.map { frequency in
             Oscillator(waveform: Table(.sine), frequency: frequency, amplitude: 0.3)
         }
         
@@ -52,17 +52,17 @@ class SoundManager: ObservableObject {
         // Set the initial output based on the recommended sound
         switch recommendedSound {
         case .upliftingSound:
-            engine.output = Mixer(happyChordOscillators)
+            engine.output = Mixer(upliftingChordOscillators)
         case .soothingSound:
-            engine.output = Mixer(sadChordOscillators)
+            engine.output = Mixer(soothingChordOscillators)
         case .calmingSound:
-            engine.output = Mixer(anxiousChordOscillators)
+            engine.output = Mixer(calmingChordOscillators)
         case .groundingSound:
-            engine.output = Mixer(angryOscillators)
+            engine.output = Mixer(groundingOscillators)
         case .rancheriaFalls:
             engine.output = Mixer() // Set a default empty mixer
         default:
-            engine.output = Mixer(happyChordOscillators) // Fallback to happy sound
+            engine.output = Mixer(upliftingChordOscillators) // Fallback to uplifting sound
         }
         
         // Start the audio engine
@@ -105,17 +105,17 @@ class SoundManager: ObservableObject {
         // Handle the actual sound playing
         switch type {
         case .upliftingSound:
-            engine.output = Mixer(happyChordOscillators)
-            happyChordOscillators.forEach { $0.start() }
+            engine.output = Mixer(upliftingChordOscillators)
+            upliftingChordOscillators.forEach { $0.start() }
         case .soothingSound:
-            engine.output = Mixer(sadChordOscillators)
-            startSadChordProgression()
+            engine.output = Mixer(soothingChordOscillators)
+            startSoothingChordProgression()
         case .calmingSound:
-            engine.output = Mixer(anxiousChordOscillators)
-            startAnxiousChordProgression()
+            engine.output = Mixer(calmingChordOscillators)
+            startCalmingChordProgression()
         case .groundingSound:
-            engine.output = Mixer(angryOscillators)
-            startAngryOscillators()
+            engine.output = Mixer(groundingOscillators)
+            startGroundingOscillators()
         case .rancheriaFalls:
             fetchDownloadURL(for: "2024-09-15-rancheria-falls.wav", directory: "nature") { url in
                 if let url = url {
@@ -148,19 +148,19 @@ class SoundManager: ObservableObject {
         oscillatorFadeTimer = nil
         
         // Stop all oscillators and reset their amplitudes
-        happyChordOscillators.forEach { 
+        upliftingChordOscillators.forEach { 
             $0.stop()
             $0.amplitude = 0.5  // Reset to initial amplitude
         }
-        sadChordOscillators.forEach { 
+        soothingChordOscillators.forEach { 
             $0.stop()
             $0.amplitude = 0.4  // Reset to initial amplitude
         }
-        anxiousChordOscillators.forEach { 
+        calmingChordOscillators.forEach { 
             $0.stop()
             $0.amplitude = 0.3  // Reset to initial amplitude
         }
-        angryOscillators.forEach { 
+        groundingOscillators.forEach { 
             $0.stop()
             $0.amplitude = 0.3  // Reset to initial amplitude
         }
@@ -173,16 +173,16 @@ class SoundManager: ObservableObject {
         print("All sounds stopped and reset")
     }
     
-    private func startSadChordProgression() {
-        sadChordOscillators.forEach { $0.start() }
+    private func startSoothingChordProgression() {
+        soothingChordOscillators.forEach { $0.start() }
     }
     
-    private func startAnxiousChordProgression() {
-        anxiousChordOscillators.forEach { $0.start() }
+    private func startCalmingChordProgression() {
+        calmingChordOscillators.forEach { $0.start() }
     }
     
-    private func startAngryOscillators() {
-        angryOscillators.forEach { $0.start() }
+    private func startGroundingOscillators() {
+        groundingOscillators.forEach { $0.start() }
     }
 
     func playAudioFromURL(_ url: URL, completion: (() -> Void)? = nil) {
@@ -274,10 +274,10 @@ class SoundManager: ObservableObject {
                     return
                 }
                 
-                let allOscillators = self.happyChordOscillators + 
-                                   self.sadChordOscillators + 
-                                   self.anxiousChordOscillators + 
-                                   self.angryOscillators
+                let allOscillators = self.upliftingChordOscillators + 
+                                   self.soothingChordOscillators + 
+                                   self.calmingChordOscillators + 
+                                   self.groundingOscillators
                 
                 var allStopped = true
                 allOscillators.forEach { oscillator in
@@ -305,10 +305,10 @@ class SoundManager: ObservableObject {
         naturePlayer = nil
         print("SoundManager: naturePlayer cleared")
         
-        let allOscillators = happyChordOscillators + 
-                           sadChordOscillators + 
-                           anxiousChordOscillators + 
-                           angryOscillators
+        let allOscillators = upliftingChordOscillators + 
+                           soothingChordOscillators + 
+                           calmingChordOscillators + 
+                           groundingOscillators
         
         allOscillators.forEach { oscillator in
             oscillator.stop()

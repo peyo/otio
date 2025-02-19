@@ -3,6 +3,7 @@ import AudioKit
 import SoundpipeAudioKit
 import AVFoundation
 
+// Common enum used by all breathing techniques
 enum BreathingPhase: Int {
     case inhale = 0
     case holdAfterInhale = 1
@@ -24,6 +25,7 @@ class BreathManager: ObservableObject {
     private let mainMixer: Mixer
     private let soundManager = SoundManager.shared
     private let totalDuration = 180
+    private var isFirstBeep = true
     
     var isActive = false
     
@@ -58,10 +60,12 @@ class BreathManager: ObservableObject {
         }
     }
 
+    // Common function used by all breathing techniques
     func startBreathing(technique: BreathingTechnique) {
         print("BreathManager: startBreathing called")
         isActive = true
         isIntroPlaying = true
+        isFirstBeep = true
         print("BreathManager: isIntroPlaying set to true")
         timeRemaining = totalDuration
         currentPhaseTimeRemaining = technique.pattern[0]
@@ -91,6 +95,7 @@ class BreathManager: ObservableObject {
         }
     }
     
+    // Common timer setup used by all breathing techniques
     private func startBreathingTimer(technique: BreathingTechnique) {
         print("BreathManager: startBreathingTimer called")
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
@@ -98,8 +103,10 @@ class BreathManager: ObservableObject {
         }
     }
     
+    // Common breathing update logic used by all techniques
     private func updateBreathing(technique: BreathingTechnique) {
         guard timeRemaining > 0 else {
+            print("BreathManager: Exercise complete, stopping")
             stopBreathing()
             return
         }
@@ -107,23 +114,53 @@ class BreathManager: ObservableObject {
         currentPhaseTimeRemaining -= 1
         timeRemaining -= 1
         
+        // Log current state
+        print("BreathManager: Time - Phase: \(currentPhase), Remaining: \(currentPhaseTimeRemaining), Total: \(timeRemaining)")
+        
         if currentPhaseTimeRemaining < 0 {
+            print("BreathManager: Phase complete, transitioning...")
             moveToNextPhase(technique: technique)
         }
     }
     
     private func moveToNextPhase(technique: BreathingTechnique) {
-        print("BreathManager: Moving to next phase")
+        print("\n=== Phase Transition ===")
+        print("BreathManager: Current phase before transition: \(currentPhase)")
         
-        // Only play beep for phase transitions that have a duration
-        let nextPhaseIndex = (currentPhase.rawValue + 1) % 4
-        let nextPhaseDuration = technique.pattern[nextPhaseIndex]
-        
-        // Play beep only if the next phase has a duration (not 0)
-        if nextPhaseDuration > 0 {
-            playPhaseTransitionBeep()
+        // Beep logic for different techniques
+        switch technique.type {
+        case .resonance:
+            print("BreathManager: Resonance technique - checking beep conditions")
+            // For resonance, we want beeps when transitioning TO inhale or exhale
+            let nextPhase = getNextPhase(currentPhase)
+            print("BreathManager: Next phase will be: \(nextPhase), isFirstBeep: \(isFirstBeep)")
+            if (nextPhase == .inhale || nextPhase == .exhale) && !isFirstBeep {
+                print("BreathManager: Conditions met - playing beep")
+                playPhaseTransitionBeep()
+            } else {
+                print("BreathManager: Skipping beep - First beep: \(isFirstBeep)")
+            }
+            isFirstBeep = false
+        case .fourSevenEight:
+            print("BreathManager: 4-7-8 technique - checking phase")
+            // Play beep at the start of inhale, hold, and exhale phases
+            if currentPhase != .holdAfterExhale {
+                print("BreathManager: Playing transition beep for phase: \(currentPhase)")
+                playPhaseTransitionBeep()
+            }
+        default: // Box breathing
+            print("BreathManager: Box breathing - checking next phase")
+            let nextPhaseIndex = (currentPhase.rawValue + 1) % 4
+            let nextPhaseDuration = technique.pattern[nextPhaseIndex]
+            print("BreathManager: Next phase duration: \(nextPhaseDuration)")
+            if nextPhaseDuration > 0 {
+                print("BreathManager: Playing transition beep")
+                playPhaseTransitionBeep()
+            }
         }
         
+        // Phase transition logic remains the same
+        let previousPhase = currentPhase
         switch currentPhase {
         case .inhale:
             currentPhase = .holdAfterInhale
@@ -138,44 +175,59 @@ class BreathManager: ObservableObject {
             currentPhase = .inhale
             currentPhaseTimeRemaining = technique.pattern[0]
         }
-        print("BreathManager: Phase changed to \(currentPhase)")
+        
+        print("BreathManager: Transition complete - \(previousPhase) → \(currentPhase)")
+        print("BreathManager: New phase duration: \(currentPhaseTimeRemaining)")
+        print("=== End Transition ===\n")
     }
     
+    private func getNextPhase(_ phase: BreathingPhase) -> BreathingPhase {
+        switch phase {
+        case .inhale:
+            return .holdAfterInhale
+        case .holdAfterInhale:
+            return .exhale
+        case .exhale:
+            return .holdAfterExhale
+        case .holdAfterExhale:
+            return .inhale
+        }
+    }
+    
+    // Common beep sound generation used by all techniques
     private func playPhaseTransitionBeep() {
-        print("BreathManager: Playing phase transition beep")
+        print("\n--- Beep Event ---")
+        print("BreathManager: Initiating beep at phase: \(currentPhase)")
         
         beepOscillator = Oscillator(
             waveform: Table(.sine),
-            frequency: 440.0,  // Changed from 880.0 to 440.0 (A4 note, one octave lower)
-            amplitude: 0.3     // Also slightly reduced amplitude
+            frequency: 440.0,
+            amplitude: 0.3
         )
         
         if let beepOscillator = beepOscillator {
-            print("BreathManager: Beep oscillator created")
-            
-            // Add oscillator to the main mixer
+            print("BreathManager: Playing beep")
             mainMixer.addInput(beepOscillator)
             mainMixer.volume = 1.0
-            
-            print("BreathManager: Starting beep oscillator...")
             beepOscillator.start()
-            print("BreathManager: Beep oscillator started")
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
                 guard let self = self else { return }
-                print("BreathManager: Stopping beep oscillator...")
+                print("BreathManager: Beep complete")
                 beepOscillator.stop()
                 self.mainMixer.removeInput(beepOscillator)
                 self.beepOscillator = nil
-                print("BreathManager: Beep cleanup completed")
+                print("--- End Beep Event ---\n")
             }
         }
     }
     
+    // Common cleanup used by all techniques
     func stopBreathing() {
         print("BreathManager: stopBreathing called")
         isActive = false
         isIntroPlaying = false
+        isFirstBeep = true
         timer?.invalidate()
         timer = nil
         timeRemaining = totalDuration

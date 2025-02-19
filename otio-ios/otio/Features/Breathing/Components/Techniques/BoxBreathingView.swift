@@ -11,8 +11,8 @@ struct BoxBreathingView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            // Make the box smaller (32% of the smallest screen dimension)
-            let size = min(geometry.size.width, geometry.size.height) * 0.32
+            // Make the box smaller (50% of the smallest screen dimension)
+            let size = min(geometry.size.width, geometry.size.height) * 0.40
             
             // Center the box in the view
             let rect = CGRect(

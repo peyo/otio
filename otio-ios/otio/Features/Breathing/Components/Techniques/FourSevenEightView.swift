@@ -10,7 +10,7 @@ struct FourSevenEightView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            let baseSize = min(geometry.size.width, geometry.size.height) * 0.32
+            let baseSize = min(geometry.size.width, geometry.size.height) * 0.50
             
             ZStack {
                 // Animated circle (no glow effect)
