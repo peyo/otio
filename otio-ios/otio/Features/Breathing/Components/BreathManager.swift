@@ -98,6 +98,10 @@ class BreathManager: ObservableObject {
     // Common timer setup used by all breathing techniques
     private func startBreathingTimer(technique: BreathingTechnique) {
         print("BreathManager: startBreathingTimer called")
+        
+        // Play start beep when timer begins
+        playPhaseTransitionBeep()
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             self?.updateBreathing(technique: technique)
         }
@@ -133,19 +137,17 @@ class BreathManager: ObservableObject {
             print("BreathManager: Resonance technique - checking beep conditions")
             // For resonance, we want beeps when transitioning TO inhale or exhale
             let nextPhase = getNextPhase(currentPhase)
-            print("BreathManager: Next phase will be: \(nextPhase), isFirstBeep: \(isFirstBeep)")
-            if (nextPhase == .inhale || nextPhase == .exhale) && !isFirstBeep {
+            print("BreathManager: Next phase will be: \(nextPhase)")
+            if nextPhase == .inhale || nextPhase == .exhale {
                 print("BreathManager: Conditions met - playing beep")
                 playPhaseTransitionBeep()
-            } else {
-                print("BreathManager: Skipping beep - First beep: \(isFirstBeep)")
             }
-            isFirstBeep = false
         case .fourSevenEight:
             print("BreathManager: 4-7-8 technique - checking phase")
-            // Play beep at the start of inhale, hold, and exhale phases
-            if currentPhase != .holdAfterExhale {
-                print("BreathManager: Playing transition beep for phase: \(currentPhase)")
+            // Play beep at the start of each phase except holdAfterExhale
+            let nextPhase = getNextPhase(currentPhase)
+            if nextPhase != .holdAfterExhale {
+                print("BreathManager: Playing transition beep for next phase: \(nextPhase)")
                 playPhaseTransitionBeep()
             }
         default: // Box breathing
@@ -199,6 +201,12 @@ class BreathManager: ObservableObject {
         print("\n--- Beep Event ---")
         print("BreathManager: Initiating beep at phase: \(currentPhase)")
         
+        // Make sure engine is active and has output
+        if engine.output == nil {
+            engine.output = mainMixer
+            try? engine.start()
+        }
+        
         beepOscillator = Oscillator(
             waveform: Table(.sine),
             frequency: 440.0,
@@ -238,7 +246,7 @@ class BreathManager: ObservableObject {
         soundManager.stopAllAudio()
         beepOscillator?.stop()
         beepOscillator = nil
-        engine.output = nil
+        // Don't set engine.output to nil here
         print("BreathManager: cleanup completed")
     }
     
