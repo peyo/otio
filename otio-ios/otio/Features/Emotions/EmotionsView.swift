@@ -15,116 +15,122 @@ struct EmotionsView: View {
     @State private var errorMessage = ""
     @State private var normalizedScore: Double = 0.0
     @State private var showEmotionDetail = false
+    @State private var navigationId = UUID()
 
     var body: some View {
+        NavigationStack {
+            Group {
+                if userService.isAuthenticated {
+                    authenticatedContent
+                } else {
+                    SignInView()
+                        .environmentObject(userService)
+                        .onAppear(perform: clearState)
+                }
+            }
+            .id(navigationId)
+        }
+    }
+    
+    private var authenticatedContent: some View {
+        ZStack {
+            Color.appBackground
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 0) {
+                    EmotionsGridView(
+                        emotionOrder: emotionOrder,
+                        selectedEmotion: selectedEmotion,
+                        onEmotionTap: handleEmotionTap
+                    )
+                    .padding(.top, 16)
+                    
+                    Spacer()
+                        .frame(minHeight: 32, maxHeight: 48)
+                    
+                    RecentEmotionsView(
+                        isLoading: isLoading,
+                        recentEmotions: recentEmotions,
+                        timeString: RelativeDateFormatter.relativeTimeString
+                    )
+                    
+                    Spacer(minLength: 16)
+                }
+                .padding(.top, -8)
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar { toolbarContent }
+        .navigationBarBackButtonHidden(true)
+        .navigationDestination(isPresented: $showEmotionDetail) {
+            emotionDetailDestination
+        }
+        .task {
+            await fetchEmotions()
+            normalizedScore = EmotionCalculator.calculateAndNormalizeWeeklyScore(emotions: weekEmotions)
+        }
+    }
+    
+    private var toolbarContent: some ToolbarContent {
         Group {
-            if userService.isAuthenticated {
-                NavigationStack {
-                    ZStack {
-                        Color.appBackground
-                            .ignoresSafeArea()
-                        
-                        ScrollView {
-                            VStack(spacing: 0) {
-                                emotionInputSection
-                                    .padding(.top, 16)
-                                
-                                Spacer()
-                                    .frame(minHeight: 32, maxHeight: 48)
-                                
-                                RecentEmotionsView(
-                                    isLoading: isLoading,
-                                    recentEmotions: recentEmotions,
-                                    timeString: relativeTimeString
-                                )
-                                
-                                Spacer(minLength: 16)
-                            }
-                            .padding(.top, -8)
-                        }
-                    }
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Text("otio")
-                                .font(.custom("IBMPlexMono-Light", size: 22))
-                                .fontWeight(.semibold)
-                        }
-                        
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            EmotionsToolbarView(
-                                weekEmotions: weekEmotions,
-                                normalizedScore: normalizedScore
-                            )
-                        }
-                    }
-                    .navigationDestination(isPresented: $showEmotionDetail) {
-                        EmotionDetailView(
-                            emotion: selectedEmotion ?? "",
-                            deeperEmotions: emotions[selectedEmotion ?? ""] ?? [],
-                            onSelect: { deeperEmotion in
-                                Task {
-                                    guard let userId = userService.userId else { return }
-                                    do {
-                                        try await EmotionService.submitEmotion(type: deeperEmotion, userId: userId)
-                                        await fetchEmotions()
-                                    } catch {
-                                        errorMessage = error.localizedDescription
-                                        showError = true
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
-                .task {
-                    await fetchEmotions()
-                    normalizedScore = EmotionCalculator.calculateAndNormalizeWeeklyScore(emotions: weekEmotions)
-                    print("Normalized Weekly Score: \(normalizedScore)")
-                }
-            } else {
-                SignInView()
+            ToolbarItem(placement: .navigationBarLeading) {
+                Text("otio")
+                    .font(.custom("IBMPlexMono-Light", size: 22))
+                    .fontWeight(.semibold)
+            }
+            
+            ToolbarItem(placement: .principal) {
+                EmptyView()
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                EmotionsToolbarView(
+                    weekEmotions: weekEmotions,
+                    normalizedScore: normalizedScore
+                )
             }
         }
     }
     
-    private var emotionInputSection: some View {
-        VStack {
-            Color.appBackground
-                .ignoresSafeArea(edges: .bottom)
-            
-            VStack(spacing: 16) {
-                let columns = [
-                    GridItem(.flexible()),
-                    GridItem(.flexible()),
-                    GridItem(.flexible())
-                ]
-                
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(emotionOrder, id: \.self) { emotion in
-                        EmotionButton(
-                            type: emotion,
-                            isSelected: selectedEmotion == emotion,
-                            onTap: {
-                                handleEmotionTap(emotion)
-                            }
-                        )
-                        .padding(.vertical, 8)
-                    }
-                }
-                .padding(.horizontal, 8)
-            }
-            .padding(.top, 0)
-        }
+    private var emotionDetailDestination: some View {
+        EmotionDetailView(
+            emotion: selectedEmotion ?? "",
+            deeperEmotions: emotions[selectedEmotion ?? ""] ?? [],
+            onSelect: handleDeeperEmotionSelect
+        )
     }
-
+    
+    private func clearState() {
+        weekEmotions = []
+        recentEmotions = []
+        navigationId = UUID()
+    }
+    
     private func handleEmotionTap(_ type: String) {
         selectedEmotion = type
         showEmotionDetail = true
     }
-
+    
+    private func handleDeeperEmotionSelect(_ deeperEmotion: String) {
+        Task {
+            guard let userId = userService.userId else { return }
+            do {
+                try await EmotionService.submitEmotion(type: deeperEmotion, userId: userId)
+                await fetchEmotions()
+            } catch {
+                errorMessage = error.localizedDescription
+                showError = true
+            }
+        }
+    }
+    
     private func fetchEmotions() async {
-        guard let userId = userService.userId else { return }
+        guard let userId = userService.userId else { 
+            weekEmotions = []
+            recentEmotions = []
+            return 
+        }
         
         isLoading = true
         defer { isLoading = false }
@@ -141,24 +147,5 @@ struct EmotionsView: View {
             errorMessage = error.localizedDescription
             showError = true
         }
-    }
-
-    private func relativeTimeString(from date: Date) -> String {
-        let now = Date()
-        let components = Calendar.current.dateComponents([.minute, .hour, .day], from: date, to: now)
-
-        if let day = components.day, day > 0 {
-            return day == 1 ? "yesterday" : "\(day) days ago"
-        }
-
-        if let hour = components.hour, hour > 0 {
-            return hour == 1 ? "an hour ago" : "\(hour) hours ago"
-        }
-
-        if let minute = components.minute, minute > 0 {
-            return minute == 1 ? "a minute ago" : "\(minute) minutes ago"
-        }
-
-        return "just now"
     }
 }

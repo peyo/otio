@@ -6,42 +6,51 @@ struct EmotionsToolbarView: View {
     @EnvironmentObject var userService: UserService
     let weekEmotions: [EmotionData]
     let normalizedScore: Double
+    @State private var showBreathingView = false
+    @State private var showInsightsView = false
+    @State private var showListeningView = false
+    @State private var showAccountView = false
     
     var body: some View {
         HStack(spacing: 8) {
-            NavigationLink {
-                BreathingView()
+            Button {
+                showBreathingView = true
             } label: {
                 Image(systemName: "nose")
                     .foregroundColor(.appAccent)
             }
+            .navigationDestination(isPresented: $showBreathingView) {
+                BreathingView()
+            }
             
-            NavigationLink {
-                InsightsView(emotions: weekEmotions)
+            Button {
+                showInsightsView = true
             } label: {
                 Image(systemName: "eye")
                     .foregroundColor(.appAccent)
             }
+            .navigationDestination(isPresented: $showInsightsView) {
+                InsightsView(emotions: weekEmotions)
+            }
 
-            NavigationLink {
-                ListeningView(normalizedScore: normalizedScore)
+            Button {
+                showListeningView = true
             } label: {
                 Image(systemName: "ear")
                     .foregroundColor(.appAccent)
             }
+            .navigationDestination(isPresented: $showListeningView) {
+                ListeningView(normalizedScore: normalizedScore)
+            }
             
             Button {
-                do {
-                    print("Debug: 🚪 Starting sign out process")
-                    try Auth.auth().signOut()
-                    userService.signOut()
-                    print("Debug: ✅ Sign out completed")
-                } catch {
-                    print("Debug: ❌ Error signing out:", error)
-                }
+                showAccountView = true
             } label: {
-                Image(systemName: "rectangle.portrait.and.arrow.right")
+                Image(systemName: "person")
                     .foregroundColor(.appAccent)
+            }
+            .navigationDestination(isPresented: $showAccountView) {
+                AccountView()
             }
         }
     }

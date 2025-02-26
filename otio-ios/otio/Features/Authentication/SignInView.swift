@@ -87,6 +87,7 @@ struct SignInView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.appBackground)
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
     

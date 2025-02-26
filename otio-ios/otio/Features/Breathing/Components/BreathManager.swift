@@ -29,6 +29,8 @@ class BreathManager: ObservableObject {
     
     var isActive = false
     
+    private var currentTechnique: BreathingTechnique?
+    
     private init() {
         print("BreathManager: Initializing...")
         
@@ -63,6 +65,7 @@ class BreathManager: ObservableObject {
     // Common function used by all breathing techniques
     func startBreathing(technique: BreathingTechnique) {
         print("BreathManager: startBreathing called")
+        currentTechnique = technique
         isActive = true
         isIntroPlaying = true
         isFirstBeep = true
@@ -248,6 +251,21 @@ class BreathManager: ObservableObject {
         beepOscillator = nil
         // Don't set engine.output to nil here
         print("BreathManager: cleanup completed")
+    }
+    
+    // Add a method to skip intro
+    func skipIntro(technique: BreathingTechnique) {
+        print("BreathManager: Skipping intro")
+        
+        // Stop the intro audio
+        soundManager.stopAllAudio()
+        
+        // Update state
+        isIntroPlaying = false
+        print("BreathManager: isIntroPlaying set to false (intro skipped)")
+        
+        // Start the breathing exercise
+        startBreathingTimer(technique: technique)
     }
     
     deinit {

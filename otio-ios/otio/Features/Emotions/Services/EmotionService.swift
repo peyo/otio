@@ -4,6 +4,7 @@ import Foundation
 
 class EmotionService {
     static func submitEmotion(type: String, userId: String) async throws {
+        print("Submitting emotion for user:", userId)  // Add debug log
         let ref = Database.database().reference()
         let emotionRef = ref.child("users").child(userId).child("emotions").childByAutoId()
         
@@ -24,6 +25,7 @@ class EmotionService {
     }
 
     static func fetchEmotions(userId: String) async throws -> (all: [EmotionData], recent: [EmotionData]) {
+        print("Fetching emotions for user:", userId)  // Add debug log
         let ref = Database.database().reference()
         
         // Get reference for all emotions from the past week

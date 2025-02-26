@@ -230,7 +230,7 @@ struct InsightsView: View {
                 Text("start tracking how you feel to get insights about your emotional patterns.")
                     .font(.custom("IBMPlexMono-Light", size: 15))
                     .fontWeight(.medium)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
             }
             .padding()

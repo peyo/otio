@@ -12,9 +12,14 @@ let useEmulator = false
 #endif
 
 class UserService: ObservableObject {
+    static let shared = UserService()
+    
     @Published var userId: String?
     @Published var isAuthenticated = false
     @Published var userEmail: String?
+    @Published var joinDate: Date?
+    @Published var totalBreathingMinutes: Int = 0
+    @Published var totalMeditationMinutes: Int = 0
 
     init() {
         // Check if the user is already signed in
@@ -108,29 +113,48 @@ class UserService: ObservableObject {
         print("Starting profile update for user:", user.uid)
         
         let ref = Database.database().reference().child("users").child(user.uid)
-        let profileData: [String: Any] = [
-            "profile": [
-                "email": user.email ?? "",
-                "lastUpdated": ServerValue.timestamp()
-            ],
-            "emotions": [:],
-            "insights": [:]
-        ]
         
-        print("Attempting to save profile data:", profileData)
-        
-        // Use setValue instead of updateChildValues
-        ref.setValue(profileData) { error, ref in
-            if let error = error {
-                print("Error saving profile:", error.localizedDescription)
-                completion(.failure(error))
-            } else {
-                print("Successfully saved profile at path:", ref.url)
+        // First, check if user data exists
+        ref.observeSingleEvent(of: .value) { snapshot in
+            if snapshot.exists() {
+                // User exists, only update mutable profile information
+                // Keep joinDate unchanged
+                let profileUpdate = [
+                    "profile/email": user.email ?? "",
+                    "profile/lastUpdated": ServerValue.timestamp(),
+                    "profile/totalBreathingMinutes": self.totalBreathingMinutes,
+                    "profile/totalMeditationMinutes": self.totalMeditationMinutes
+                ] as [String : Any]
                 
-                // Verify the data was saved
-                ref.observeSingleEvent(of: .value) { snapshot in
-                    print("Verification - saved data:", snapshot.value ?? "nil")
-                    completion(.success(()))
+                ref.updateChildValues(profileUpdate) { error, _ in
+                    if let error = error {
+                        print("Error updating profile:", error.localizedDescription)
+                        completion(.failure(error))
+                    } else {
+                        print("Successfully updated existing profile")
+                        completion(.success(()))
+                    }
+                }
+            } else {
+                // New user, create initial structure with all fields
+                let initialData: [String: Any] = [
+                    "profile": [
+                        "email": user.email ?? "",
+                        "joinDate": ServerValue.timestamp(),
+                        "lastUpdated": ServerValue.timestamp(),
+                        "totalBreathingMinutes": 0,
+                        "totalMeditationMinutes": 0
+                    ]
+                ]
+                
+                ref.setValue(initialData) { error, ref in
+                    if let error = error {
+                        print("Error creating new profile:", error.localizedDescription)
+                        completion(.failure(error))
+                    } else {
+                        print("Successfully created new profile at path:", ref.url)
+                        completion(.success(()))
+                    }
                 }
             }
         }
@@ -155,5 +179,59 @@ class UserService: ObservableObject {
         userId = user.uid
         isAuthenticated = true
         print("Debug: ✅ Sign in completed")
+    }
+    
+    // Add function to update breathing minutes
+    func updateBreathingMinutes(minutes: Int) {
+        guard let userId = userId else { return }
+        
+        let ref = Database.database().reference().child("users").child(userId).child("profile")
+        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+            var value = currentData.value as? [String: Any] ?? [:]
+            let currentMinutes = value["totalBreathingMinutes"] as? Int ?? 0
+            value["totalBreathingMinutes"] = currentMinutes + minutes
+            currentData.value = value
+            return TransactionResult.success(withValue: currentData)
+        }) { error, _, _ in
+            if let error = error {
+                print("Error updating breathing minutes:", error.localizedDescription)
+            }
+        }
+    }
+    
+    // Add function to update meditation minutes
+    func updateMeditationMinutes(minutes: Int) {
+        guard let userId = userId else { return }
+        
+        let ref = Database.database().reference().child("users").child(userId).child("profile")
+        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
+            var value = currentData.value as? [String: Any] ?? [:]
+            let currentMinutes = value["totalMeditationMinutes"] as? Int ?? 0
+            value["totalMeditationMinutes"] = currentMinutes + minutes
+            currentData.value = value
+            return TransactionResult.success(withValue: currentData)
+        }) { error, _, _ in
+            if let error = error {
+                print("Error updating meditation minutes:", error.localizedDescription)
+            }
+        }
+    }
+    
+    // Add function to fetch user stats
+    func fetchUserStats() {
+        guard let userId = userId else { return }
+        
+        let ref = Database.database().reference().child("users").child(userId).child("profile")
+        ref.observeSingleEvent(of: .value) { [weak self] snapshot in
+            guard let profile = snapshot.value as? [String: Any] else { return }
+            
+            DispatchQueue.main.async {
+                self?.totalBreathingMinutes = profile["totalBreathingMinutes"] as? Int ?? 0
+                self?.totalMeditationMinutes = profile["totalMeditationMinutes"] as? Int ?? 0
+                if let joinTimestamp = profile["joinDate"] as? TimeInterval {
+                    self?.joinDate = Date(timeIntervalSince1970: joinTimestamp / 1000)
+                }
+            }
+        }
     }
 }

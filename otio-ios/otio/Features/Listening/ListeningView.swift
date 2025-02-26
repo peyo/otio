@@ -11,6 +11,7 @@ struct ListeningView: View {
     private var timerPublisher = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let sampleCount = 100
     private let normalizedScore: Double
+    @StateObject private var userService = UserService.shared
 
     init(normalizedScore: Double) {
         self.normalizedScore = normalizedScore
@@ -40,18 +41,17 @@ struct ListeningView: View {
                             amplitude: amplitude,
                             color: Color.appAccent
                         )
-                        .frame(width: 200, height: 200)
                     }
-                    .frame(height: 200)
-                    .offset(y: -20) // Shifted up by y points
+                    .frame(width: 200, height: 200)
+                    .offset(y: -20)
 
-                    // Add timer display
+                    // Timer display
                     Text(timeString(from: elapsedSeconds))
                         .font(.custom("IBMPlexMono-Light", size: 21))
                         .foregroundColor(.secondary)
-                        .padding(.top, 8)  // Add some spacing
+                        .padding(.top, 8)
 
-                    Spacer() // Add a spacer to push content down
+                    Spacer()
                     
                     // Sound selection cards
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -91,16 +91,25 @@ struct ListeningView: View {
                     }
                     .padding(.horizontal)
                     
-                    // Play/Stop Button
-                    Button(action: toggleSound) {
-                        Image(systemName: isPlaying ? "stop.fill" : "play.fill")
-                            .font(.system(size: 24))
-                            .foregroundColor(.appAccent)
-                            .frame(width: 50, height: 50)
-                            .background(Color(.systemGray5))  // System color that adapts to light/dark
-                            .cornerRadius(0)
+                    // ZStack to contain button (matching BreathingView structure)
+                    ZStack(alignment: .center) {
+                        VStack {
+                            // Play/Stop Button
+                            Button(action: toggleSound) {
+                                Image(systemName: isPlaying ? "stop.fill" : "play.fill")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.appAccent)
+                                    .frame(width: 50, height: 50)
+                                    .background(Color(.systemGray5))
+                                    .cornerRadius(0)
+                            }
+                            .padding(.top, 30)
+                            
+                            // Spacer to maintain consistent spacing
+                            Spacer()
+                                .frame(height: 40)
+                        }
                     }
-                    .padding(.top, 30)
                     
                     Spacer()
                 }
@@ -111,7 +120,7 @@ struct ListeningView: View {
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("meditate")
+                    Text("listen")
                         .font(.custom("IBMPlexMono-Light", size: 22))
                         .fontWeight(.semibold)
                 }
@@ -148,6 +157,9 @@ struct ListeningView: View {
     func toggleSound() {
         if isPlaying {
             soundManager.stopAllSounds()
+            // Update total meditation minutes when stopping
+            let minutes = Int(ceil(Double(elapsedSeconds) / 60.0))
+            userService.updateMeditationMinutes(minutes: minutes)
         } else {
             startCurrentSound()
         }
