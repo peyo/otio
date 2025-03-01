@@ -3,6 +3,7 @@ import SwiftUI
 struct EmotionCard: View {
     let emotion: EmotionData
     let timeString: (Date) -> String
+    let onDelete: () -> Void
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -17,11 +18,16 @@ struct EmotionCard: View {
 
                     Text(timeString(emotion.date))
                         .font(.custom("IBMPlexMono-Light", size: 15))
-                        .fontWeight(.medium)
                         .foregroundColor(.secondary)
                 }
                 
                 Spacer()
+                
+                Button(action: onDelete) {
+                    Text("delete")
+                        .font(.custom("IBMPlexMono-Light", size: 15))
+                        .foregroundColor(.secondary)
+                }
             }
         }
         .padding(20)

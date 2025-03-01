@@ -16,6 +16,8 @@ struct EmotionsView: View {
     @State private var normalizedScore: Double = 0.0
     @State private var showEmotionDetail = false
     @State private var navigationId = UUID()
+    @State private var showDeleteConfirmation = false
+    @State private var emotionToDelete: EmotionData?
 
     var body: some View {
         NavigationStack {
@@ -29,6 +31,66 @@ struct EmotionsView: View {
                 }
             }
             .id(navigationId)
+            .overlay {
+                if showDeleteConfirmation {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                        .overlay {
+                            VStack(spacing: 24) {
+                                Text("delete emotion")
+                                    .font(.custom("IBMPlexMono-Light", size: 17))
+                                    .fontWeight(.semibold)
+                                
+                                Text("let go of this emotion?")
+                                    .font(.custom("IBMPlexMono-Light", size: 15))
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.center)
+                                
+                                HStack(spacing: 16) {
+                                    Button {
+                                        emotionToDelete = nil
+                                        showDeleteConfirmation = false
+                                    } label: {
+                                        Text("cancel")
+                                            .font(.custom("IBMPlexMono-Light", size: 15))
+                                            .foregroundColor(.appAccent)
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(Color.appCardBackground)
+                                    }
+                                    
+                                    Button {
+                                        if let emotion = emotionToDelete,
+                                           let userId = userService.userId {
+                                            Task {
+                                                do {
+                                                    try await EmotionService.deleteEmotion(emotionId: emotion.id, userId: userId)
+                                                    await fetchEmotions()
+                                                } catch {
+                                                    errorMessage = error.localizedDescription
+                                                    showError = true
+                                                }
+                                            }
+                                        }
+                                        emotionToDelete = nil
+                                        showDeleteConfirmation = false
+                                    } label: {
+                                        Text("delete")
+                                            .font(.custom("IBMPlexMono-Light", size: 15))
+                                            .foregroundColor(.secondary)
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(Color.appCardBackground)
+                                    }
+                                }
+                            }
+                            .padding(24)
+                            .background(Color.appBackground)
+                            .padding(.horizontal, 40)
+                        }
+                        .transition(.opacity)
+                }
+            }
         }
     }
     
@@ -52,7 +114,11 @@ struct EmotionsView: View {
                     RecentEmotionsView(
                         isLoading: isLoading,
                         recentEmotions: recentEmotions,
-                        timeString: RelativeDateFormatter.relativeTimeString
+                        timeString: RelativeDateFormatter.relativeTimeString,
+                        onDelete: { emotion in
+                            emotionToDelete = emotion
+                            showDeleteConfirmation = true
+                        }
                     )
                     
                     Spacer(minLength: 16)

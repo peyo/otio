@@ -106,4 +106,22 @@ class EmotionService {
         
         return (allEmotions, recentEmotions)
     }
+
+    static func deleteEmotion(emotionId: String, userId: String) async throws {
+        let ref = Database.database().reference()
+            .child("users")
+            .child(userId)
+            .child("emotions")
+            .child(emotionId)
+        
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            ref.removeValue { error, _ in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: ())
+                }
+            }
+        }
+    }
 }

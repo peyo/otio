@@ -42,14 +42,24 @@ struct AccountView: View {
                     
                     Spacer()
                     
-                    // Logout Button
-                    Button(action: {
-                        userService.signOut()
-                        shouldShowSignIn = true
-                    }) {
-                        Text("log out")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
-                            .foregroundColor(.appAccent)
+                    // Credits and Logout Buttons
+                    VStack(spacing: 24) {
+                        NavigationLink {
+                            CreditsView()
+                        } label: {
+                            Text("credits")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                                .foregroundColor(.appAccent)
+                        }
+                        
+                        Button(action: {
+                            userService.signOut()
+                            shouldShowSignIn = true
+                        }) {
+                            Text("log out")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                                .foregroundColor(.appAccent)
+                        }
                     }
                     .padding(.bottom, 40)
                 }

@@ -5,6 +5,7 @@ struct RecentEmotionsView: View {
     let isLoading: Bool
     let recentEmotions: [EmotionData]
     let timeString: (Date) -> String
+    let onDelete: (EmotionData) -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -24,7 +25,7 @@ struct RecentEmotionsView: View {
                 HStack(spacing: 16) {
                     Image("zen")
                         .resizable()
-                        .renderingMode(.template)  // Add this line
+                        .renderingMode(.template)
                         .scaledToFit()
                         .frame(width: 40)
                         .foregroundColor(.primary)
@@ -43,7 +44,8 @@ struct RecentEmotionsView: View {
                     ForEach(recentEmotions) { emotion in
                         EmotionCard(
                             emotion: emotion,
-                            timeString: timeString
+                            timeString: timeString,
+                            onDelete: { onDelete(emotion) }
                         )
                     }
                 }
