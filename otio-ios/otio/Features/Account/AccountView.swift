@@ -92,9 +92,9 @@ struct AccountView: View {
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter.string(from: date)
+        formatter.dateFormat = "MMM d, yyyy"  // Use custom format
+        let formattedDate = formatter.string(from: date)
+        return formattedDate.lowercased()  // Convert to lowercase
     }
     
     private func formatMinutes(_ minutes: Int) -> String {

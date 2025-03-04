@@ -9,21 +9,7 @@ struct CreditsView: View {
                 .ignoresSafeArea()
             
             ScrollView {
-                VStack(spacing: 32) {
-                    // Sound Design Section
-                    VStack(spacing: 16) {
-                        Text("sound design")
-                            .font(.custom("IBMPlexMono-Light", size: 17))
-                            .foregroundColor(.primary)
-                        
-                        Link(destination: URL(string: "https://hrresonance.bandcamp.com/")!) {
-                            Text("gregory kyryluk")
-                                .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.appAccent)
-                                .underline()
-                        }
-                    }
-                    
+                VStack(spacing: 32) {                   
                     // Contributors Section
                     VStack(spacing: 16) {
                         Text("contributors")

@@ -57,6 +57,8 @@ struct BreathingView: View {
             }
             .onAppear {
                 print("🟢 BreathingView appeared: \(Date())")
+                // Preload the intro audio when view appears
+                breathManager.preloadIntroFor(technique: currentTechnique)
             }
             .task {
                 print("🔵 BreathingView task started: \(Date())")
@@ -74,8 +76,7 @@ struct BreathingView: View {
         }
         .onDisappear {
             print("🔴 BreathingView disappeared: \(Date())")
-            breathManager.stopBreathing()
-            SoundManager.shared.stopAllAudio()
+            cleanup()
         }
     }
     
@@ -167,35 +168,46 @@ struct BreathingView: View {
                 .padding(.horizontal)
             }
             
-            // ZStack to contain both button and skip text
-            ZStack(alignment: .center) {
-                VStack {
-                    // Start/Stop Button
-                    Button(action: toggleBreathing) {
-                        Image(systemName: breathManager.isActive ? "stop.fill" : "play.fill")
-                            .font(.system(size: 24))
-                            .foregroundColor(.appAccent)
+            // Start/Stop Button with loading state
+            VStack(spacing: 0) {
+                // Button or loading indicator
+                Group {
+                    if breathManager.isLoading {
+                        ProgressView()
+                            .tint(.appAccent)
                             .frame(width: 50, height: 50)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(0)
+                    } else {
+                        Button(action: toggleBreathing) {
+                            Image(systemName: breathManager.isActive ? "stop.fill" : "play.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.appAccent)
+                                .frame(width: 50, height: 50)
+                                .background(Color(.systemGray5))
+                                .cornerRadius(0)
+                        }
                     }
-                    .padding(.top, 30)
-                    
-                    // Spacer to maintain consistent spacing
-                    Spacer()
-                        .frame(height: 40)  // Fixed height for skip text area
                 }
+                .padding(.top, 30)
                 
-                // Skip text overlaid below button
-                if breathManager.isIntroPlaying && breathManager.isActive {
+                // Fixed height container for skip intro text
+                ZStack {
+                    // Invisible text to reserve space
                     Text("skip intro")
                         .font(.custom("IBMPlexMono-Light", size: 17))
-                        .foregroundColor(.appAccent)
-                        .onTapGesture {
-                            breathManager.skipIntro(technique: currentTechnique)
-                        }
-                        .transition(.opacity)
-                        .offset(y: 60)  // Position below button
+                        .foregroundColor(.clear)
+                        .padding(.top, 20)
+                    
+                    // Actual skip intro text
+                    if breathManager.isIntroPlaying && breathManager.isActive {
+                        Text("skip intro")
+                            .font(.custom("IBMPlexMono-Light", size: 17))
+                            .foregroundColor(.appAccent)
+                            .onTapGesture {
+                                breathManager.skipIntro(technique: currentTechnique)
+                            }
+                            .padding(.top, 20)
+                            .transition(.opacity)
+                    }
                 }
             }
             
@@ -235,5 +247,11 @@ struct BreathingView: View {
             return 1.0
         }
         return 1.0 - (CGFloat(timeRemaining) / CGFloat(pattern[Int(phase.rawValue)]))
+    }
+
+    private func cleanup() {
+        breathManager.stopBreathing()
+        // Replace SoundManager.shared.stopAllAudio() with breathManager.stopBreathing()
+        // since breathManager now handles its own audio cleanup
     }
 }

@@ -5,27 +5,42 @@ struct EmotionCalculator {
         var totalScore = 0.0
         for emotion in emotions {
             let baseScore: Double
-            switch emotion.type {
-            case "happy":
-                baseScore = 4.0
-            case "loved":
-                baseScore = 3.0
-            case "confident":
-                baseScore = 2.0
-            case "playful":
-                baseScore = 1.0
-            case "balanced":
-                baseScore = 0.0
-            case "embarrassed":
-                baseScore = -1.0
-            case "angry":
-                baseScore = -2.0
-            case "scared":
-                baseScore = -3.0
-            case "sad":
-                baseScore = -4.0
-            default:
-                baseScore = 0.0
+            switch emotion.type.lowercased() {
+                // Happy family (4.0)
+                case "happy", "caring", "grateful", "excited":
+                    baseScore = 4.0
+                
+                // Loved family (3.0)
+                case "loved", "respected", "valued", "accepted":
+                    baseScore = 3.0
+                
+                // Confident family (2.0)
+                case "confident", "brave", "hopeful", "powerful":
+                    baseScore = 2.0
+                
+                // Playful family (1.0)
+                case "playful", "creative", "curious", "affectionate":
+                    baseScore = 1.0
+                
+                // Embarrassed family (-1.0)
+                case "embarrassed", "ashamed", "excluded", "guilty":
+                    baseScore = -1.0
+                
+                // Angry family (-2.0)
+                case "angry", "bored", "jealous", "annoyed":
+                    baseScore = -2.0
+                
+                // Scared family (-3.0)
+                case "scared", "anxious", "powerless", "overwhelmed":
+                    baseScore = -3.0
+                
+                // Sad family (-4.0)
+                case "sad", "lonely", "hurt", "disappointed":
+                    baseScore = -4.0
+                
+                default:
+                    print("Debug: Unknown emotion type: \(emotion.type)")
+                    baseScore = 0.0
             }
             totalScore += baseScore
             print("Debug: Emotion \(emotion.type) contributes \(baseScore) to total score.")

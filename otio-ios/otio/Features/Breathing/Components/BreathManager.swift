@@ -18,28 +18,28 @@ class BreathManager: ObservableObject {
     @Published var timeRemaining: Int = 180
     @Published var currentPhaseTimeRemaining: Int = 4
     @Published var isIntroPlaying = false
+    @Published var isLoading = false
+    @Published var isActive = false
     
+    private var preloadedURL: URL?
+    private var preloadedTechnique: BreathingType?
     private var timer: Timer?
     private let engine = AudioEngine()
     private var beepOscillator: Oscillator?
     private let mainMixer: Mixer
-    private let soundManager = SoundManager.shared
+    private let audioPlayerManager = AudioPlayerManager()
     private let totalDuration = 180
     private var isFirstBeep = true
-    
-    var isActive = false
     
     private var currentTechnique: BreathingTechnique?
     
     private init() {
         print("BreathManager: Initializing...")
         
-        // Create and set the main mixer first
         mainMixer = Mixer()
         engine.output = mainMixer
         print("BreathManager: Main mixer set as engine output")
         
-        // Then start the engine
         do {
             print("BreathManager: Starting audio engine...")
             try engine.start()
@@ -48,7 +48,7 @@ class BreathManager: ObservableObject {
             print("BreathManager: Failed to start audio engine: \(error)")
         }
 
-        configureAudioSession() // Configure the audio session during initialization
+        configureAudioSession()
     }
     
     private func configureAudioSession() {
@@ -62,39 +62,97 @@ class BreathManager: ObservableObject {
         }
     }
 
+    func preloadIntroFor(technique: BreathingTechnique) {
+        guard let introFile = technique.introAudioFile else { return }
+        
+        if preloadedTechnique != technique.type {
+            preloadedURL = nil
+            preloadedTechnique = nil
+        }
+        
+        isLoading = true
+        print("BreathManager: Preloading intro for \(technique.type) with file: \(introFile)")
+        
+        audioPlayerManager.fetchDownloadURL(for: introFile, directory: "breathing") { [weak self] url in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                if let url = url {
+                    self.preloadedURL = url
+                    self.preloadedTechnique = technique.type
+                    print("BreathManager: Successfully preloaded intro for \(technique.type)")
+                }
+                self.isLoading = false
+            }
+        }
+    }
+
     // Common function used by all breathing techniques
     func startBreathing(technique: BreathingTechnique) {
-        print("BreathManager: startBreathing called")
+        print("BreathManager: startBreathing called for technique: \(technique.type)")
+        
+        if preloadedTechnique != technique.type {
+            preloadedURL = nil
+            preloadedTechnique = nil
+        }
+        
         currentTechnique = technique
         isActive = true
         isIntroPlaying = true
         isFirstBeep = true
-        print("BreathManager: isIntroPlaying set to true")
         timeRemaining = totalDuration
         currentPhaseTimeRemaining = technique.pattern[0]
         
         if let introFile = technique.introAudioFile {
-            print("BreathManager: attempting to play intro audio: \(introFile)")
-            soundManager.fetchDownloadURL(for: introFile, directory: "breathing") { [weak self] url in
-                guard let self = self else { return }
-                
-                if let url = url {
-                    print("BreathManager: got URL for intro audio, playing...")
-                    self.soundManager.playAudioFromURL(url) {
-                        print("BreathManager: intro audio finished naturally")
-                        self.isIntroPlaying = false
-                        print("BreathManager: isIntroPlaying set to false")
-                        self.startBreathingTimer(technique: technique)
+            print("BreathManager: Using intro file: \(introFile)")
+            if let preloadedURL = preloadedURL, preloadedTechnique == technique.type {
+                print("BreathManager: Using preloaded intro audio URL for \(technique.type)")
+                playIntroAudio(url: preloadedURL, technique: technique)
+            } else {
+                print("BreathManager: Fetching intro audio URL")
+                isLoading = true
+                audioPlayerManager.fetchDownloadURL(for: introFile, directory: "breathing") { [weak self] url in
+                    guard let self = self else { return }
+                    
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        if let url = url {
+                            self.playIntroAudio(url: url, technique: technique)
+                        } else {
+                            self.stopBreathing()
+                        }
                     }
-                } else {
-                    print("BreathManager: failed to get URL for intro audio")
-                    self.isIntroPlaying = false
-                    print("BreathManager: isIntroPlaying set to false (URL failed)")
-                    self.startBreathingTimer(technique: technique)
                 }
             }
         } else {
             startBreathingTimer(technique: technique)
+        }
+    }
+    
+    private func playIntroAudio(url: URL, technique: BreathingTechnique) {
+        DispatchQueue.main.async {
+            self.audioPlayerManager.playAudio(
+                from: url,
+                completion: {
+                    DispatchQueue.main.async {
+                        print("BreathManager: intro audio finished naturally")
+                        self.isIntroPlaying = false
+                        print("BreathManager: isIntroPlaying set to false")
+                        print("BreathManager: Starting exercise in 3 seconds...")
+                        
+                        // Add 3 second delay
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            self.startBreathingTimer(technique: technique)
+                        }
+                    }
+                },
+                onError: { error in
+                    DispatchQueue.main.async {
+                        print("BreathManager: Error playing intro: \(error.description)")
+                        self.stopBreathing()
+                    }
+                }
+            )
         }
     }
     
@@ -245,27 +303,30 @@ class BreathManager: ObservableObject {
         currentPhaseTimeRemaining = 4
         currentPhase = .inhale
         
+        preloadedURL = nil
+        preloadedTechnique = nil
+        
         print("BreathManager: stopping all audio")
-        soundManager.stopAllAudio()
+        audioPlayerManager.stopAudio()
         beepOscillator?.stop()
         beepOscillator = nil
-        // Don't set engine.output to nil here
         print("BreathManager: cleanup completed")
     }
     
-    // Add a method to skip intro
+    // Add delay to skip intro as well
     func skipIntro(technique: BreathingTechnique) {
         print("BreathManager: Skipping intro")
         
-        // Stop the intro audio
-        soundManager.stopAllAudio()
+        audioPlayerManager.stopAudio()
         
-        // Update state
         isIntroPlaying = false
         print("BreathManager: isIntroPlaying set to false (intro skipped)")
+        print("BreathManager: Starting exercise in 3 seconds...")
         
-        // Start the breathing exercise
-        startBreathingTimer(technique: technique)
+        // Add 3 second delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            self.startBreathingTimer(technique: technique)
+        }
     }
     
     deinit {

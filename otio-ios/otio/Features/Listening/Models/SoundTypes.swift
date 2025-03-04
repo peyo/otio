@@ -1,31 +1,37 @@
 import Foundation
 
 enum SoundType: String, CaseIterable {
-    case upliftingSound = "uplifting"
-    case soothingSound = "soothing"
-    case calmingSound = "calming"
-    case groundingSound = "grounding"
+    case happy = "happy"
+    case loved = "loved"
+    case confident = "confident"
+    case playful = "playful"
+    case embarrassed = "embarrassed"
+    case scared = "scared"
+    case angry = "angry"
+    case sad = "sad"
     case rancheriaFalls = "rancheria falls"
     case recommendedSound = "recommended sound"
 }
 
 func determineRecommendedSound(from normalizedScore: Double) -> SoundType {
     switch normalizedScore {
-    case 0.6...1.0:  // Happy
-        return .upliftingSound
-    case 0.2..<0.6:  // Loved or Confident
-        return .upliftingSound
-    case 0.0..<0.2:  // Playful
-        return .upliftingSound
-    case -0.2..<0.0:  // Embarrassed
-        return .soothingSound
-    case -0.6..<(-0.2):  // Scared
-        return .calmingSound
-    case -1.0..<(-0.6):  // Angry
-        return .calmingSound
-    case -4.0..<(-1.0):  // Sad
-        return .groundingSound
-    case 0.0:  // Balanced
+    case 0.75...1.0:  // Happy
+        return .happy
+    case 0.5..<0.75:  // Loved
+        return .loved
+    case 0.25..<0.5:  // Confident
+        return .confident
+    case 0.0..<0.25:  // Playful
+        return .playful
+    case -0.25..<0.0:  // Embarrassed
+        return .embarrassed
+    case -0.5..<(-0.25):  // Scared
+        return .scared
+    case -0.75..<(-0.5):  // Angry
+        return .angry
+    case -1.0..<(-0.75):  // Sad
+        return .sad
+    case 0.0:  // Balanced (exact 0.0)
         return .rancheriaFalls
     default:
         return .rancheriaFalls
