@@ -8,8 +8,8 @@ struct BreathingCard: View {
     var body: some View {
         Button(action: action) {
             Text(technique.name)
-                .foregroundColor(Color.appAccent)
-                .font(.custom("IBMPlexMono-Light", size: 17))
+                .foregroundColor(.appAccent) // Text color
+                .font(.custom("IBMPlexMono-Light", size: 15))
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(

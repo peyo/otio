@@ -9,6 +9,7 @@ struct SoundCard: View {
         Button(action: action) {
             Text(sound.rawValue)
                 .foregroundColor(.appAccent) // Text color
+                .font(.custom("IBMPlexMono-Light", size: 15))
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(

@@ -29,7 +29,7 @@ struct InsightsView: View {
                     VStack(spacing: 24) {
                         // Subtitle only
                         Text("navigate your emotions")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
+                            .font(.custom("IBMPlexMono-Light", size: 17))
                             .fontWeight(.medium)
                             .foregroundColor(.primary)
                             .padding(.top, 0)
@@ -220,9 +220,8 @@ struct InsightsView: View {
     private struct EmptyStateView: View {
         var body: some View {
             VStack(spacing: 16) {
-                Image("zen")
+                Image(systemName: "leaf.fill")
                     .resizable()
-                    .renderingMode(.template)
                     .scaledToFit()
                     .frame(width: 40)
                     .foregroundColor(.primary)

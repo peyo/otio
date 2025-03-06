@@ -45,9 +45,9 @@ struct AccountView: View {
                     // Credits and Logout Buttons
                     VStack(spacing: 24) {
                         NavigationLink {
-                            CreditsView()
+                            ManifestoCreditsView()
                         } label: {
-                            Text("credits")
+                            Text("manifesto / credits")
                                 .font(.custom("IBMPlexMono-Light", size: 15))
                                 .foregroundColor(.appAccent)
                         }

@@ -7,13 +7,13 @@ struct InsightCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .center) {
-                Image(insight.emojiName)
+                Image(systemName: InsightSymbol.sfSymbol(for: insight.emojiName))
                     .resizable()
                     .scaledToFit()
                     .frame(width: 28, height: 28)
-                    .brightness(colorScheme == .dark ? 1 : 0)
+                    .foregroundColor(.appAccent)
                 Text(insight.title)
-                    .font(.custom("IBMPlexMono-Light", size: 16))
+                    .font(.custom("IBMPlexMono-Light", size: 15))
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
             }
@@ -21,7 +21,7 @@ struct InsightCard: View {
             Text(insight.description)
                 .font(.custom("IBMPlexMono-Light", size: 15))
                 .fontWeight(.medium)
-                .foregroundColor(.primary)
+                .foregroundColor(.secondary)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)

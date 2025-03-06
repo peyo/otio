@@ -24,77 +24,86 @@ struct ListeningView: View {
                 Color.appBackground
                     .ignoresSafeArea()
                 
-                VStack(spacing: 24) {
-                    Text("catch the wave")
-                        .font(.custom("IBMPlexMono-Light", size: 15))
-                        .fontWeight(.medium)
-                        .foregroundColor(.primary)
-                        .padding(.top, 10)
-                    
-                    Spacer()
-                    
-                    // Waveform visualization
-                    ZStack {
-                        DynamicWaveformCircle(
-                            sampleCount: sampleCount,
-                            phase: phase,
-                            amplitude: amplitude,
-                            color: Color.appAccent
-                        )
-                    }
-                    .frame(width: 200, height: 200)
-                    .offset(y: -20)
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 32) {
+                        Text("catch the wave")
+                            .font(.custom("IBMPlexMono-Light", size: 17))
+                            .fontWeight(.medium)
+                            .foregroundColor(.primary)
+                            .padding(.top, -32)
+                        
+                        Spacer()
+                        
+                        // Waveform visualization
+                        ZStack {
+                            DynamicWaveformCircle(
+                                sampleCount: sampleCount,
+                                phase: phase,
+                                amplitude: amplitude,
+                                color: Color.appAccent
+                            )
+                        }
+                        .frame(width: 200, height: 200)
+                        .offset(y: -20)
 
-                    // Timer display
-                    Text(timeString(from: elapsedSeconds))
-                        .font(.custom("IBMPlexMono-Light", size: 21))
-                        .foregroundColor(.secondary)
-                        .padding(.top, 8)
+                        // Timer display
+                        Text(timeString(from: elapsedSeconds))
+                            .font(.custom("IBMPlexMono-Light", size: 21))
+                            .foregroundColor(.secondary)
+                            .padding(.top, 8)
 
-                    Spacer()
-                    
-                    // Sound selection cards
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            // Show recommended sound first
-                            VStack {
-                                SoundCard(sound: .recommendedSound, isSelected: currentSound == .recommendedSound) {
-                                    if currentSound != .recommendedSound {
-                                        currentSound = .recommendedSound
-                                        if isPlaying {
-                                            soundManager.stopAllSounds()
-                                            startCurrentSound()
-                                        }
-                                    }
-                                }
-                                .font(.custom("IBMPlexMono-Light", size: 17))
-                            }
-                            .frame(height: 100)
-                            
-                            // Show remaining sounds
-                            ForEach(SoundType.allCases.filter { $0 != .recommendedSound }, id: \.self) { sound in
+                        Spacer()
+                        
+                        // Sound selection cards
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                // Show recommended sound first
                                 VStack {
-                                    SoundCard(sound: sound, isSelected: currentSound == sound) {
-                                        if currentSound != sound {
-                                            currentSound = sound
+                                    SoundCard(sound: .recommendedSound, isSelected: currentSound == .recommendedSound) {
+                                        if currentSound != .recommendedSound {
+                                            // Stop current sound if playing
                                             if isPlaying {
                                                 soundManager.stopAllSounds()
-                                                startCurrentSound()
+                                                // Update total meditation minutes when switching
+                                                let minutes = Int(ceil(Double(elapsedSeconds) / 60.0))
+                                                userService.updateMeditationMinutes(minutes: minutes)
+                                                elapsedSeconds = 0
+                                                isPlaying = false
                                             }
+                                            currentSound = .recommendedSound
                                         }
                                     }
                                     .font(.custom("IBMPlexMono-Light", size: 17))
                                 }
                                 .frame(height: 100)
+                                
+                                // Show remaining sounds
+                                ForEach(SoundType.allCases.filter { $0 != .recommendedSound }, id: \.self) { sound in
+                                    VStack {
+                                        SoundCard(sound: sound, isSelected: currentSound == sound) {
+                                            if currentSound != sound {
+                                                // Stop current sound if playing
+                                                if isPlaying {
+                                                    soundManager.stopAllSounds()
+                                                    // Update total meditation minutes when switching
+                                                    let minutes = Int(ceil(Double(elapsedSeconds) / 60.0))
+                                                    userService.updateMeditationMinutes(minutes: minutes)
+                                                    elapsedSeconds = 0
+                                                    isPlaying = false
+                                                }
+                                                currentSound = sound
+                                            }
+                                        }
+                                        .font(.custom("IBMPlexMono-Light", size: 17))
+                                    }
+                                    .frame(height: 100)
+                                }
                             }
                         }
-                    }
-                    .padding(.horizontal)
-                    
-                    // ZStack to contain button (matching BreathingView structure)
-                    ZStack(alignment: .center) {
-                        VStack {
-                            // Play/Stop Button
+                        .padding(.horizontal)
+                        
+                        // Play/Stop button
+                        VStack(spacing: 0) {
                             Button(action: toggleSound) {
                                 Image(systemName: isPlaying ? "stop.fill" : "play.fill")
                                     .font(.system(size: 24))
@@ -104,16 +113,12 @@ struct ListeningView: View {
                                     .cornerRadius(0)
                             }
                             .padding(.top, 30)
-                            
-                            // Spacer to maintain consistent spacing
-                            Spacer()
-                                .frame(height: 40)
                         }
                     }
-                    
-                    Spacer()
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 40)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.horizontal, 20)
             }
             
             .navigationBarTitleDisplayMode(.inline)

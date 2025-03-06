@@ -66,6 +66,10 @@ struct EmotionDetailView: View {
                         LazyVGrid(columns: columns, spacing: 20) {
                             ForEach(deeperEmotions, id: \.self) { deeperEmotion in
                                 Button {
+                                    // Add gentle haptic feedback
+                                    let impactGenerator = UIImpactFeedbackGenerator(style: .soft)
+                                    impactGenerator.impactOccurred()
+                                    
                                     onSelect(deeperEmotion)
                                     dismiss()
                                 } label: {

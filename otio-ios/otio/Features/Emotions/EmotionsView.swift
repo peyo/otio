@@ -99,7 +99,7 @@ struct EmotionsView: View {
             Color.appBackground
                 .ignoresSafeArea()
             
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     EmotionsGridView(
                         emotionOrder: emotionOrder,
@@ -120,10 +120,9 @@ struct EmotionsView: View {
                             showDeleteConfirmation = true
                         }
                     )
-                    
-                    Spacer(minLength: 16)
                 }
                 .padding(.top, -8)
+                .padding(.bottom, 40)
             }
         }
         .navigationBarTitleDisplayMode(.inline)

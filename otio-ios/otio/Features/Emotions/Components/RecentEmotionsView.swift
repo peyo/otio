@@ -23,9 +23,8 @@ struct RecentEmotionsView: View {
                 }
             } else if recentEmotions.isEmpty {
                 HStack(spacing: 16) {
-                    Image("zen")
+                    Image(systemName: "leaf.fill")
                         .resizable()
-                        .renderingMode(.template)
                         .scaledToFit()
                         .frame(width: 40)
                         .foregroundColor(.primary)
