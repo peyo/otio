@@ -105,35 +105,18 @@ class BreathManager: ObservableObject {
         
         if let introFile = technique.introAudioFile {
             print("BreathManager: Using intro file: \(introFile)")
-            if let preloadedURL = preloadedURL, preloadedTechnique == technique.type {
-                print("BreathManager: Using preloaded intro audio URL for \(technique.type)")
-                playIntroAudio(url: preloadedURL, technique: technique)
-            } else {
-                print("BreathManager: Fetching intro audio URL")
-                isLoading = true
-                audioPlayerManager.fetchDownloadURL(for: introFile, directory: "breathing") { [weak self] url in
-                    guard let self = self else { return }
-                    
+            isLoading = true
+            
+            audioPlayerManager.fetchAndPlayAudio(
+                fileName: introFile,
+                directory: "breathing",
+                onStart: { [weak self] in
                     DispatchQueue.main.async {
-                        self.isLoading = false
-                        if let url = url {
-                            self.playIntroAudio(url: url, technique: technique)
-                        } else {
-                            self.stopBreathing()
-                        }
+                        self?.isLoading = false  // Stop loading when audio starts playing
                     }
-                }
-            }
-        } else {
-            startBreathingTimer(technique: technique)
-        }
-    }
-    
-    private func playIntroAudio(url: URL, technique: BreathingTechnique) {
-        DispatchQueue.main.async {
-            self.audioPlayerManager.playAudio(
-                from: url,
-                completion: {
+                },
+                completion: { [weak self] in
+                    guard let self = self else { return }
                     DispatchQueue.main.async {
                         print("BreathManager: intro audio finished naturally")
                         self.isIntroPlaying = false
@@ -146,13 +129,17 @@ class BreathManager: ObservableObject {
                         }
                     }
                 },
-                onError: { error in
+                onError: { [weak self] error in
+                    guard let self = self else { return }
                     DispatchQueue.main.async {
                         print("BreathManager: Error playing intro: \(error.description)")
+                        self.isLoading = false
                         self.stopBreathing()
                     }
                 }
             )
+        } else {
+            startBreathingTimer(technique: technique)
         }
     }
     

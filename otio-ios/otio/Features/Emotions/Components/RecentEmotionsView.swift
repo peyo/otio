@@ -18,7 +18,7 @@ struct RecentEmotionsView: View {
                 HStack {
                     Spacer()
                     ProgressView()
-                        .tint(.appAccent)
+                        .tint(.primary)
                     Spacer()
                 }
             } else if recentEmotions.isEmpty {

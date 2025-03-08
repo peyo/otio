@@ -77,7 +77,7 @@ struct ManifestoCreditsView: View {
                         title: "contributors",
                         content: AnyView(
                             VStack(alignment: .leading, spacing: 16) {
-                                ForEach(["chris cardillo", "liz yoon", "matt klein", "mike sim", "nick brennan", "paul kang"], id: \.self) { name in
+                                ForEach(["chris cardillo", "liz yoon", "matt klein", "mike sim", "mike yi", "nick brennan", "paul kang"], id: \.self) { name in
                                     Text(name)
                                         .font(.custom("IBMPlexMono-Light", size: 15))
                                         .foregroundColor(.secondary)
@@ -106,7 +106,7 @@ struct ManifestoCreditsView: View {
                     dismiss()
                 } label: {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.appAccent)
+                        .foregroundColor(.primary)
                 }
             }
         }

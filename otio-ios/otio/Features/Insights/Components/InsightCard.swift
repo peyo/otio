@@ -11,7 +11,7 @@ struct InsightCard: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 28, height: 28)
-                    .foregroundColor(.appAccent)
+                    .foregroundColor(.primary)
                 Text(insight.title)
                     .font(.custom("IBMPlexMono-Light", size: 15))
                     .fontWeight(.semibold)

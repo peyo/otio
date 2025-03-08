@@ -113,7 +113,7 @@ struct EmotionDetailView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.appAccent)
+                            .foregroundColor(.primary)
                     }
                 }
             }

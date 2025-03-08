@@ -7,10 +7,6 @@ struct ResonanceView: View {
     let isIntroPlaying: Bool
     let isBreathingActive: Bool
     
-    // Animation properties
-    @State private var phase: CGFloat = 0
-    @State private var isAnimating: Bool = false
-    
     // Wave configuration
     private let amplitude: CGFloat = 32
     private let periodMultiplier: CGFloat = 2.0
@@ -27,70 +23,40 @@ struct ResonanceView: View {
                     periodMultiplier: periodMultiplier,
                     endPoint: waveEndPoint)
                 .stroke(Color.white, lineWidth: 2)
-                .offset(x: horizontalOffset, y: phase)
-                .onChange(of: isBreathingActive) { active in
-                    if !active {
-                        stopAnimation()
-                    }
-                }
-                .onChange(of: isIntroPlaying) { playing in
-                    if !playing && isBreathingActive {
-                        startAnimation()
-                    }
-                }
-                .onChange(of: breathingPhase) { newPhase in
-                    updateAnimation(for: newPhase)
-                }
+                .offset(x: horizontalOffset, y: calculatePosition())
+                .animation(.easeInOut(duration: 2.0), value: progress)
+                .animation(.easeInOut(duration: 2.0), value: breathingPhase)
+                .animation(.easeInOut(duration: 1.5), value: isBreathingActive)
         }
     }
     
-    private func startAnimation() {
-        print("ResonanceView: Starting animation")
-        // Start with inhale (moving up)
-        phase = 0
-        
-        // Immediately start moving up for inhale
-        withAnimation(.easeInOut(duration: 5)) {
-            phase = -verticalOffset
+    private func calculatePosition() -> CGFloat {
+        // Always return to bottom when not active
+        guard isBreathingActive else {
+            return verticalOffset
         }
         
-        isAnimating = true
-        print("ResonanceView: Animation started - moving up")
-    }
-    
-    private func updateAnimation(for phase: BreathingPhase) {
-        guard isBreathingActive && !isIntroPlaying else { return }
+        // Stay at bottom during intro
+        guard !isIntroPlaying else {
+            return verticalOffset
+        }
         
-        print("ResonanceView: Updating animation for phase: \(phase)")
-        
-        switch phase {
+        switch breathingPhase {
         case .inhale:
-            withAnimation(.easeInOut(duration: 5)) {
-                self.phase = -verticalOffset  // Move up
-            }
-            print("ResonanceView: Moving up for inhale")
+            // Move from bottom to top
+            return verticalOffset - (progress * verticalOffset * 2)
         case .exhale:
-            withAnimation(.easeInOut(duration: 5)) {
-                self.phase = 0  // Move down
-            }
-            print("ResonanceView: Moving down for exhale")
-        case .holdAfterInhale, .holdAfterExhale:
-            // No animation during hold phases
-            print("ResonanceView: Hold phase - maintaining position")
-            break
+            // Move from top to bottom
+            return -verticalOffset + (progress * verticalOffset * 2)
+        case .holdAfterInhale:
+            return -verticalOffset // Stay at top
+        case .holdAfterExhale:
+            return verticalOffset  // Stay at bottom
         }
-    }
-    
-    private func stopAnimation() {
-        print("ResonanceView: Stopping animation")
-        isAnimating = false
-        withAnimation(.linear(duration: 0.3)) {
-            phase = 0
-        }
-        print("ResonanceView: Animation stopped")
     }
 }
 
+// Keep WavePath struct unchanged
 struct WavePath: Shape {
     let size: CGSize
     let amplitude: CGFloat

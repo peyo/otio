@@ -12,6 +12,13 @@ class SoundManager: ObservableObject {
         print("SoundManager: Creating OscillatorManager...")
         return OscillatorManager(engine: engine)
     }()
+    private let natureSoundManager = NatureSoundManager()
+    private lazy var crossfadeManager: CrossfadeManager = {
+        return CrossfadeManager(
+            oscillatorManager: oscillatorManager,
+            natureSoundManager: natureSoundManager
+        )
+    }()
     
     // State tracking
     private var currentSoundType: SoundType?
@@ -47,20 +54,36 @@ class SoundManager: ObservableObject {
         // Stop previous sound
         stopAllSounds()
         
-        // Verify engine is running
-        if !engine.avEngine.isRunning {
-            print("SoundManager: Engine not running, attempting to start...")
-            try? engine.start()
+        if let audioFile = type.audioFileName {
+            // Play nature sound
+            print("SoundManager: Playing nature sound: \(audioFile)")
+            natureSoundManager.playNatureSound(
+                fileName: audioFile,
+                directory: "nature",
+                initialVolume: 1.0
+            )
+        } else {
+            // Play binaural beat
+            if !engine.avEngine.isRunning {
+                try? engine.start()
+            }
+            oscillatorManager.startSound(type)
+            
+            // Start crossfade timer if this is a recommended sound
+            if isRecommendedButton {
+                print("SoundManager: Starting crossfade timer for recommended sound")
+                crossfadeManager.startCrossfadeTimer()
+            }
         }
         
-        // Start new sound
-        oscillatorManager.startSound(type)
         currentSoundType = type
     }
     
     func stopAllSounds() {
         print("SoundManager: Stopping all sounds")
         oscillatorManager.stopAllSounds()
+        natureSoundManager.stopCurrentSound()
+        crossfadeManager.cancelCrossfade()
         currentSoundType = nil
     }
     

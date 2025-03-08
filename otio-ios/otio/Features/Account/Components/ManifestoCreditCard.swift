@@ -8,7 +8,7 @@ struct ManifestoCreditCard: View {
         VStack(alignment: .leading, spacing: 24) {
             Text(title)
                 .font(.custom("IBMPlexMono-Light", size: 17))
-                .foregroundColor(.appAccent)
+                .foregroundColor(.primary)
             
             content
         }

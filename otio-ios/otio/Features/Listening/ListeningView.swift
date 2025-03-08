@@ -40,7 +40,7 @@ struct ListeningView: View {
                                 sampleCount: sampleCount,
                                 phase: phase,
                                 amplitude: amplitude,
-                                color: Color.appAccent
+                                color: Color.primary
                             )
                         }
                         .frame(width: 200, height: 200)
@@ -107,7 +107,7 @@ struct ListeningView: View {
                             Button(action: toggleSound) {
                                 Image(systemName: isPlaying ? "stop.fill" : "play.fill")
                                     .font(.system(size: 24))
-                                    .foregroundColor(.appAccent)
+                                    .foregroundColor(.primary)
                                     .frame(width: 50, height: 50)
                                     .background(Color(.systemGray5))
                                     .cornerRadius(0)
@@ -135,21 +135,42 @@ struct ListeningView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.appAccent)
+                            .foregroundColor(.primary)
                     }
                 }
             }
             .onAppear {
                 startVisualUpdates()
+                setupNotifications()
             }
             .onDisappear {
                 soundManager.stopAllSounds()
+                // Remove the observer when view disappears
+                NotificationCenter.default.removeObserver(
+                    self,
+                    name: .soundPlaybackFinished,
+                    object: nil
+                )
             }
             .onReceive(timerPublisher) { _ in
                 if isPlaying {
                     elapsedSeconds += 1
                 }
             }
+        }
+    }
+
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            forName: .soundPlaybackFinished,
+            object: nil,
+            queue: .main
+        ) { notification in
+            isPlaying = false
+            elapsedSeconds = 0
+            // Update total meditation minutes when nature sound finishes
+            let minutes = Int(ceil(Double(elapsedSeconds) / 60.0))
+            userService.updateMeditationMinutes(minutes: minutes)
         }
     }
 

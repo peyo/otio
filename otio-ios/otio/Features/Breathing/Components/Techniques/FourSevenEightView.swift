@@ -16,7 +16,7 @@ struct FourSevenEightView: View {
                 // Animated circle (no glow effect)
                 if isBreathingActive && !isIntroPlaying {
                     Circle()
-                        .stroke(Color.appAccent, lineWidth: lineWidth)
+                        .stroke(Color.primary, lineWidth: lineWidth)
                         .frame(width: calculateSize(baseSize: baseSize), height: calculateSize(baseSize: baseSize))
                         .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                         .animation(.linear(duration: 0.3), value: phase)
@@ -24,7 +24,7 @@ struct FourSevenEightView: View {
                 } else {
                     // Show small initial circle when not active
                     Circle()
-                        .stroke(Color.appAccent, lineWidth: lineWidth)
+                        .stroke(Color.primary, lineWidth: lineWidth)
                         .frame(width: baseSize * 0.6, height: baseSize * 0.6)
                         .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 }

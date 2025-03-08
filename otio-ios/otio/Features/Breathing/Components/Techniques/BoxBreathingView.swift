@@ -23,19 +23,19 @@ struct BoxBreathingView: View {
             )
             
             ZStack {
-                // Base box (dimmed) - now with no corner radius
+                // Base box with secondary color
                 Rectangle()
-                    .stroke(Color.appAccent, lineWidth: lineWidth)
+                    .stroke(Color.secondary, lineWidth: lineWidth)
                     .frame(width: size, height: size)
                     .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 
                 // Only show animated segment if breathing is active and intro is not playing
                 if isBreathingActive && !isIntroPlaying {
                     activeSegment(in: rect)
-                        .stroke(Color.appAccent, lineWidth: lineWidth * 2)
+                        .stroke(Color.primary, lineWidth: lineWidth * 2)
                         .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-                        .animation(.linear(duration: 0.3), value: phase)
-                        .animation(.linear(duration: 0.3), value: progress)
+                        .animation(.easeInOut(duration: 0.5), value: phase)
+                        .animation(.easeInOut(duration: 0.5), value: progress)
                 }
             }
             .onChange(of: isBreathingActive) { newValue in

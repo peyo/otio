@@ -53,7 +53,7 @@ struct EmotionsView: View {
                                     } label: {
                                         Text("cancel")
                                             .font(.custom("IBMPlexMono-Light", size: 15))
-                                            .foregroundColor(.appAccent)
+                                            .foregroundColor(.primary)
                                             .frame(maxWidth: .infinity)
                                             .padding()
                                             .background(Color.appCardBackground)

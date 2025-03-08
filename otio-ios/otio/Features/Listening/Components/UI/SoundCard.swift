@@ -8,7 +8,7 @@ struct SoundCard: View {
     var body: some View {
         Button(action: action) {
             Text(sound.rawValue)
-                .foregroundColor(.appAccent) // Text color
+                .foregroundColor(.primary) // Text color
                 .font(.custom("IBMPlexMono-Light", size: 15))
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -18,7 +18,7 @@ struct SoundCard: View {
                 )
                 .overlay(
                     Rectangle()
-                        .strokeBorder(isSelected ? Color.appAccent : Color.clear, lineWidth: 1) // Border color
+                        .strokeBorder(isSelected ? Color.primary : Color.clear, lineWidth: 1) // Border color
                 )
         }
         .padding(.horizontal, 4)

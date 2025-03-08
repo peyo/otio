@@ -18,7 +18,7 @@ struct SignInView: View {
             VStack {
                 if isLoading {
                     ProgressView()
-                        .tint(.appAccent)
+                        .tint(.primary)
                         .frame(maxWidth: .infinity)
                         .padding()
                 } else {
@@ -75,9 +75,9 @@ struct SignInView: View {
                                     .font(.custom("IBMPlexMono-Light", size: 15))
                                     .fontWeight(.semibold)
                             }
-                            .foregroundColor(Color.appAccent)
+                            .foregroundColor(Color.primary)
                             .frame(width: 280, height: 55)
-                            .background(Color.appAccent.opacity(0.15))
+                            .background(Color.primary.opacity(0.15))
                             .cornerRadius(8)
                         }
                         .padding(.horizontal, 24)

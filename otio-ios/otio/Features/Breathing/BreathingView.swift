@@ -26,8 +26,8 @@ struct BreathingView: View {
                     // Show immediate feedback while view loads
                     VStack {
                         ProgressView()
-                            .tint(.appAccent)
-                        Text("preparing breath...")
+                            .tint(.primary)
+                        Text("preparing to breathe.")
                             .font(.custom("IBMPlexMono-Light", size: 15))
                             .foregroundColor(.secondary)
                             .padding(.top, 8)
@@ -51,7 +51,7 @@ struct BreathingView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.appAccent)
+                            .foregroundColor(.primary)
                     }
                 }
             }
@@ -179,13 +179,13 @@ struct BreathingView: View {
                     Group {
                         if breathManager.isLoading {
                             ProgressView()
-                                .tint(.appAccent)
+                                .tint(.primary)
                                 .frame(width: 50, height: 50)
                         } else {
                             Button(action: toggleBreathing) {
                                 Image(systemName: breathManager.isActive ? "stop.fill" : "play.fill")
                                     .font(.system(size: 24))
-                                    .foregroundColor(.appAccent)
+                                    .foregroundColor(.primary)
                                     .frame(width: 50, height: 50)
                                     .background(Color(.systemGray5))
                                     .cornerRadius(0)
@@ -202,11 +202,11 @@ struct BreathingView: View {
                             .foregroundColor(.clear)
                             .padding(.top, 20)
                         
-                        // Actual skip intro text
-                        if breathManager.isIntroPlaying && breathManager.isActive {
+                        // Only show skip intro when active, playing intro, and not loading
+                        if breathManager.isIntroPlaying && breathManager.isActive && !breathManager.isLoading {
                             Text("skip intro")
                                 .font(.custom("IBMPlexMono-Light", size: 17))
-                                .foregroundColor(.appAccent)
+                                .foregroundColor(.primary)
                                 .onTapGesture {
                                     breathManager.skipIntro(technique: currentTechnique)
                                 }

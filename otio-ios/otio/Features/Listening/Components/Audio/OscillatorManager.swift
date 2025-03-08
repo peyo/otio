@@ -77,4 +77,9 @@ class OscillatorManager {
         print("OscillatorManager: Fading out")
         binauralGenerator?.fadeOut(duration: duration)
     }
+    
+    func setVolume(_ volume: Float) {
+        print("OscillatorManager: Setting volume to \(volume)")
+        binauralGenerator?.setVolume(volume)
+    }
 }

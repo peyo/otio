@@ -24,21 +24,21 @@ struct BreathingTechnique: Identifiable, Hashable {
         type: .boxBreathing,
         name: "box",
         pattern: [4,4,4,4],
-        introAudioFile: "box-breathing-intro.wav"
+        introAudioFile: "box-breathing-intro.mp3"
     )
     
     static let fourSevenEight = BreathingTechnique(
         type: .fourSevenEight,
         name: "4-7-8",
         pattern: [4,7,8,0], // Note: last 0 means no hold after exhale
-        introAudioFile: "four-seven-eight-intro.wav"
+        introAudioFile: "four-seven-eight-intro.mp3"
     )
     
     static let resonance = BreathingTechnique(
         type: .resonance,
         name: "resonance",
         pattern: [5,0,5,0], // 5 seconds inhale, 5 seconds exhale, no holds
-        introAudioFile: "resonance-intro.wav"
+        introAudioFile: "resonance-intro.mp3"
     )
 }
 

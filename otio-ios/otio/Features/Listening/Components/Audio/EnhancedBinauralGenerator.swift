@@ -176,4 +176,14 @@ class EnhancedBinauralGenerator {
         leftOscillator?.$amplitude.ramp(to: 0.0, duration: Float(duration))
         rightOscillator?.$amplitude.ramp(to: 0.0, duration: Float(duration))
     }
+    
+    func setVolume(_ volume: Float) {
+        let clampedVolume = max(0, min(1, volume))
+        let baseAmp = clampedVolume * 0.4  // Scale with the original base amplitude
+        
+        // Set amplitudes with ramping
+        leftOscillator?.$amplitude.ramp(to: baseAmp, duration: 0.1)
+        rightOscillator?.$amplitude.ramp(to: baseAmp, duration: 0.1)
+        harmonicOscillator?.$amplitude.ramp(to: baseAmp * FreqConstants.harmonicVolume, duration: 0.1)
+    }
 }

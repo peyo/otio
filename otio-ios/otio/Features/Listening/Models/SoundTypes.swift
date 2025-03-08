@@ -11,6 +11,16 @@ enum SoundType: String, CaseIterable {
     case sad = "sad"
     case rancheriaFalls = "rancheria falls"
     case recommendedSound = "recommended sound"
+    
+    // Audio file name for nature sounds
+    var audioFileName: String? {
+        switch self {
+        case .rancheriaFalls:
+            return "2024-09-15-rancheria-falls.mp3"
+        default:
+            return nil
+        }
+    }
 }
 
 func determineRecommendedSound(from normalizedScore: Double) -> SoundType {

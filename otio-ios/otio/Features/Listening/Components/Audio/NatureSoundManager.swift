@@ -2,10 +2,13 @@ import Foundation
 import AVFoundation
 import FirebaseStorage
 
+extension Notification.Name {
+    static let soundPlaybackFinished = Notification.Name("soundPlaybackFinished")
+}
+
 class NatureSoundManager: NSObject {
     private var player: AVPlayer?
     private var isObserving = false
-    private var volumeTimer: Timer?
     var onPlaybackFinished: (() -> Void)?
     
     override init() {
@@ -49,66 +52,8 @@ class NatureSoundManager: NSObject {
         }
     }
     
-    func fadeIn(duration: TimeInterval) {
-        guard let player = player else { return }
-        player.volume = 0
-        
-        volumeTimer?.invalidate()
-        volumeTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
-            guard let self = self else {
-                timer.invalidate()
-                return
-            }
-            
-            player.volume += 0.1 / Float(duration)
-            if player.volume >= 1.0 {
-                player.volume = 1.0
-                timer.invalidate()
-                self.volumeTimer = nil
-                print("Nature sound fade in complete")
-            }
-        }
-    }
-    
-    func fadeOut(duration: TimeInterval, completion: (() -> Void)? = nil) {
-        guard let player = player else {
-            completion?()
-            return
-        }
-        
-        volumeTimer?.invalidate()
-        volumeTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
-            guard let self = self else {
-                timer.invalidate()
-                return
-            }
-            
-            player.volume -= 0.1 / Float(duration)
-            if player.volume <= 0 {
-                self.stopCurrentSound()
-                timer.invalidate()
-                self.volumeTimer = nil
-                completion?()
-                print("Nature sound fade out complete")
-            }
-        }
-    }
-    
-    private func fetchDownloadURL(for fileName: String, directory: String, completion: @escaping (URL?) -> Void) {
-        print("Fetching download URL for \(fileName)")
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        let path = "\(directory)/\(fileName)"
-        let fileRef = storageRef.child(path)
-        
-        fileRef.downloadURL { url, error in
-            if let error = error {
-                print("Error getting download URL: \(error)")
-                completion(nil)
-                return
-            }
-            completion(url)
-        }
+    func setVolume(_ volume: Float) {
+        player?.volume = max(0, min(1, volume))
     }
     
     func stopCurrentSound() {
@@ -128,11 +73,24 @@ class NatureSoundManager: NSObject {
         player?.pause()
         player = nil
         
-        // Clean up timer
-        volumeTimer?.invalidate()
-        volumeTimer = nil
-        
         print("Stopped current nature sound")
+    }
+    
+    private func fetchDownloadURL(for fileName: String, directory: String, completion: @escaping (URL?) -> Void) {
+        print("Fetching download URL for \(fileName)")
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let path = "\(directory)/\(fileName)"
+        let fileRef = storageRef.child(path)
+        
+        fileRef.downloadURL { url, error in
+            if let error = error {
+                print("Error getting download URL: \(error)")
+                completion(nil)
+                return
+            }
+            completion(url)
+        }
     }
     
     @objc private func playerDidFinishPlaying() {

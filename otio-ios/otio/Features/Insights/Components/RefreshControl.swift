@@ -12,7 +12,7 @@ struct RefreshControl: View {
         GeometryReader { geo in
             if offset > 0 {
                 ProgressView()
-                    .tint(.appAccent)
+                    .tint(.primary)
                     .frame(width: geo.size.width, height: offset)
             }
         }

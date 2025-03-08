@@ -38,7 +38,7 @@ struct InsightsView: View {
                             VStack {
                                 Spacer()
                                 ProgressView()
-                                    .tint(.appAccent)
+                                    .tint(.primary)
                                 Spacer()
                             }
                             .frame(height: geometry.size.height * 0.7)
@@ -89,7 +89,7 @@ struct InsightsView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.appAccent)
+                            .foregroundColor(.primary)
                     }
                 }
             }

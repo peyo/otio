@@ -49,7 +49,7 @@ struct AccountView: View {
                         } label: {
                             Text("manifesto / credits")
                                 .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.appAccent)
+                                .foregroundColor(.primary)
                         }
                         
                         Button(action: {
@@ -58,7 +58,7 @@ struct AccountView: View {
                         }) {
                             Text("log out")
                                 .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.appAccent)
+                                .foregroundColor(.primary)
                         }
                     }
                     .padding(.bottom, 40)
@@ -79,7 +79,7 @@ struct AccountView: View {
                             dismiss()
                         } label: {
                             Image(systemName: "chevron.left")
-                                .foregroundColor(.appAccent)
+                                .foregroundColor(.primary)
                         }
                     }
                 }

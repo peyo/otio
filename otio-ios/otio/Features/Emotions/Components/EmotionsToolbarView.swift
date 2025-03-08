@@ -17,7 +17,7 @@ struct EmotionsToolbarView: View {
                 showBreathingView = true
             } label: {
                 Image(systemName: "nose")
-                    .foregroundColor(.appAccent)
+                    .foregroundColor(.primary)
             }
             .navigationDestination(isPresented: $showBreathingView) {
                 BreathingView()
@@ -27,7 +27,7 @@ struct EmotionsToolbarView: View {
                 showInsightsView = true
             } label: {
                 Image(systemName: "eye")
-                    .foregroundColor(.appAccent)
+                    .foregroundColor(.primary)
             }
             .navigationDestination(isPresented: $showInsightsView) {
                 InsightsView(emotions: weekEmotions)
@@ -37,7 +37,7 @@ struct EmotionsToolbarView: View {
                 showListeningView = true
             } label: {
                 Image(systemName: "ear")
-                    .foregroundColor(.appAccent)
+                    .foregroundColor(.primary)
             }
             .navigationDestination(isPresented: $showListeningView) {
                 ListeningView(normalizedScore: normalizedScore)
@@ -47,7 +47,7 @@ struct EmotionsToolbarView: View {
                 showAccountView = true
             } label: {
                 Image(systemName: "person")
-                    .foregroundColor(.appAccent)
+                    .foregroundColor(.primary)
             }
             .navigationDestination(isPresented: $showAccountView) {
                 AccountView()
