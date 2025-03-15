@@ -59,7 +59,7 @@ exports.generateInsights = functions.https.onCall(
       });
 
       const currentTime = Date.now();
-      const cooldownPeriod = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+      const cooldownPeriod = 3 * 60 * 60 * 1000; // 3 hours in milliseconds "3 * 60 * 60 * 1000"
 
       // Fix: Check if there's a valid lastTimestamp and if we're within cooldown period
       if (lastTimestamp > 0 && currentTime - lastTimestamp < cooldownPeriod) {
@@ -95,31 +95,55 @@ exports.generateInsights = functions.https.onCall(
         .map((e) => `- ${e.type} on ${e.date}`)
         .join("\n");
 
-      const prompt = `As an empathetic AI, analyze these emotions deeply:
+        const prompt = `As an empathetic AI, analyze these emotions deeply and compassionately.
 
-            ${emotionsText}
-            
-            Focus on these areas for your insights:
-
-            The first insight should be a trend-based feedback insight: Identify explicit temporal patterns in the data, such as daily or weekly trends.
-            - Use specific language to make insights relatable (e.g., "over the past week," "in the evenings").
-            - Highlight trends in emotion frequency or timing.
-            
-            The second insight should be a self-reflection insight: Pose general, open-ended questions to encourage self-awareness and exploration.
-            - Frame questions to help users connect with their experiences (e.g., "What was happening when you felt this way?" or "What helped you feel calmer during similar times?").
-            
-            The third insight should be a general tips insight: Provide universal, actionable advice tailored to the emotions recorded for the week.
-            - Align tips with recorded emotions (e.g., for anxiety: "Try a short breathing exercise," for happiness: "Reflect on what brought you joy today").
-            - Avoid assumptions about specific triggers, focusing on practical and empathetic guidance.
-            
-            **Instruction**:
-            - Generate exactly **three** insights, one for each focus area above.
-            - Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.
-            - **Do not** number the insights.
-            - **Do not** lead the insights with any symbols.
-
-            **Format**:
-            Example: Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.`;
+        ${emotionsText}
+        
+        Focus on the following categories of insights:
+        
+        The first category is a trend-based feedback insight:
+        - Provide an observational statement about explicit temporal patterns in the data, such as daily or weekly trends.
+        - Do not ask questions in this insight. Focus on giving the user a clear, empathetic summary of their trends.
+        - Use specific language to make insights relatable (e.g., "over the past week," "in the evenings").
+        - Highlight patterns in emotion frequency or timing in a clear and supportive tone.
+        
+        The second category is a self-reflection insight:
+        - Pose general, open-ended questions to encourage self-awareness and personal exploration.
+        - Use specific language to make the reflection relatable (e.g., "over the past week," "in the evenings").
+        - Frame questions to help users connect with their experiences (e.g., "What was happening when you felt this way?" or "What helped you feel calmer during similar times?").
+        - Maintain a gentle, non-judgmental tone.
+        
+        The third category is a general tips insight:
+        - Provide universal, actionable advice tailored to the emotions recorded for the week.
+        - Align tips with recorded emotions (e.g., for anxiety: "Try a short breathing exercise," for happiness: "Reflect on what brought you joy today").
+        - Frame suggestions gently, using language like "consider," "you might try," or "it could be helpful to..."
+        - Avoid assumptions about specific triggers, focusing on practical and empathetic guidance.
+        
+        ---
+        
+        In each category, incorporate techniques from evidence-based therapeutic approaches to enhance the insights:
+        - From CBT: Help users reflect on thought patterns linked to their emotions and consider alternative perspectives or coping strategies.
+        - From Positive Psychology: Highlight positive moments and strengths, and encourage gratitude or reflection on what brings joy.
+        - From Mindfulness: Encourage present-moment awareness and gentle, non-judgmental observation of emotions.
+        
+        Maintain a warm, empathetic tone that fosters self-compassion and growth.
+        
+        ---
+        
+        Instructions:
+        - Assume the emotion data spans the past week unless stated otherwise.
+        - Generate exactly three insights, one for each focus area above.
+        - Keep insights specific, empathetic, and actionable, referencing the actual emotions provided.
+        - Keep each insight concise but meaningful, focusing on clarity and impact.
+        - Maintain a warm, supportive, and non-judgmental tone.
+        - Do not ask questions in the first or third insights. Only the second insight should contain open-ended questions.
+        - Do not number the insights.
+        - Do not lead the insights with any symbols.
+        
+        Your goal is to provide a supportive, thoughtful experience that helps users reflect on their emotions and discover helpful patterns and strategies.
+        
+        Format:
+        Example: Your anxiety levels have been higher in the evenings. Consider journaling or practicing mindfulness before bed.`;
 
       console.log("Debug: 📤 Sending request to OpenAI");
 

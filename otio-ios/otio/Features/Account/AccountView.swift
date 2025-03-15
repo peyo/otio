@@ -7,65 +7,71 @@ struct AccountView: View {
     @State private var shouldShowSignIn = false
     
     var body: some View {
-        ZStack {
-            Color.appBackground
-                .ignoresSafeArea()
-            
-            if shouldShowSignIn {
-                SignInView()
-                    .environmentObject(userService)
-            } else {
-                VStack(spacing: 32) {
-                    // User Information
-                    VStack(alignment: .leading, spacing: 24) {
-                        if let email = userService.userEmail {
-                            Text("email address: \(email)")
-                                .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.primary)
-                        }
-                        
-                        if let joinDate = userService.joinDate {
-                            Text("join date: \(formatDate(joinDate))")
-                                .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.primary)
-                        }
-                        
-                        Text("total breath time: \(formatMinutes(userService.totalBreathingMinutes))")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
-                            .foregroundColor(.primary)
-                        
-                        Text("total meditation time: \(formatMinutes(userService.totalMeditationMinutes))")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
-                            .foregroundColor(.primary)
-                    }
-                    .padding(.top, 20)
+        NavigationStack {
+            GeometryReader { geometry in
+                ZStack {
+                    Color.appBackground
+                        .ignoresSafeArea()
                     
-                    Spacer()
-                    
-                    // Credits and Logout Buttons
-                    VStack(spacing: 24) {
-                        NavigationLink {
-                            ManifestoCreditsView()
-                        } label: {
-                            Text("manifesto / credits")
-                                .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.primary)
-                        }
-                        
-                        Button(action: {
-                            userService.signOut()
-                            shouldShowSignIn = true
-                        }) {
-                            Text("log out")
-                                .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.primary)
+                    if shouldShowSignIn {
+                        SignInView()
+                            .environmentObject(userService)
+                    } else {
+                        VStack(spacing: 0) {
+                            // User Information
+                            VStack(alignment: .leading, spacing: 24) {
+                                if let email = userService.userEmail {
+                                    Text("email address: \(email)")
+                                        .font(.custom("IBMPlexMono-Light", size: 15))
+                                        .foregroundColor(.primary)
+                                }
+                                
+                                if let joinDate = userService.joinDate {
+                                    Text("join date: \(formatDate(joinDate))")
+                                        .font(.custom("IBMPlexMono-Light", size: 15))
+                                        .foregroundColor(.primary)
+                                }
+                                
+                                Text("total breath time: \(formatMinutes(userService.totalBreathingMinutes))")
+                                    .font(.custom("IBMPlexMono-Light", size: 15))
+                                    .foregroundColor(.primary)
+                                
+                                Text("total meditation time: \(formatMinutes(userService.totalMeditationMinutes))")
+                                    .font(.custom("IBMPlexMono-Light", size: 15))
+                                    .foregroundColor(.primary)
+                            }
+                            .padding(.top, 20)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 20)
+                            
+                            Spacer()
+                            
+                            // Credits and Logout Buttons
+                            VStack(spacing: 24) {
+                                NavigationLink {
+                                    ManifestoCreditsView()
+                                } label: {
+                                    Text("manifesto / credits")
+                                        .font(.custom("IBMPlexMono-Light", size: 15))
+                                        .foregroundColor(.primary)
+                                }
+                                
+                                Button(action: {
+                                    userService.signOut()
+                                    shouldShowSignIn = true
+                                }) {
+                                    Text("log out")
+                                        .font(.custom("IBMPlexMono-Light", size: 15))
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                            .padding(.bottom, 40)
+                            .padding(.horizontal, 20)
                         }
                     }
-                    .padding(.bottom, 40)
                 }
-                .padding(.horizontal, 20)
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationBarBackButtonHidden()
+                .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItem(placement: .principal) {
                         Text("account")
@@ -83,6 +89,14 @@ struct AccountView: View {
                         }
                     }
                 }
+                .gesture(
+                    DragGesture()
+                        .onEnded { gesture in
+                            if gesture.translation.width > 100 {
+                                dismiss()
+                            }
+                        }
+                )
             }
         }
         .onAppear {

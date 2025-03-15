@@ -6,10 +6,11 @@ struct RecentEmotionsView: View {
     let recentEmotions: [EmotionData]
     let timeString: (Date) -> String
     let onDelete: (EmotionData) -> Void
+    let geometry: GeometryProxy
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            Text("recent")
+        VStack(alignment: .leading, spacing: geometry.size.height * 0.03) {
+            Text("recent emotions")
                 .font(.custom("IBMPlexMono-Light", size: 17))
                 .fontWeight(.semibold)
                 .foregroundColor(.primary)

@@ -17,47 +17,56 @@ struct BreathingView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                Color.appBackground
-                    .ignoresSafeArea()
-                
-                if isInitializing {
-                    // Show immediate feedback while view loads
-                    VStack {
-                        ProgressView()
-                            .tint(.primary)
-                        Text("preparing to breathe.")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
-                            .foregroundColor(.secondary)
-                            .padding(.top, 8)
+        NavigationStack {
+            GeometryReader { geometry in
+                ZStack {
+                    Color.appBackground
+                        .ignoresSafeArea()
+                    
+                    if isInitializing {
+                        // Show immediate feedback while view loads
+                        VStack {
+                            ProgressView()
+                                .tint(.primary)
+                            Text("preparing to breathe.")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                                .foregroundColor(.primary)
+                                .padding(.top, 8)
+                        }
+                    } else {
+                        mainContent(geometry: geometry)
                     }
-                } else {
-                    mainContent
                 }
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden()
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("breathe")
-                        .font(.custom("IBMPlexMono-Light", size: 22))
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                }
-                
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("breathe")
+                            .font(.custom("IBMPlexMono-Light", size: 22))
+                            .fontWeight(.semibold)
                             .foregroundColor(.primary)
                     }
+                    
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.primary)
+                        }
+                    }
                 }
+                .gesture(
+                    DragGesture()
+                        .onEnded { gesture in
+                            if gesture.translation.width > 100 {
+                                dismiss()
+                            }
+                        }
+                )
             }
             .onAppear {
                 print("🟢 BreathingView appeared: \(Date())")
-                // Preload the intro audio when view appears
                 breathManager.preloadIntroFor(technique: currentTechnique)
             }
             .task {
@@ -81,7 +90,7 @@ struct BreathingView: View {
     }
     
     @ViewBuilder
-    private var mainContent: some View {
+    private func mainContent(geometry: GeometryProxy) -> some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 32) {
                 Text("find your rhythm")
@@ -133,8 +142,9 @@ struct BreathingView: View {
                         )
                     }
                 }
-                .frame(width: 200, height: 200)
-                .offset(y: -20)
+                .frame(width: min(200, geometry.size.width * 0.5),  // Responsive width
+                       height: min(200, geometry.size.width * 0.5))  // Keep it square
+                .offset(y: -geometry.size.height * 0.02)  // Small upward offset
                 
                 // Timer display
                 Text(timeString(from: elapsedSeconds))
@@ -192,33 +202,24 @@ struct BreathingView: View {
                             }
                         }
                     }
-                    .padding(.top, 30)
+                    .padding(.top, geometry.size.height * 0.02)  // Responsive padding
                     
-                    // Fixed height container for skip intro text
+                    // Skip intro with dynamic positioning
                     ZStack {
-                        // Invisible text to reserve space
-                        Text("skip intro")
-                            .font(.custom("IBMPlexMono-Light", size: 17))
-                            .foregroundColor(.clear)
-                            .padding(.top, 20)
-                        
-                        // Only show skip intro when active, playing intro, and not loading
                         if breathManager.isIntroPlaying && breathManager.isActive && !breathManager.isLoading {
                             Text("skip intro")
-                                .font(.custom("IBMPlexMono-Light", size: 17))
+                                .font(.custom("IBMPlexMono-Light", size: 15))
                                 .foregroundColor(.primary)
                                 .onTapGesture {
                                     breathManager.skipIntro(technique: currentTechnique)
                                 }
-                                .padding(.top, 20)
-                                .transition(.opacity)
+                                .padding(.top, geometry.size.height * 0.02)  // Responsive padding
                         }
                     }
                 }
             }
             .padding(.horizontal, 20)
-            .padding(.vertical, 40)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, geometry.size.height * 0.05)  // Responsive vertical padding
         }
     }
 

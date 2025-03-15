@@ -1,26 +1,30 @@
 import Foundation
 import AudioKit
 import SoundpipeAudioKit
+import AudioKitEX
 import AVFoundation
 
 class EnhancedBinauralGenerator {
     private var leftOscillator: Oscillator?
     private var rightOscillator: Oscillator?
-    private var breathingLFO: Oscillator?
     private var harmonicOscillator: Oscillator?
-    private var reverb: Reverb?  // Add reverb node
+    private var breathingLFO: Oscillator?
+    private var reverb: Reverb?
+    private var limiter: PeakLimiter?
     private let engine: AudioEngine
-    private var isPlaying = false  // Track playing state
+    private var isPlaying = false
+    private var modulationTimer: CADisplayLink?
     
-    // Constants for frequency calculations
     private struct FreqConstants {
-        static let carrierBase: Float = 100.0  // Base carrier frequency
-        static let maxBeatFreq: Float = 12.0   // Maximum binaural beat frequency
-        static let breathingRate: Float = 1.0   // 1 Hz breathing rate
-        static let breathingDepth: Float = 0.15  // Breathing modulation depth
-        static let harmonicRatio: Float = 2.02  // Slightly detuned from 2.0
-        static let harmonicVolume: Float = 0.1  // 10% volume
-        static let reverbMix: Float = 0.2      // 20% wet signal
+        static let carrierBase: Float = 108.0  // 432/4 Hz - two octaves lower
+        static let maxBeatFreq: Float = 12.0
+        static let breathingRate: Float = 0.2
+        static let breathingDepth: Float = 0.15
+        static let harmonicRatio: Float = 2.02
+        static let harmonicVolume: Float = 0.1
+        static let reverbMix: Float = 0.2
+        static let mixerVolume: Float = 0.7
+        static let limiterPreGain: Float = 0.0
     }
     
     init(engine: AudioEngine) {
@@ -33,7 +37,6 @@ class EnhancedBinauralGenerator {
     private func setupOscillators() {
         print("EnhancedBinaural: Creating oscillators...")
         
-        // Create all oscillators
         leftOscillator = Oscillator(waveform: Table(.sine))
         rightOscillator = Oscillator(waveform: Table(.sine))
         harmonicOscillator = Oscillator(waveform: Table(.sine))
@@ -44,31 +47,33 @@ class EnhancedBinauralGenerator {
            let harmonic = harmonicOscillator,
            let breath = breathingLFO {
             
-            // Configure breathing LFO
             breath.frequency = FreqConstants.breathingRate
-            breath.amplitude = FreqConstants.breathingDepth
             
-            // Create mixer for oscillators
             let mixer = Mixer([left, right, harmonic])
-            mixer.volume = 1.0
+            mixer.volume = FreqConstants.mixerVolume
             
-            // Create and configure reverb
             reverb = Reverb(mixer)
             if let reverb = reverb {
+                reverb.loadFactoryPreset(.mediumRoom)
                 reverb.dryWetMix = FreqConstants.reverbMix
                 print("EnhancedBinaural: Reverb configured")
             }
             
-            // Set initial states
+            limiter = PeakLimiter(reverb!)
+            if let limiter = limiter {
+                limiter.preGain = FreqConstants.limiterPreGain
+                limiter.attackTime = 0.001
+                limiter.decayTime = 0.05
+                print("EnhancedBinaural: PeakLimiter configured")
+            }
+            
             left.amplitude = 0.0
             right.amplitude = 0.0
             harmonic.amplitude = 0.0
             
-            // Connect breathing LFO
             breath.start()
             
-            // Connect reverb to engine
-            engine.output = reverb
+            engine.output = limiter
             
             print("EnhancedBinaural: Signal chain completed")
         }
@@ -84,24 +89,20 @@ class EnhancedBinauralGenerator {
             return
         }
         
-        // Don't start if already playing
         guard !isPlaying else {
             print("EnhancedBinaural: Already playing")
             return
         }
         
         do {
-            // Calculate frequencies
             let beatFreq = min(frequency, FreqConstants.maxBeatFreq)
             let leftFreq = FreqConstants.carrierBase
             let rightFreq = leftFreq + beatFreq
             let harmonicFreq = leftFreq * FreqConstants.harmonicRatio
             
-            // Set frequencies
             left.frequency = leftFreq
             right.frequency = rightFreq
             harmonic.frequency = harmonicFreq
-            breath.frequency = FreqConstants.breathingRate
             
             print("EnhancedBinaural: Setting frequencies:")
             print("- Left: \(leftFreq)Hz")
@@ -109,15 +110,12 @@ class EnhancedBinauralGenerator {
             print("- Beat: \(beatFreq)Hz")
             print("- Harmonic: \(harmonicFreq)Hz")
             print("- Breathing: \(FreqConstants.breathingRate)Hz")
-            print("- Reverb Mix: \(FreqConstants.reverbMix * 100)%")
             
-            // Ensure engine is running
             if !engine.avEngine.isRunning {
                 try engine.start()
                 print("EnhancedBinaural: Engine started")
             }
             
-            // Start oscillators
             left.start()
             right.start()
             harmonic.start()
@@ -125,20 +123,14 @@ class EnhancedBinauralGenerator {
             
             print("EnhancedBinaural: Oscillators started")
             
-            // Base amplitude for carriers (slightly reduced to allow for breathing modulation)
-            let baseAmp: Float = 0.4  // Reduced from 0.45 to allow headroom for modulation
-            
-            // Set amplitudes with ramping
+            let baseAmp: Float = 0.3
             left.$amplitude.ramp(to: baseAmp, duration: 0.5)
             right.$amplitude.ramp(to: baseAmp, duration: 0.5)
             harmonic.$amplitude.ramp(to: FreqConstants.harmonicVolume, duration: 0.5)
-            breath.$amplitude.ramp(to: FreqConstants.breathingDepth, duration: 0.5)
             
-            print("EnhancedBinaural: Amplitudes set and ramping")
+            startBreathingAmplitudeModulation()
             
-            // Keep strong reference to engine
             try AVAudioSession.sharedInstance().setActive(true)
-            
             isPlaying = true
             
         } catch {
@@ -154,20 +146,25 @@ class EnhancedBinauralGenerator {
         
         print("EnhancedBinaural: Stopping sound")
         
-        // Ramp down amplitudes
-        leftOscillator?.$amplitude.ramp(to: 0.0, duration: 0.1)
-        rightOscillator?.$amplitude.ramp(to: 0.0, duration: 0.1)
-        harmonicOscillator?.$amplitude.ramp(to: 0.0, duration: 0.1)
-        breathingLFO?.$amplitude.ramp(to: 0.0, duration: 0.1)
+        // Immediately mark as not playing so new sounds can start
+        isPlaying = false
         
-        // Allow reverb tail to decay naturally
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            // Stop oscillators after reverb tail starts
+        // Start fade out
+        leftOscillator?.$amplitude.ramp(to: 0.0, duration: 0.3)
+        rightOscillator?.$amplitude.ramp(to: 0.0, duration: 0.3)
+        harmonicOscillator?.$amplitude.ramp(to: 0.0, duration: 0.3)
+        
+        stopBreathingAmplitudeModulation()
+        
+        // Clean up after fade
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             self?.leftOscillator?.stop()
             self?.rightOscillator?.stop()
             self?.harmonicOscillator?.stop()
             self?.breathingLFO?.stop()
-            self?.isPlaying = false
+            
+            try? AVAudioSession.sharedInstance().setActive(false)
+            print("EnhancedBinaural: Fully stopped")
         }
     }
     
@@ -179,11 +176,47 @@ class EnhancedBinauralGenerator {
     
     func setVolume(_ volume: Float) {
         let clampedVolume = max(0, min(1, volume))
-        let baseAmp = clampedVolume * 0.4  // Scale with the original base amplitude
+        let baseAmp = clampedVolume * 0.3
         
-        // Set amplitudes with ramping
         leftOscillator?.$amplitude.ramp(to: baseAmp, duration: 0.1)
         rightOscillator?.$amplitude.ramp(to: baseAmp, duration: 0.1)
         harmonicOscillator?.$amplitude.ramp(to: baseAmp * FreqConstants.harmonicVolume, duration: 0.1)
+    }
+    
+    // MARK: - Amplitude Modulation Logic
+    
+    private func startBreathingAmplitudeModulation() {
+        modulationTimer?.invalidate()
+        
+        modulationTimer = CADisplayLink(target: self, selector: #selector(updateAmplitudeWithBreathing))
+        modulationTimer?.preferredFramesPerSecond = 30
+        modulationTimer?.add(to: .current, forMode: .common)
+        
+        print("EnhancedBinaural: Breathing amplitude modulation started")
+    }
+    
+    private func stopBreathingAmplitudeModulation() {
+        modulationTimer?.invalidate()
+        modulationTimer = nil
+        
+        print("EnhancedBinaural: Breathing amplitude modulation stopped")
+    }
+    
+    @objc private func updateAmplitudeWithBreathing() {
+        // Break down the calculation into steps
+        let time = CACurrentMediaTime()
+        let angle = 2 * Double.pi * Double(FreqConstants.breathingRate) * time
+        let lfoValue = sin(angle)
+        
+        let baseAmp: Float = 0.3
+        let depth = FreqConstants.breathingDepth
+        let lfoComponent = Float(lfoValue) * depth
+        
+        // Calculate final amplitude
+        let modulatedAmplitude = baseAmp + lfoComponent
+        
+        // Apply to oscillators
+        leftOscillator?.amplitude = modulatedAmplitude
+        rightOscillator?.amplitude = modulatedAmplitude
     }
 }

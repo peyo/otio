@@ -13,98 +13,107 @@ struct InsightsView: View {
     @State private var cooldownTime: Int = 0
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                Color.appBackground
-                    .ignoresSafeArea()
-                
-                ScrollView {
-                    // Pull to refresh with cooldown check
-                    RefreshControl(
-                        coordinateSpace: .named("refresh"),
-                        onRefresh: fetchInsights,
-                        isInCooldown: cooldownTime > 0
-                    )
+        NavigationStack {
+            GeometryReader { geometry in
+                ZStack {
+                    Color.appBackground
+                        .ignoresSafeArea()
                     
-                    VStack(spacing: 24) {
-                        // Subtitle only
-                        Text("navigate your emotions")
-                            .font(.custom("IBMPlexMono-Light", size: 17))
-                            .fontWeight(.medium)
-                            .foregroundColor(.primary)
-                            .padding(.top, 0)
+                    ScrollView(showsIndicators: false) {
+                        // Pull to refresh with cooldown check
+                        RefreshControl(
+                            coordinateSpace: .named("refresh"),
+                            onRefresh: fetchInsights,
+                            isInCooldown: cooldownTime > 0
+                        )
                         
-                        if isLoading {
-                            VStack {
-                                Spacer()
-                                ProgressView()
-                                    .tint(.primary)
-                                Spacer()
-                            }
-                            .frame(height: geometry.size.height * 0.7)
-                        } else if emotions.isEmpty {
-                            EmptyStateView()
-                        } else {
-                            // Insights content
-                            VStack(spacing: 16) {
-                                if let errorMessage = errorMessage {
-                                    let errorInsight = Insight(
-                                        emojiName: "zen",
-                                        title: "digital detour",
-                                        description: errorMessage
-                                    )
-                                    InsightCard(insight: errorInsight)
-                                } else {
-                                    ForEach(insights.prefix(3), id: \.self) { insight in
-                                        InsightCard(insight: insight)
-                                    }
-                                    
-                                    if cooldownTime > 0 {
-                                        Text("next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
-                                            .font(.custom("IBMPlexMono-Light", size: 13))
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(.primary)
-                                            .padding(.top, 8)
+                        VStack(spacing: 24) {
+                            // Subtitle only
+                            Text("navigate your emotions")
+                                .font(.custom("IBMPlexMono-Light", size: 17))
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                                .padding(.top, 0)
+                            
+                            if isLoading {
+                                VStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .tint(.primary)
+                                    Spacer()
+                                }
+                                .frame(height: geometry.size.height * 0.7)
+                            } else if emotions.isEmpty {
+                                EmptyStateView()
+                            } else {
+                                // Insights content
+                                VStack(spacing: 16) {
+                                    if let errorMessage = errorMessage {
+                                        let errorInsight = Insight(
+                                            emojiName: "zen",
+                                            title: "digital detour",
+                                            description: errorMessage
+                                        )
+                                        InsightCard(insight: errorInsight)
+                                    } else {
+                                        ForEach(insights.prefix(3), id: \.self) { insight in
+                                            InsightCard(insight: insight)
+                                        }
+                                        
+                                        if cooldownTime > 0 {
+                                            Text("next insights available in: \(cooldownTime / 3600)h \((cooldownTime % 3600) / 60)m")
+                                                .font(.custom("IBMPlexMono-Light", size: 13))
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(.primary)
+                                                .padding(.top, 8)
+                                        }
                                     }
                                 }
                             }
                         }
+                        .padding(.horizontal, 20)
                     }
-                    .padding(.horizontal, 20)
+                    .coordinateSpace(name: "refresh")
                 }
-                .coordinateSpace(name: "refresh")
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden()
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("understand")
-                        .font(.custom("IBMPlexMono-Light", size: 22))
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                }
-                
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.primary)
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("insights")
+                            .font(.custom("IBMPlexMono-Light", size: 22))
+                            .fontWeight(.semibold)
+                    }
+                    
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.primary)
+                        }
                     }
                 }
-            }
-            .task {
-                // Cancel previous task if it exists
-                currentTask?.cancel()
-                
-                // Create and store new task
-                let task = Task {
-                    await fetchInsights()
+                .gesture(
+                    DragGesture()
+                        .onEnded { gesture in
+                            if gesture.translation.width > 100 {
+                                dismiss()
+                            }
+                        }
+                )
+                .task {
+                    // Cancel previous task if it exists
+                    currentTask?.cancel()
+                    
+                    // Create and store new task
+                    let task = Task {
+                        await fetchInsights()
+                    }
+                    currentTask = task
+                    
+                    // Wait for completion
+                    await task.value
                 }
-                currentTask = task
-                
-                // Wait for completion
-                await task.value
             }
         }
     }

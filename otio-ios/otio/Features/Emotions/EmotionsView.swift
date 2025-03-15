@@ -23,7 +23,9 @@ struct EmotionsView: View {
         NavigationStack {
             Group {
                 if userService.isAuthenticated {
-                    authenticatedContent
+                    GeometryReader { geometry in
+                        authenticatedContent(geometry: geometry)
+                    }
                 } else {
                     SignInView()
                         .environmentObject(userService)
@@ -94,7 +96,7 @@ struct EmotionsView: View {
         }
     }
     
-    private var authenticatedContent: some View {
+    private func authenticatedContent(geometry: GeometryProxy) -> some View {
         ZStack {
             Color.appBackground
                 .ignoresSafeArea()
@@ -104,12 +106,16 @@ struct EmotionsView: View {
                     EmotionsGridView(
                         emotionOrder: emotionOrder,
                         selectedEmotion: selectedEmotion,
-                        onEmotionTap: handleEmotionTap
+                        onEmotionTap: handleEmotionTap,
+                        geometry: geometry
                     )
-                    .padding(.top, 16)
+                    .padding(.top, geometry.size.height * 0.04)
                     
                     Spacer()
-                        .frame(minHeight: 32, maxHeight: 48)
+                        .frame(
+                            minHeight: geometry.size.height * 0.04,
+                            maxHeight: geometry.size.height * 0.06
+                        )
                     
                     RecentEmotionsView(
                         isLoading: isLoading,
@@ -118,11 +124,12 @@ struct EmotionsView: View {
                         onDelete: { emotion in
                             emotionToDelete = emotion
                             showDeleteConfirmation = true
-                        }
+                        },
+                        geometry: geometry
                     )
                 }
                 .padding(.top, -8)
-                .padding(.bottom, 40)
+                .padding(.bottom, geometry.size.height * 0.05)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
