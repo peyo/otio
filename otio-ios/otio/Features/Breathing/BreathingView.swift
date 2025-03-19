@@ -154,35 +154,15 @@ struct BreathingView: View {
                 
                 Spacer()
                 
-                // Breathing technique cards
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(breathingTechniques, id: \.id) { technique in
-                            VStack {
-                                BreathingCard(technique: technique, isSelected: currentTechnique.type == technique.type) {
-                                    if currentTechnique.type != technique.type {
-                                        // Stop current breathing if active
-                                        if breathManager.isActive {
-                                            // Update total breathing minutes when switching
-                                            let minutes = Int(ceil(Double(elapsedSeconds) / 60.0))
-                                            userService.updateBreathingMinutes(minutes: minutes)
-                                            elapsedSeconds = 0
-                                            breathManager.stopBreathing()
-                                        }
-                                        
-                                        // Switch to new technique and preload
-                                        currentTechnique = technique
-                                        breathManager.preloadIntroFor(technique: technique)
-                                    }
-                                }
-                                .font(.custom("IBMPlexMono-Light", size: 17))
-                            }
-                            .frame(height: 100)
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                
+                // Breathing technique selector
+                BreathingSelectorView(
+                    currentTechnique: $currentTechnique,
+                    breathingTechniques: breathingTechniques,
+                    isActive: breathManager.isActive,
+                    geometry: geometry,
+                    onTechniqueSelected: handleTechniqueSelection
+                )
+
                 // Start/Stop Button with loading state
                 VStack(spacing: 0) {
                     // Button or loading indicator
@@ -197,7 +177,7 @@ struct BreathingView: View {
                                     .font(.system(size: 24))
                                     .foregroundColor(.primary)
                                     .frame(width: 50, height: 50)
-                                    .background(Color(.systemGray5))
+                                    .background(Color.appCardBackground)
                                     .cornerRadius(0)
                             }
                         }
@@ -264,5 +244,20 @@ struct BreathingView: View {
         breathManager.stopBreathing()
         // Replace SoundManager.shared.stopAllAudio() with breathManager.stopBreathing()
         // since breathManager now handles its own audio cleanup
+    }
+
+    private func handleTechniqueSelection(technique: BreathingTechnique, minutes: Int) {
+        // Stop current breathing if active
+        if breathManager.isActive {
+            // Update total breathing minutes when switching
+            let minutes = Int(ceil(Double(elapsedSeconds) / 60.0))
+            userService.updateBreathingMinutes(minutes: minutes)
+            elapsedSeconds = 0
+            breathManager.stopBreathing()
+        }
+        
+        // Switch to new technique and preload
+        currentTechnique = technique
+        breathManager.preloadIntroFor(technique: technique)
     }
 }

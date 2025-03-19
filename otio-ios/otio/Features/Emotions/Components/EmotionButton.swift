@@ -4,7 +4,7 @@ struct EmotionButton: View {
     let type: String
     let isSelected: Bool
     let onTap: () -> Void
-    @State private var isHighlighted = false
+    @State private var isPressed = false
     
     private func dynamicFontSize(for text: String) -> CGFloat {
         switch text.count {
@@ -16,31 +16,35 @@ struct EmotionButton: View {
     }
     
     var body: some View {
-        Button(action: {
-            isHighlighted = true
-            onTap()
-            
-            // Reset highlight after a brief delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                isHighlighted = false
-            }
-        }) {
-            Rectangle()
-                .fill(isHighlighted ? Color(.systemGray5) : Color.clear)  // Fill with systemGray5 when selected
-                .frame(width: 100, height: 100)
-                .overlay(
-                    Rectangle()
-                        .strokeBorder(Color.primary, lineWidth: 1)  // Primary color adapts to light/dark mode
-                )
-                .overlay(
-                    VStack(spacing: 4) {
-                        Text(type)
-                            .font(.custom("IBMPlexMono-Light", size: dynamicFontSize(for: type)))
-                            .fontWeight(.medium)
-                            .foregroundColor(.primary)  // Text color adapts to light/dark mode
+        Rectangle()
+            .fill(isPressed ? Color.appCardBackground : Color.clear)
+            .frame(width: 100, height: 100)
+            .overlay(
+                Rectangle()
+                    .strokeBorder(isPressed ? Color.secondary : Color.primary, lineWidth: 1)
+            )
+            .overlay(
+                VStack(spacing: 4) {
+                    Text(type)
+                        .font(.custom("IBMPlexMono-Light", size: dynamicFontSize(for: type)))
+                        .fontWeight(.medium)
+                        .foregroundColor(isPressed ? Color.secondary : Color.primary)
+                }
+            )
+            .animation(.easeInOut(duration: 0.15), value: isPressed)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        // User is pressing down
+                        if !isPressed {
+                            isPressed = true
+                        }
                     }
-                )
-                .animation(.easeInOut(duration: 0.15), value: isHighlighted)
-        }
+                    .onEnded { _ in
+                        // User released
+                        isPressed = false
+                        onTap()  // Trigger the action when released
+                    }
+            )
     }
 }

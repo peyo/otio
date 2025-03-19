@@ -3,24 +3,40 @@ import SwiftUI
 struct BreathingCard: View {
     let technique: BreathingTechnique
     let isSelected: Bool
-    let action: () -> Void
+    let onTap: () -> Void
+    @State private var isPressed = false
     
     var body: some View {
-        Button(action: action) {
+        // Keep the current dimensions but add the emotion button styling
+        VStack(alignment: .center, spacing: 8) {
             Text(technique.name)
-                .foregroundColor(.primary) // Text color
                 .font(.custom("IBMPlexMono-Light", size: 15))
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(
-                    Rectangle()
-                        .fill(isSelected ? Color(.systemGray5) : Color.clear)
-                )
-                .overlay(
-                    Rectangle()
-                        .strokeBorder(isSelected ? Color.primary : Color.clear, lineWidth: 1)
-                )
+                .fontWeight(.medium)
+                .foregroundColor(isSelected || isPressed ? Color.secondary : Color.primary)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
         }
+        .frame(height: 50)  // Keep the height consistent
+        .background(Color.clear)  // Always clear background, removing the highlight
+        .overlay(
+            Rectangle()
+                .strokeBorder(isSelected || isPressed ? Color.secondary : Color.primary, lineWidth: 1)
+        )
+        .animation(.easeInOut(duration: 0.15), value: isPressed)
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    // User is pressing down
+                    if !isPressed {
+                        isPressed = true
+                    }
+                }
+                .onEnded { _ in
+                    // User released
+                    isPressed = false
+                    onTap()  // Trigger the action when released
+                }
+        )
         .padding(.horizontal, 4)
     }
 }

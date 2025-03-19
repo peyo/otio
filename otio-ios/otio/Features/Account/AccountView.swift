@@ -54,6 +54,12 @@ struct AccountView: View {
                                     Text("manifesto / credits")
                                         .font(.custom("IBMPlexMono-Light", size: 15))
                                         .foregroundColor(.primary)
+                                        .frame(height: 50)
+                                        .padding(.horizontal)
+                                        .overlay(
+                                            Rectangle()
+                                                .strokeBorder(Color.primary, lineWidth: 1)
+                                        )
                                 }
                                 
                                 Button(action: {
@@ -63,6 +69,12 @@ struct AccountView: View {
                                     Text("log out")
                                         .font(.custom("IBMPlexMono-Light", size: 15))
                                         .foregroundColor(.primary)
+                                        .frame(height: 50)
+                                        .padding(.horizontal)
+                                        .overlay(
+                                            Rectangle()
+                                                .strokeBorder(Color.primary, lineWidth: 1)
+                                        )
                                 }
                             }
                             .padding(.bottom, 40)

@@ -58,7 +58,10 @@ struct EmotionsView: View {
                                             .foregroundColor(.primary)
                                             .frame(maxWidth: .infinity)
                                             .padding()
-                                            .background(Color.appCardBackground)
+                                            .overlay(
+                                                Rectangle()
+                                                    .strokeBorder(Color.primary, lineWidth: 1)
+                                            )
                                     }
                                     
                                     Button {
@@ -79,10 +82,13 @@ struct EmotionsView: View {
                                     } label: {
                                         Text("delete")
                                             .font(.custom("IBMPlexMono-Light", size: 15))
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.primary)
                                             .frame(maxWidth: .infinity)
                                             .padding()
-                                            .background(Color.appCardBackground)
+                                            .overlay(
+                                                Rectangle()
+                                                    .strokeBorder(Color.primary, lineWidth: 1)
+                                            )
                                     }
                                 }
                             }

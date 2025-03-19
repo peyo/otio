@@ -26,7 +26,13 @@ struct EmotionCard: View {
                 Button(action: onDelete) {
                     Text("delete")
                         .font(.custom("IBMPlexMono-Light", size: 15))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .overlay(
+                            Rectangle()
+                                .strokeBorder(Color.primary, lineWidth: 1)
+                        )
                 }
             }
         }

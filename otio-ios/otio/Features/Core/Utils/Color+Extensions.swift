@@ -8,6 +8,7 @@ extension Color {
     static let appBackground = Color(.systemGray6)
     static let appCardBackground = Color(.systemGray5)
     
+    /*
     // For the emotion buttons, we'll use asset catalog colors
     static let happyColor = Color("HappyColor") // Soft Yellow
     static let sadColor = Color("SadColor") // Light Sky Blue
@@ -18,6 +19,7 @@ extension Color {
     static let playfulColor = Color("PlayfulColor") // Peach
     static let lovedColor = Color("LovedColor") // Coral
     static let confidentColor = Color("ConfidentColor") // Light Green
+    */
 
     // If you still need the hex initializer for other purposes
     init(hex: String) {
