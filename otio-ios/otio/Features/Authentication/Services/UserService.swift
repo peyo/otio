@@ -13,6 +13,7 @@ let useEmulator = false
 
 class UserService: ObservableObject {
     static let shared = UserService()
+    static let authStateChangedNotification = Notification.Name("authStateChanged")
     
     @Published var userId: String?
     @Published var isAuthenticated = false
@@ -167,6 +168,9 @@ class UserService: ObservableObject {
                 self.isAuthenticated = false
                 self.userId = nil
                 self.userEmail = nil
+                
+                // Post notification for navigation reset
+                NotificationCenter.default.post(name: UserService.authStateChangedNotification, object: nil)
             }
             print("Successfully signed out")
         } catch {

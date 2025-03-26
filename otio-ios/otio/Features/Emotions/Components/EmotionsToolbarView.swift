@@ -13,6 +13,7 @@ struct EmotionsToolbarView: View {
     
     var body: some View {
         HStack(spacing: 8) {
+            // Breathing button
             Button {
                 showBreathingView = true
             } label: {
@@ -23,6 +24,7 @@ struct EmotionsToolbarView: View {
                 BreathingView()
             }
             
+            // Insights button
             Button {
                 showInsightsView = true
             } label: {
@@ -33,6 +35,7 @@ struct EmotionsToolbarView: View {
                 InsightsView(emotions: weekEmotions)
             }
 
+            // Listening button
             Button {
                 showListeningView = true
             } label: {
@@ -43,6 +46,7 @@ struct EmotionsToolbarView: View {
                 ListeningView(normalizedScore: normalizedScore)
             }
             
+            // Account button
             Button {
                 showAccountView = true
             } label: {
@@ -51,6 +55,7 @@ struct EmotionsToolbarView: View {
             }
             .navigationDestination(isPresented: $showAccountView) {
                 AccountView()
+                    .environmentObject(userService)
             }
         }
     }

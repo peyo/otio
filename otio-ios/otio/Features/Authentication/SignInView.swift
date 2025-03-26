@@ -5,7 +5,6 @@ struct SignInView: View {
     @EnvironmentObject var userService: UserService
     @State private var isLoading = false
     @State private var showFirstText = true
-    @State private var showTutorial = false
     private let firstText = "feeling into insight"
     private let secondText = "insight into sound"
     private let animationDuration = 1.0
@@ -15,17 +14,6 @@ struct SignInView: View {
         if userService.isAuthenticated {
             EmotionsView()
                 .environmentObject(userService)
-                .onAppear {
-                    // Force tutorial to show during development
-                    // showTutorial = true  // Comment this out for production
-                    
-                    // Original code
-                    let hasSeenTutorial = UserDefaults.standard.integer(forKey: "tutorialVersion") >= 1
-                    showTutorial = !hasSeenTutorial
-                }
-                .fullScreenCover(isPresented: $showTutorial) {
-                    TutorialView()
-                }
         } else {
             VStack {
                 if isLoading {

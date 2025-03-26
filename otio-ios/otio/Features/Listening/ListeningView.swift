@@ -142,6 +142,7 @@ struct ListeningView: View {
     
     private func playButton(geometry: GeometryProxy) -> some View {
         VStack(spacing: 0) {
+            // Play/Stop button
             Button(action: toggleSound) {
                 Image(systemName: isPlaying ? "stop.fill" : "play.fill")
                     .font(.system(size: 24))
@@ -151,12 +152,35 @@ struct ListeningView: View {
                     .cornerRadius(0)
             }
             .padding(.top, geometry.size.height * 0.02)
+            
+            // Skip intro with ZStack for better layout control
+            ZStack {
+                if soundManager.isIntroPlaying && isPlaying {
+                    Text("skip intro")
+                        .font(.custom("IBMPlexMono-Light", size: 15))
+                        .foregroundColor(.primary)
+                        .onTapGesture {
+                            print("Skip intro button tapped")
+                            soundManager.skipIntro()
+                        }
+                        .padding(.top, 8)
+                        .onAppear {
+                            print("Skip intro button appeared - isIntroPlaying: \(soundManager.isIntroPlaying), isPlaying: \(isPlaying)")
+                        }
+                        .onDisappear {
+                            print("Skip intro button disappeared")
+                        }
+                }
+            }
+            .frame(height: 30) // Give it a fixed height to reserve space
+            .padding(.top, 4)
         }
     }
     
     // MARK: - Logic Functions
     
     private func handleSoundSelection(sound: SoundType, minutes: Int) {
+        print("ListeningView: Sound selected: \(sound.rawValue)")
         // Stop current sound if playing
         if isPlaying {
             soundManager.stopAllSounds()
@@ -184,26 +208,29 @@ struct ListeningView: View {
     }
 
     private func toggleSound() {
+        print("toggleSound called - current isPlaying: \(isPlaying)")
+        
         if isPlaying {
             soundManager.stopAllSounds()
             // Update total meditation minutes when stopping
             let minutes = Int(ceil(Double(elapsedSeconds) / 60.0))
             userService.updateMeditationMinutes(minutes: minutes)
+            isPlaying = false  // Set this after stopping sounds
+            elapsedSeconds = 0
         } else {
             startCurrentSound()
+            isPlaying = true  // Set this after starting sounds
         }
-        isPlaying.toggle()
         
-        // Reset timer when stopping
-        if !isPlaying {
-            elapsedSeconds = 0
-        }
+        print("toggleSound finished - new isPlaying: \(isPlaying)")
     }
 
     private func startCurrentSound() {
+        print("ListeningView: Starting current sound: \(currentSound.rawValue)")
         if currentSound == .recommendedSound {
+            print("ListeningView: Starting recommended sound with score: \(normalizedScore)")
             soundManager.startSound(
-                type: determineRecommendedSound(from: normalizedScore),
+                type: currentSound,
                 normalizedScore: normalizedScore,
                 isRecommendedButton: true
             )

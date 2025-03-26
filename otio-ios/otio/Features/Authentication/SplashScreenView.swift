@@ -4,6 +4,7 @@ struct SplashScreenView: View {
     @EnvironmentObject var userService: UserService
     @State private var isActive = false
     @State private var scaleEffect: CGFloat = 1.0
+    @State private var resetNavigation = UUID()
 
     var body: some View {
         ZStack {
@@ -11,8 +12,16 @@ struct SplashScreenView: View {
                 .ignoresSafeArea()
                 
             if isActive {
-                SignInView()
-                    .environmentObject(userService)
+                Group {
+                    if userService.isAuthenticated {
+                        EmotionsView()
+                            .environmentObject(userService)
+                            .id(resetNavigation) // Force view refresh on navigation reset
+                    } else {
+                        SignInView()
+                            .environmentObject(userService)
+                    }
+                }
             } else {
                 VStack {
                     Spacer()
@@ -35,6 +44,10 @@ struct SplashScreenView: View {
                     Spacer()
                 }
             }
+        }
+        .onChange(of: userService.isAuthenticated) { _ in
+            // Reset navigation when auth state changes
+            resetNavigation = UUID()
         }
     }
 }

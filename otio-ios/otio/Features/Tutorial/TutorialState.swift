@@ -9,7 +9,36 @@ struct TutorialSlide: Identifiable {
 
 class TutorialState: ObservableObject {
     @Published var currentSlide = 0
-    let currentVersion = 1
+    static let currentVersion = 1
+    
+    // Set this to true during development to always show the tutorial
+    #if DEBUG
+    static let forceShowTutorialForTesting = false // Change this to true to force the tutorial to show
+    #else
+    static let forceShowTutorialForTesting = false
+    #endif
+    
+    static func shouldShowTutorial() -> Bool {
+        // Always show tutorial if force flag is true
+        if forceShowTutorialForTesting {
+            return true
+        }
+        
+        let lastSeenVersion = UserDefaults.standard.integer(forKey: "tutorialVersion")
+        return lastSeenVersion < currentVersion
+    }
+    
+    static func markTutorialAsSeen() {
+        UserDefaults.standard.set(currentVersion, forKey: "tutorialVersion")
+    }
+    
+    #if DEBUG
+    // Add this method for testing
+    static func resetTutorialState() {
+        UserDefaults.standard.removeObject(forKey: "tutorialVersion")
+        print("DEBUG: Tutorial state reset")
+    }
+    #endif
     
     let slides = [
         TutorialSlide(
@@ -39,6 +68,6 @@ class TutorialState: ObservableObject {
     }
     
     func completeTutorial() {
-        UserDefaults.standard.set(currentVersion, forKey: "tutorialVersion")
+        UserDefaults.standard.set(TutorialState.currentVersion, forKey: "tutorialVersion")
     }
 }

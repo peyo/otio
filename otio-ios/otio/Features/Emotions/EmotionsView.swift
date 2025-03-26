@@ -18,90 +18,123 @@ struct EmotionsView: View {
     @State private var navigationId = UUID()
     @State private var showDeleteConfirmation = false
     @State private var emotionToDelete: EmotionData?
+    @StateObject private var tutorialState = TutorialState()
+    @State private var showTutorial = false
 
     var body: some View {
+        mainNavigationStack
+    }
+
+    private var mainNavigationStack: some View {
         NavigationStack {
-            Group {
-                if userService.isAuthenticated {
-                    GeometryReader { geometry in
-                        authenticatedContent(geometry: geometry)
-                    }
-                } else {
-                    SignInView()
-                        .environmentObject(userService)
-                        .onAppear(perform: clearState)
+            mainContent
+                .id(navigationId)
+                .overlay(deleteConfirmationOverlay)
+                .onAppear {
+                    // Reset tutorial version to show it again
+                    // UserDefaults.standard.set(0, forKey: "tutorialVersion")
+                    
+                    // Replace your current logic with this
+                    showTutorial = TutorialState.shouldShowTutorial()
                 }
-            }
-            .id(navigationId)
-            .overlay {
-                if showDeleteConfirmation {
-                    Color.black.opacity(0.3)
-                        .ignoresSafeArea()
-                        .overlay {
-                            VStack(spacing: 24) {
-                                Text("delete emotion")
-                                    .font(.custom("IBMPlexMono-Light", size: 17))
-                                    .fontWeight(.semibold)
-                                
-                                Text("let go of this emotion?")
-                                    .font(.custom("IBMPlexMono-Light", size: 15))
-                                    .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.center)
-                                
-                                HStack(spacing: 16) {
-                                    Button {
-                                        emotionToDelete = nil
-                                        showDeleteConfirmation = false
-                                    } label: {
-                                        Text("cancel")
-                                            .font(.custom("IBMPlexMono-Light", size: 15))
-                                            .foregroundColor(.primary)
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .overlay(
-                                                Rectangle()
-                                                    .strokeBorder(Color.primary, lineWidth: 1)
-                                            )
-                                    }
-                                    
-                                    Button {
-                                        if let emotion = emotionToDelete,
-                                           let userId = userService.userId {
-                                            Task {
-                                                do {
-                                                    try await EmotionService.deleteEmotion(emotionId: emotion.id, userId: userId)
-                                                    await fetchEmotions()
-                                                } catch {
-                                                    errorMessage = error.localizedDescription
-                                                    showError = true
-                                                }
-                                            }
-                                        }
-                                        emotionToDelete = nil
-                                        showDeleteConfirmation = false
-                                    } label: {
-                                        Text("delete")
-                                            .font(.custom("IBMPlexMono-Light", size: 15))
-                                            .foregroundColor(.primary)
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .overlay(
-                                                Rectangle()
-                                                    .strokeBorder(Color.primary, lineWidth: 1)
-                                            )
-                                    }
-                                }
-                            }
-                            .padding(24)
-                            .background(Color.appBackground)
-                            .padding(.horizontal, 40)
-                        }
-                        .transition(.opacity)
+                .fullScreenCover(isPresented: $showTutorial) {
+                    TutorialView()
                 }
+        }
+    }
+
+    private var mainContent: some View {
+        Group {
+            if userService.isAuthenticated {
+                GeometryReader { geometry in
+                    authenticatedContent(geometry: geometry)
+                }
+            } else {
+                SignInView()
+                    .environmentObject(userService)
+                    .onAppear(perform: clearState)
             }
         }
     }
-    
+
+    private var deleteConfirmationOverlay: some View {
+        Group {
+            if showDeleteConfirmation {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .overlay(deleteConfirmationContent)
+                    .transition(.opacity)
+            }
+        }
+    }
+
+    private var deleteConfirmationContent: some View {
+        VStack(spacing: 24) {
+            Text("delete emotion")
+                .font(.custom("IBMPlexMono-Light", size: 17))
+                .fontWeight(.semibold)
+            
+            Text("let go of this emotion?")
+                .font(.custom("IBMPlexMono-Light", size: 15))
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            
+            HStack(spacing: 16) {
+                cancelButton
+                deleteButton
+            }
+        }
+        .padding(24)
+        .background(Color.appBackground)
+        .padding(.horizontal, 40)
+    }
+
+    private var cancelButton: some View {
+        Button {
+            emotionToDelete = nil
+            showDeleteConfirmation = false
+        } label: {
+            Text("cancel")
+                .font(.custom("IBMPlexMono-Light", size: 15))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .overlay(
+                    Rectangle()
+                        .strokeBorder(Color.primary, lineWidth: 1)
+                )
+        }
+    }
+
+    private var deleteButton: some View {
+        Button {
+            if let emotion = emotionToDelete,
+               let userId = userService.userId {
+                Task {
+                    do {
+                        try await EmotionService.deleteEmotion(emotionId: emotion.id, userId: userId)
+                        await fetchEmotions()
+                    } catch {
+                        errorMessage = error.localizedDescription
+                        showError = true
+                    }
+                }
+            }
+            emotionToDelete = nil
+            showDeleteConfirmation = false
+        } label: {
+            Text("delete")
+                .font(.custom("IBMPlexMono-Light", size: 15))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .overlay(
+                    Rectangle()
+                        .strokeBorder(Color.primary, lineWidth: 1)
+                )
+        }
+    }
+
     private func authenticatedContent(geometry: GeometryProxy) -> some View {
         ZStack {
             Color.appBackground

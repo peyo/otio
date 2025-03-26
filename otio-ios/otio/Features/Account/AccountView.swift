@@ -3,113 +3,104 @@ import FirebaseAuth
 
 struct AccountView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var userService = UserService.shared
-    @State private var shouldShowSignIn = false
+    @EnvironmentObject var userService: UserService
     
     var body: some View {
-        NavigationStack {
-            GeometryReader { geometry in
-                ZStack {
-                    Color.appBackground
-                        .ignoresSafeArea()
-                    
-                    if shouldShowSignIn {
-                        SignInView()
-                            .environmentObject(userService)
-                    } else {
-                        VStack(spacing: 0) {
-                            // User Information
-                            VStack(alignment: .leading, spacing: 24) {
-                                if let email = userService.userEmail {
-                                    Text("email address: \(email)")
-                                        .font(.custom("IBMPlexMono-Light", size: 15))
-                                        .foregroundColor(.primary)
-                                }
-                                
-                                if let joinDate = userService.joinDate {
-                                    Text("join date: \(formatDate(joinDate))")
-                                        .font(.custom("IBMPlexMono-Light", size: 15))
-                                        .foregroundColor(.primary)
-                                }
-                                
-                                Text("total breath time: \(formatMinutes(userService.totalBreathingMinutes))")
-                                    .font(.custom("IBMPlexMono-Light", size: 15))
-                                    .foregroundColor(.primary)
-                                
-                                Text("total meditation time: \(formatMinutes(userService.totalMeditationMinutes))")
-                                    .font(.custom("IBMPlexMono-Light", size: 15))
-                                    .foregroundColor(.primary)
-                            }
-                            .padding(.top, 20)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
-                            
-                            Spacer()
-                            
-                            // Credits and Logout Buttons
-                            VStack(spacing: 24) {
-                                NavigationLink {
-                                    ManifestoCreditsView()
-                                } label: {
-                                    Text("manifesto / credits")
-                                        .font(.custom("IBMPlexMono-Light", size: 15))
-                                        .foregroundColor(.primary)
-                                        .frame(height: 50)
-                                        .padding(.horizontal)
-                                        .overlay(
-                                            Rectangle()
-                                                .strokeBorder(Color.primary, lineWidth: 1)
-                                        )
-                                }
-                                
-                                Button(action: {
-                                    userService.signOut()
-                                    shouldShowSignIn = true
-                                }) {
-                                    Text("log out")
-                                        .font(.custom("IBMPlexMono-Light", size: 15))
-                                        .foregroundColor(.primary)
-                                        .frame(height: 50)
-                                        .padding(.horizontal)
-                                        .overlay(
-                                            Rectangle()
-                                                .strokeBorder(Color.primary, lineWidth: 1)
-                                        )
-                                }
-                            }
-                            .padding(.bottom, 40)
-                            .padding(.horizontal, 20)
-                        }
-                    }
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        Text("account")
-                            .font(.custom("IBMPlexMono-Light", size: 22))
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            dismiss()
-                        } label: {
-                            Image(systemName: "chevron.left")
+        GeometryReader { geometry in
+            ZStack {
+                Color.appBackground
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    // User Information
+                    VStack(alignment: .leading, spacing: 24) {
+                        if let email = userService.userEmail {
+                            Text("email address: \(email)")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
                                 .foregroundColor(.primary)
                         }
+                        
+                        if let joinDate = userService.joinDate {
+                            Text("join date: \(formatDate(joinDate))")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                                .foregroundColor(.primary)
+                        }
+                        
+                        Text("total breath time: \(formatMinutes(userService.totalBreathingMinutes))")
+                            .font(.custom("IBMPlexMono-Light", size: 15))
+                            .foregroundColor(.primary)
+                        
+                        Text("total meditation time: \(formatMinutes(userService.totalMeditationMinutes))")
+                            .font(.custom("IBMPlexMono-Light", size: 15))
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.top, 20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+                    
+                    Spacer()
+                    
+                    // Credits and Logout Buttons
+                    VStack(spacing: 24) {
+                        NavigationLink {
+                            ManifestoCreditsView()
+                        } label: {
+                            Text("manifesto / credits")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                                .foregroundColor(.primary)
+                                .frame(height: 50)
+                                .padding(.horizontal)
+                                .overlay(
+                                    Rectangle()
+                                        .strokeBorder(Color.primary, lineWidth: 1)
+                                )
+                        }
+                        
+                        Button(action: {
+                            userService.signOut()
+                        }) {
+                            Text("log out")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                                .foregroundColor(.primary)
+                                .frame(height: 50)
+                                .padding(.horizontal)
+                                .overlay(
+                                    Rectangle()
+                                        .strokeBorder(Color.primary, lineWidth: 1)
+                                )
+                        }
+                    }
+                    .padding(.bottom, 40)
+                    .padding(.horizontal, 20)
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("account")
+                        .font(.custom("IBMPlexMono-Light", size: 22))
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                }
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.primary)
                     }
                 }
-                .gesture(
-                    DragGesture()
-                        .onEnded { gesture in
-                            if gesture.translation.width > 100 {
-                                dismiss()
-                            }
-                        }
-                )
             }
+            .gesture(
+                DragGesture()
+                    .onEnded { gesture in
+                        if gesture.translation.width > 100 {
+                            dismiss()
+                        }
+                    }
+            )
         }
         .onAppear {
             userService.fetchUserStats()
@@ -136,8 +127,4 @@ struct AccountView: View {
             }
         }
     }
-}
-
-#Preview {
-    AccountView()
 }
