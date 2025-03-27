@@ -4,6 +4,8 @@ import Foundation
 
 struct EmotionsView: View {
     @EnvironmentObject var userService: UserService
+    @StateObject private var emotionService = EmotionService()
+    
     private var emotionOrder: [String] { EmotionData.emotionOrder }
     private var emotions: [String: [String]] { EmotionData.emotions }
 
@@ -210,6 +212,7 @@ struct EmotionsView: View {
             deeperEmotions: emotions[selectedEmotion ?? ""] ?? [],
             onSelect: handleDeeperEmotionSelect
         )
+        .environmentObject(emotionService)
     }
     
     private func clearState() {
@@ -224,6 +227,8 @@ struct EmotionsView: View {
     }
     
     private func handleDeeperEmotionSelect(_ deeperEmotion: String) {
+        // We'll let EmotionDetailView handle the cooldown check
+        // This function will only be called if the cooldown check passes
         Task {
             guard let userId = userService.userId else { return }
             do {

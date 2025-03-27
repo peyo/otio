@@ -6,6 +6,8 @@ struct EmotionDetailView: View {
     let onSelect: (String) -> Void
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var emotionService: EmotionService
+    @State private var showCooldownAlert = false
 
     private func dynamicFontSize(for text: String) -> CGFloat {
         switch text.count {
@@ -92,7 +94,70 @@ struct EmotionDetailView: View {
                             }
                         }
                 )
+                .overlay(cooldownAlertOverlay)
             }
+        }
+    }
+    
+    // Cooldown alert overlay with Group wrapper
+    private var cooldownAlertOverlay: some View {
+        Group {
+            if showCooldownAlert {
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .overlay(cooldownAlertContent)
+                    .transition(.opacity)
+            }
+        }
+    }
+
+    // Cooldown alert content styled like insight view
+    private var cooldownAlertContent: some View {
+        VStack(spacing: 24) {
+            Text("take a moment")
+                .font(.custom("IBMPlexMono-Light", size: 17))
+                .fontWeight(.semibold)
+            
+            VStack(spacing: 16) {
+                Text("take a moment to pause and sit with your emotions. a short cooldown follows to support mindful logging.")
+                    .font(.custom("IBMPlexMono-Light", size: 15))
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                
+                HStack(spacing: 8) {
+                    Text("next log available in:")
+                        .font(.custom("IBMPlexMono-Light", size: 15))
+                        .foregroundColor(.primary)
+                    
+                    Text(emotionService.formattedRemainingTime())
+                        .font(.custom("IBMPlexMono-Light", size: 15))
+                        .foregroundColor(.primary)
+                }
+            }
+            
+            HStack(spacing: 16) {
+                okButton
+            }
+        }
+        .padding(24)
+        .background(Color.appBackground)
+        .padding(.horizontal, 40)
+    }
+    
+    // OK button component
+    private var okButton: some View {
+        Button {
+            showCooldownAlert = false
+        } label: {
+            Text("ok")
+                .font(.custom("IBMPlexMono-Light", size: 15))
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .overlay(
+                    Rectangle()
+                        .strokeBorder(Color.primary, lineWidth: 1)
+                )
         }
     }
 
@@ -102,8 +167,18 @@ struct EmotionDetailView: View {
             let impactGenerator = UIImpactFeedbackGenerator(style: .soft)
             impactGenerator.impactOccurred()
             
-            onSelect(emotion)
-            dismiss()
+            // Check if we can log an emotion
+            if emotionService.canLogEmotion() {
+                // Try to log the emotion
+                if emotionService.tryLogEmotion() {
+                    // Proceed with normal emotion logging
+                    onSelect(emotion)
+                    dismiss()
+                }
+            } else {
+                // Show cooldown alert
+                showCooldownAlert = true
+            }
         } label: {
             Rectangle()
                 .fill(Color.clear)

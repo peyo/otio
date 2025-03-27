@@ -2,7 +2,119 @@ import FirebaseDatabase
 import FirebaseAuth
 import Foundation
 
-class EmotionService {
+class EmotionService: ObservableObject {
+    // Recent emotion logs
+    private var recentLogs: [Date] = []
+    
+    // Cooldown state
+    @Published private(set) var inCooldown: Bool = false
+    private var cooldownEndTime: Date?
+    
+    // Constants
+    private let triggerThreshold = 5 // Number of emotions
+    private let triggerTimeWindow: TimeInterval = 10 * 60 // 10 minutes in seconds
+    private let cooldownPeriod: TimeInterval = 20 * 60 // 20 minutes in seconds
+    
+    init() {
+        // Load saved state if needed
+        loadState()
+    }
+    
+    // Check if user can log an emotion
+    func canLogEmotion() -> Bool {
+        // If cooldown has ended, update state
+        if let endTime = cooldownEndTime, Date() >= endTime {
+            inCooldown = false
+            cooldownEndTime = nil
+            saveState()
+        }
+        
+        return !inCooldown
+    }
+    
+    // Try to log an emotion - returns true if successful, false if in cooldown
+    func tryLogEmotion() -> Bool {
+        // First check if we're in cooldown
+        if !canLogEmotion() {
+            return false
+        }
+        
+        // Record this attempt
+        recentLogs.append(Date())
+        
+        // Check if we need to trigger cooldown
+        checkAndTriggerCooldown()
+        
+        // Save state
+        saveState()
+        
+        // Logging was successful
+        return true
+    }
+    
+    // Check if we need to trigger cooldown
+    private func checkAndTriggerCooldown() {
+        let windowStart = Date().addingTimeInterval(-triggerTimeWindow)
+        
+        // Count logs in the trigger window
+        let recentLogCount = recentLogs.filter { $0 >= windowStart }.count
+        
+        // If threshold reached, trigger cooldown
+        if recentLogCount >= triggerThreshold {
+            triggerCooldown()
+        }
+        
+        // Clean up old logs
+        recentLogs = recentLogs.filter { $0 >= windowStart }
+    }
+    
+    // Trigger the cooldown period
+    private func triggerCooldown() {
+        inCooldown = true
+        cooldownEndTime = Date().addingTimeInterval(cooldownPeriod)
+    }
+    
+    // Get remaining cooldown time in seconds
+    func remainingCooldownTime() -> TimeInterval {
+        guard inCooldown, let endTime = cooldownEndTime else {
+            return 0
+        }
+        
+        return max(0, endTime.timeIntervalSince(Date()))
+    }
+    
+    // Format remaining time as minutes only (Xm)
+    func formattedRemainingTime() -> String {
+        let remaining = Int(remainingCooldownTime())
+        if remaining <= 0 {
+            return "0m"
+        }
+        
+        let minutes = Int(ceil(Double(remaining) / 60.0)) // Round up to the next minute
+        return "\(minutes)m"
+    }
+    
+    // Save state to UserDefaults
+    private func saveState() {
+        let defaults = UserDefaults.standard
+        defaults.set(recentLogs, forKey: "EmotionService.recentLogs")
+        defaults.set(cooldownEndTime, forKey: "EmotionService.cooldownEndTime")
+        defaults.set(inCooldown, forKey: "EmotionService.inCooldown")
+    }
+    
+    // Load state from UserDefaults
+    private func loadState() {
+        let defaults = UserDefaults.standard
+        if let savedLogs = defaults.array(forKey: "EmotionService.recentLogs") as? [Date] {
+            recentLogs = savedLogs
+        }
+        cooldownEndTime = defaults.object(forKey: "EmotionService.cooldownEndTime") as? Date
+        inCooldown = defaults.bool(forKey: "EmotionService.inCooldown")
+        
+        // Validate state on load
+        _ = canLogEmotion() // This will update inCooldown if needed
+    }
+
     static func submitEmotion(type: String, userId: String) async throws {
         print("Submitting emotion for user:", userId)  // Add debug log
         let ref = Database.database().reference()

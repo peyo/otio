@@ -11,7 +11,7 @@
 		D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EB52D2B27F600E0F36E /* FirebaseDatabase */; };
 		D0079EBC2D2B372800E0F36E /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBB2D2B372800E0F36E /* GoogleSignIn */; };
 		D0079EBE2D2B372800E0F36E /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */; };
-		D07F38F42D3DF46C00BDDD62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D07F38F32D3DF46C00BDDD62 /* Launch Screen.storyboard */; };
+		D07F38F42D3DF46C00BDDD62 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D07F38F32D3DF46C00BDDD62 /* LaunchScreen.storyboard */; };
 		D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = D0834F102D2B9406000200C7 /* FirebaseFunctions */; };
 		D08350162D2F1BC0000200C7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D08350152D2F1BC0000200C7 /* FirebaseFirestore */; };
 		D08350192D2F1C15000200C7 /* Fakery in Frameworks */ = {isa = PBXBuildFile; productRef = D08350182D2F1C15000200C7 /* Fakery */; };
@@ -41,7 +41,7 @@
 		D064A4CC2D2646450001C402 /* otio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = otio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D064A4DC2D2646460001C402 /* otioTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = otioTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D064A4E62D2646460001C402 /* otioUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = otioUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D07F38F32D3DF46C00BDDD62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		D07F38F32D3DF46C00BDDD62 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -103,7 +103,7 @@
 		D064A4C32D2646450001C402 = {
 			isa = PBXGroup;
 			children = (
-				D07F38F32D3DF46C00BDDD62 /* Launch Screen.storyboard */,
+				D07F38F32D3DF46C00BDDD62 /* LaunchScreen.storyboard */,
 				D064A4CE2D2646450001C402 /* otio */,
 				D064A4CD2D2646450001C402 /* Products */,
 			);
@@ -251,7 +251,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D07F38F42D3DF46C00BDDD62 /* Launch Screen.storyboard in Resources */,
+				D07F38F42D3DF46C00BDDD62 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

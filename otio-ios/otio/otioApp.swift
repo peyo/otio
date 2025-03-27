@@ -82,7 +82,7 @@ struct otioApp: App {
     
     var body: some Scene {
         WindowGroup {
-            SplashScreenView()
+            RouterView()
                 .environmentObject(userService)
         }
     }
