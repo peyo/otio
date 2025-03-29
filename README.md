@@ -9,9 +9,7 @@ otio is a mobile application designed to help users track and analyze their emot
 - **Emotion Tracking**: Users can log their emotions, categorized by type (e.g., Happy, Sad, Anxious) and intensity. This data is securely stored in Firebase Realtime Database.
 - **AI-Powered Insights**: The app generates personalized insights using OpenAI's GPT model, providing users with meaningful feedback about their emotional patterns.
 - **Breathing Techniques**: Includes guided breathing exercises, such as box breathing, to help users manage stress and anxiety. Each exercise is paired with an instructional intro and a calming animation to guide the practice effectively.
-- **Soundscapes**: The app features carefully curated soundscapes, including:
-  - Oscillator-generated tones for mental clarity and grounding.
-  - A serene sound recording from Rancheria Falls, Yosemite, bringing nature's tranquility to your fingertips.
+- **Binaural Beats**: The app offers thoughtfully curate binaural beats designed to enhance your meditation practice, pairing each beat with guided introductions for every emotion. This approach invites you to sit, reflect, and ground yourself while enjoying oscillator-generated tones that promote mental clarity alongside a serene recording from Rancheria Falls, Yosemite.
 
 ## Technology Stack
 
