@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "otio-light.png",
+      "filename" : "Horseshoe.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -12,7 +12,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "otio-dark.png",
+      "filename" : "Horseshoe_WhiteOnTransparent.png",
       "idiom" : "universal",
       "scale" : "1x"
     },

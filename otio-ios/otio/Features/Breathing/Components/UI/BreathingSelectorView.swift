@@ -46,6 +46,5 @@ struct BreathingSelectorView: View {
                 }
             }
         }
-        .padding(.horizontal)
     }
 }

@@ -13,7 +13,7 @@ class EmotionService: ObservableObject {
     // Constants
     private let triggerThreshold = 5 // Number of emotions
     private let triggerTimeWindow: TimeInterval = 10 * 60 // 10 minutes in seconds
-    private let cooldownPeriod: TimeInterval = 20 * 60 // 20 minutes in seconds
+    private let cooldownPeriod: TimeInterval = 30 * 60 // 30 minutes in seconds
     
     init() {
         // Load saved state if needed

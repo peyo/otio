@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "listening-screen.png",
+      "filename" : "listening_screen_dark.png",
       "idiom" : "universal",
       "scale" : "1x"
     },

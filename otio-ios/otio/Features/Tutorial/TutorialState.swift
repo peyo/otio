@@ -2,7 +2,8 @@ import SwiftUI
 
 struct TutorialSlide: Identifiable {
     let id = UUID()
-    let image: String
+    let lightModeImage: String  // Image for light mode
+    let darkModeImage: String   // Image for dark mode
     let title: String
     let description: String
 }
@@ -42,22 +43,26 @@ class TutorialState: ObservableObject {
     
     let slides = [
         TutorialSlide(
-            image: "emotions-screen",
+            lightModeImage: "emotions_screen_light",
+            darkModeImage: "emotions_screen_dark",
             title: /*"track your emotions",*/"",
             description: "tap an emotion whenever you'd like to track how you're feeling. studies (lieberman, 2007) found that naming emotions reduces amygdala activity, making feelings less overwhelming."
         ),
         TutorialSlide(
-            image: "insights-screen",
+            lightModeImage: "insights_screen_light",
+            darkModeImage: "insights_screen_dark",
             title: /*"spot emotional insights",*/"",
             description: "view your emotional patterns and receive daily reflections. mindfulness research (kabat-zinn, 1990) shows that reflective awareness improves mental health and emotional understanding."
         ),
         TutorialSlide(
-            image: "listening-screen",
+            lightModeImage: "listening_screen_light",
+            darkModeImage: "listening_screen_dark",
             title: /*"listen and center",*/"",
             description: "choose from binaural beats and nature sounds from u.s. parks. studies (zeidan, 2010 and goyal, 2014) show meditation improves focus and reduces anxiety."
         ),
         TutorialSlide(
-            image: "breathing-screen",
+            lightModeImage: "breathing_screen_light",
+            darkModeImage: "breathing_screen_dark",
             title: /*"take a breath",*/"",
             description: "follow guided breathing exercises. research (balban, 2023) found that this cyclic sighing pattern reduces anxiety and negative mood more effectively than meditation alone."
         )

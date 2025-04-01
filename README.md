@@ -1,47 +1,47 @@
 # otio
 
-## Project Overview
+## project overview
 
 otio is a mobile application designed to help users track and analyze their emotional states. The app provides insights into users' emotional journeys, allowing them to understand their feelings better and recognize patterns in their emotional well-being.
 
-## Features
+## features
 
-- **Emotion Tracking**: Users can log their emotions, categorized by type (e.g., Happy, Sad, Anxious) and intensity. This data is securely stored in Firebase Realtime Database.
-- **AI-Powered Insights**: The app generates personalized insights using OpenAI's GPT model, providing users with meaningful feedback about their emotional patterns.
-- **Breathing Techniques**: Includes guided breathing exercises, such as box breathing, to help users manage stress and anxiety. Each exercise is paired with an instructional intro and a calming animation to guide the practice effectively.
-- **Binaural Beats**: The app offers thoughtfully curate binaural beats designed to enhance your meditation practice, pairing each beat with guided introductions for every emotion. This approach invites you to sit, reflect, and ground yourself while enjoying oscillator-generated tones that promote mental clarity alongside a serene recording from Rancheria Falls, Yosemite.
+- **emotion tracking**: users can log their emotions, categorized by type (e.g., happy, sad, anxious) and intensity. this data is securely stored in firebase realtime database.
+- **ai-powered insights**: the app generates personalized insights using openai's gpt model, providing users with meaningful feedback about their emotional patterns.
+- **breathing techniques**: includes guided breathing exercises, such as box breathing, to help users manage stress and anxiety. each exercise is paired with an instructional intro and a calming animation to guide the practice effectively.
+- **binaural beats**: the app offers thoughtfully curate binaural beats designed to enhance your meditation practice, pairing each beat with guided introductions for every emotion. this approach invites you to sit, reflect, and ground yourself while enjoying oscillator-generated tones that promote mental clarity alongside a serene recording from rancheria falls, yosemite.
 
-## Technology Stack
+## technology stack
 
-- **Frontend**: 
-  - SwiftUI for the iOS application
-  - Firebase SDK for authentication and data management
+- **frontend**: 
+  - swiftui for the ios application
+  - firebase sdk for authentication and data management
 
-- **Backend & Infrastructure**: 
-  - Firebase Authentication for secure user management
-  - Firebase Realtime Database for data storage
-  - Firebase Cloud Functions for serverless operations
-  - OpenAI GPT API for generating personalized emotional insights
+- **backend & infrastructure**: 
+  - firebase authentication for secure user management
+  - firebase realtime database for data storage
+  - firebase cloud functions for serverless operations
+  - openai gpt api for generating personalized emotional insights
 
-## Installation
+## installation
 
-### iOS App
+### ios app
 
-1. Open the `otio.xcodeproj` in Xcode.
-2. Ensure you have the latest version of Xcode and the necessary iOS SDK.
-3. Run the app on a simulator or a physical device.
+1. open the `otio.xcodeproj` in xcode.
+2. ensure you have the latest version of xcode and the necessary ios sdk.
+3. run the app on a simulator or a physical device.
 
-### Firebase Setup
+### firebase setup
 
-1. Create a new Firebase project in the [Firebase Console](https://console.firebase.google.com)
-2. Enable Authentication with Google Sign-In
-3. Set up Realtime Database
-4. Configure Cloud Functions with OpenAI integration
+1. create a new firebase project in the [firebase console](https://console.firebase.google.com)
+2. enable authentication with google sign-in
+3. set up realtime database
+4. configure cloud functions with openai integration
 
-## Contributing
+## contributing
 
-Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
+contributions are welcome! please feel free to submit a pull request or open an issue for any suggestions or improvements.
 
-## License
+## license
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+this project is licensed under the mit license - see the [license](license) file for details.

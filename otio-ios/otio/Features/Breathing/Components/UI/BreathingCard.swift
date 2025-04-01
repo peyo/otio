@@ -37,6 +37,5 @@ struct BreathingCard: View {
                     onTap()  // Trigger the action when released
                 }
         )
-        .padding(.horizontal, 4)
     }
 }

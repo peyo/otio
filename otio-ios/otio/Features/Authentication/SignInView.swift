@@ -58,7 +58,7 @@ struct SignInView: View {
                             }
                         }) {
                             HStack(spacing: 12) {
-                                if let image = UIImage(named: "google-logo") {
+                                if let image = UIImage(named: "google_logo") {
                                     Image(uiImage: image)
                                         .resizable()
                                         .scaledToFit()

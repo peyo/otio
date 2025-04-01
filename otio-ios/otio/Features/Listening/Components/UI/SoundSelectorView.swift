@@ -62,6 +62,5 @@ struct SoundSelectorView: View {
                 }
             }
         }
-        .padding(.horizontal)
     }
 }

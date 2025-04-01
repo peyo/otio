@@ -3,14 +3,19 @@ import SwiftUI
 struct TutorialView: View {
     @StateObject private var tutorialState = TutorialState()
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme  // Get the current color scheme
     @State private var showSwipeHint = true
     
     var body: some View {
         TabView(selection: $tutorialState.currentSlide) {
             ForEach(tutorialState.slides.indices, id: \.self) { index in
                 VStack(spacing: 20) {
-                    // Image
-                    Image(tutorialState.slides[index].image)
+                    // Image - choose based on color scheme
+                    let imageName = colorScheme == .dark ? 
+                        tutorialState.slides[index].darkModeImage : 
+                        tutorialState.slides[index].lightModeImage
+                    
+                    Image(imageName)
                         .resizable()
                         .scaledToFit()
                         .frame(height: UIScreen.main.bounds.height * 0.6)
@@ -78,6 +83,14 @@ struct TutorialView: View {
                     showSwipeHint = false
                 }
             }
+            
+            // Convert SwiftUI colors to UIColors for the page control
+            let appTextUIColor = UIColor.label // This is what Color.appText uses
+            let appCardBackgroundUIColor = UIColor.systemGray5 // This is what Color.appCardBackground uses
+            
+            // Customize the page indicator dots
+            UIPageControl.appearance().currentPageIndicatorTintColor = appTextUIColor
+            UIPageControl.appearance().pageIndicatorTintColor = appCardBackgroundUIColor
         }
         // Dismiss swipe hint on first swipe
         .onChange(of: tutorialState.currentSlide) { _ in

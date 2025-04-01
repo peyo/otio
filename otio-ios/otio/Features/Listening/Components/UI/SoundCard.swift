@@ -36,6 +36,5 @@ struct SoundCard: View {
                     onTap()  // Changed from 'action()' to 'onTap()'
                 }
         )
-        .padding(.horizontal, 4)
     }
 }

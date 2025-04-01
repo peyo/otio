@@ -198,7 +198,6 @@ struct BreathingView: View {
                     }
                 }
             }
-            .padding(.horizontal, 20)
             .padding(.vertical, geometry.size.height * 0.05)  // Responsive vertical padding
         }
     }

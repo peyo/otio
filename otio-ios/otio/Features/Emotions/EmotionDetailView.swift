@@ -119,7 +119,7 @@ struct EmotionDetailView: View {
                 .fontWeight(.semibold)
             
             VStack(spacing: 16) {
-                Text("take a moment to pause and sit with your emotions. a short cooldown follows to support mindful logging.")
+                Text("pause and sit with your emotions. a short cooldown follows to support mindful logging.")
                     .font(.custom("IBMPlexMono-Light", size: 15))
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)

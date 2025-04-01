@@ -135,7 +135,7 @@ struct ListeningView: View {
                 // Play/Stop button
                 playButton(geometry: geometry)
             }
-            .padding(.horizontal, 20)
+            //.padding(.horizontal, 20)
             .padding(.vertical, geometry.size.height * 0.05)
         }
     }

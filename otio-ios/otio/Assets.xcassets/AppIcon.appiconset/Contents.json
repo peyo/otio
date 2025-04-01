@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon-dark.png",
+      "filename" : "Horseshoe_WhiteOnDark_1024.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "icon-dark 1.png",
+      "filename" : "Horseshoe_WhiteOnDark_1024 1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "otio-light.png",
+      "filename" : "Horseshoe_WhiteOnDark_1024 2.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
