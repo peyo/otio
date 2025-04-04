@@ -150,12 +150,12 @@ struct EmotionsView: View {
                         onEmotionTap: handleEmotionTap,
                         geometry: geometry
                     )
-                    .padding(.top, geometry.size.height * 0.04)
+                    .padding(.top, geometry.size.height * 0.06)
                     
                     Spacer()
                         .frame(
-                            minHeight: geometry.size.height * 0.04,
-                            maxHeight: geometry.size.height * 0.06
+                            minHeight: geometry.size.height * 0.06,
+                            maxHeight: geometry.size.height * 0.08
                         )
                     
                     RecentEmotionsView(

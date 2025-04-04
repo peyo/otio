@@ -9,6 +9,7 @@ enum SoundType: String, CaseIterable {
     case scared = "scared"
     case angry = "angry"
     case sad = "sad"
+    case balanced = "balanced"
     case rancheriaFalls = "rancheria falls"
     case recommendedSound = "recommended sound"
     
@@ -16,6 +17,8 @@ enum SoundType: String, CaseIterable {
     var audioFileName: String? {
         switch self {
         case .rancheriaFalls:
+            return "2024-09-15-rancheria-falls.mp3"
+        case .balanced:
             return "2024-09-15-rancheria-falls.mp3"
         default:
             return nil
@@ -33,6 +36,7 @@ enum SoundType: String, CaseIterable {
         case .scared: return "scared-meditation.mp3"
         case .angry: return "angry-meditation.mp3"
         case .sad: return "sad-meditation.mp3"
+        case .balanced: return "balanced-meditation.mp3"
         case .rancheriaFalls: return "rancheria-falls-meditation.mp3"
         case .recommendedSound: return "recommended-meditation.mp3"
         }
@@ -58,8 +62,8 @@ func determineRecommendedSound(from normalizedScore: Double) -> SoundType {
     case -1.0..<(-0.75):  // Sad
         return .sad
     case 0.0:  // Balanced (exact 0.0)
-        return .rancheriaFalls
+        return .balanced
     default:
-        return .rancheriaFalls
+        return .balanced
     }
 }

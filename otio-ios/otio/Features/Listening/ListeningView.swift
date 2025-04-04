@@ -164,16 +164,19 @@ struct ListeningView: View {
                             soundManager.skipIntro()
                         }
                         .padding(.top, 8)
+                        .transition(.opacity)
+                        .id(soundManager.isRecommendedIntroPlaying ? "recommended" : "emotion")
                         .onAppear {
-                            print("Skip intro button appeared - isIntroPlaying: \(soundManager.isIntroPlaying), isPlaying: \(isPlaying)")
-                        }
-                        .onDisappear {
-                            print("Skip intro button disappeared")
+                            print("Skip intro button appeared - isIntroPlaying: \(soundManager.isIntroPlaying)")
+                            print("isRecommendedIntro: \(soundManager.isRecommendedIntroPlaying)")
+                            print("isEmotionIntro: \(soundManager.isEmotionIntroPlaying)")
                         }
                 }
             }
             .frame(height: 30) // Give it a fixed height to reserve space
             .padding(.top, 4)
+            .animation(.easeInOut(duration: 0.3), value: soundManager.isRecommendedIntroPlaying)
+            .animation(.easeInOut(duration: 0.3), value: soundManager.isEmotionIntroPlaying)
         }
     }
     

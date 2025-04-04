@@ -9,6 +9,7 @@ struct InsightsView: View {
     let emotions: [EmotionData]
     @State private var insights: [Insight] = []
     @State private var errorMessage: String?
+    @State private var errorTitle: String?
     @State private var currentTask: Task<Void, Never>?
     @State private var cooldownTime: Int = 0
 
@@ -43,15 +44,13 @@ struct InsightsView: View {
                                     Spacer()
                                 }
                                 .frame(height: geometry.size.height * 0.7)
-                            } else if emotions.isEmpty {
-                                EmptyStateView()
                             } else {
                                 // Insights content
                                 VStack(spacing: 16) {
                                     if let errorMessage = errorMessage {
                                         let errorInsight = Insight(
                                             emojiName: "zen",
-                                            title: "digital detour",
+                                            title: errorTitle ?? "oops",
                                             description: errorMessage
                                         )
                                         InsightCard(insight: errorInsight)
@@ -79,7 +78,7 @@ struct InsightsView: View {
                 .navigationBarBackButtonHidden(true)
                 .toolbar {
                     ToolbarItem(placement: .principal) {
-                        Text("insights")
+                        Text("understand")
                             .font(.custom("IBMPlexMono-Light", size: 22))
                             .fontWeight(.semibold)
                     }
@@ -128,13 +127,26 @@ struct InsightsView: View {
         // Check authentication first
         guard let user = Auth.auth().currentUser else {
             print("Debug: ❌ No authenticated user")
-            errorMessage = "please sign in to view insights."
+            await MainActor.run {
+                errorMessage = "please sign in to view insights."
+                errorTitle = "account needed"  // Specific title for auth error
+            }
             return
         }
 
         if emotions.isEmpty {
             print("Debug: ⚠️ no emotions to analyze")
-            errorMessage = "no emotions data available to analyze insights. start logging your feelings."
+            await MainActor.run {
+                errorMessage = "start logging your emotions to view insights."
+                errorTitle = "getting started"  // Specific title for empty emotions
+            }
+            return
+        } else if emotions.count < 7 {
+            print("Debug: ⚠️ not enough emotions for insights: \(emotions.count)/7")
+            await MainActor.run {
+                errorMessage = "you've logged \(emotions.count)/7 emotions. log \(7 - emotions.count) more to receive personalized insights."
+                errorTitle = "almost there"  // Encouraging title for progress
+            }
             return
         }
 
@@ -191,13 +203,17 @@ struct InsightsView: View {
                     self.insights = insights
                     self.cooldownTime = cooldownRemainingMs / 1000
                     self.errorMessage = nil
+                    self.errorTitle = nil  // Clear error title
                 }
                 print("Debug: ✅ Insights updated successfully")
             }
         } catch {
             print("Debug: ❌ Error fetching insights:", error)
             print("Debug: 🔍 Detailed error:", (error as NSError).userInfo)
-            errorMessage = "hmm, looks like this page is taking a breather. try returning and refreshing."
+            await MainActor.run {
+                errorMessage = "hmm, looks like this page is taking a breather. try returning and refreshing."
+                errorTitle = "digital detour"  // Specific title for API errors
+            }
         }
     }
 
@@ -224,30 +240,5 @@ struct InsightsView: View {
         let formatter = Foundation.DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
-    }
-
-    private struct EmptyStateView: View {
-        var body: some View {
-            VStack(spacing: 16) {
-                Image(systemName: "leaf.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40)
-                    .foregroundColor(.primary)
-                
-                Text("start tracking how you feel to get insights about your emotional patterns.")
-                    .font(.custom("IBMPlexMono-Light", size: 15))
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.center)
-            }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(
-                Rectangle()
-                    .fill(Color.appCardBackground)
-            )
-            .padding(.horizontal)
-        }
     }
 }

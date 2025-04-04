@@ -25,48 +25,51 @@ struct EmotionDetailView: View {
                     Color.appBackground
                         .ignoresSafeArea()
                     
-                    VStack(spacing: geometry.size.height * 0.06) {  // Responsive spacing
-                        Text("share your feelings")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
-                            .fontWeight(.medium)
-                            .foregroundColor(.primary)
-                            .padding(.top, geometry.size.height * 0.02)
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 32) {
+                            Text("share your feelings")
+                                .font(.custom("IBMPlexMono-Light", size: 17))
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                                .padding(.top, -32)
 
-                        let buttonSize = min(geometry.size.width * 0.25, 100)  // Responsive button size
-                        let gridSpacing = geometry.size.width * 0.1  // Responsive grid spacing
-                        
-                        let columns = [
-                            GridItem(.fixed(buttonSize), spacing: gridSpacing),
-                            GridItem(.fixed(buttonSize), spacing: gridSpacing)
-                        ]
-                        
-                        if deeperEmotions.count == 1 {
-                            // Single emotion - centered
-                            HStack {
-                                Spacer()
-                                emotionButton(
-                                    emotion: deeperEmotions[0],
-                                    size: buttonSize
-                                )
-                                .padding(.vertical, 8)
-                                Spacer()
-                            }
-                        } else {
-                            // Multiple emotions - grid
-                            LazyVGrid(columns: columns, spacing: geometry.size.height * 0.025) {
-                                ForEach(deeperEmotions, id: \.self) { deeperEmotion in
+                            let buttonSize = min(geometry.size.width * 0.25, 100)  // Responsive button size
+                            let gridSpacing = geometry.size.width * 0.1  // Responsive grid spacing
+                            
+                            let columns = [
+                                GridItem(.fixed(buttonSize), spacing: gridSpacing),
+                                GridItem(.fixed(buttonSize), spacing: gridSpacing)
+                            ]
+                            
+                            if deeperEmotions.count == 1 {
+                                // Single emotion - centered
+                                HStack {
+                                    Spacer()
                                     emotionButton(
-                                        emotion: deeperEmotion,
+                                        emotion: deeperEmotions[0],
                                         size: buttonSize
                                     )
                                     .padding(.vertical, 8)
+                                    Spacer()
                                 }
+                            } else {
+                                // Multiple emotions - grid
+                                LazyVGrid(columns: columns, spacing: geometry.size.height * 0.025) {
+                                    ForEach(deeperEmotions, id: \.self) { deeperEmotion in
+                                        emotionButton(
+                                            emotion: deeperEmotion,
+                                            size: buttonSize
+                                        )
+                                        .padding(.vertical, 8)
+                                    }
+                                }
+                                .padding(.horizontal, geometry.size.width * 0.05)
+                                .frame(maxWidth: .infinity)
                             }
-                            .padding(.horizontal, geometry.size.width * 0.05)
-                            .frame(maxWidth: .infinity)
-                        }
 
-                        Spacer()
+                            Spacer()
+                        }
+                        .padding(.vertical, geometry.size.height * 0.05)
                     }
                 }
                 .navigationBarTitleDisplayMode(.inline)
