@@ -144,7 +144,7 @@ struct InsightsView: View {
         } else if emotions.count < 7 {
             print("Debug: ⚠️ not enough emotions for insights: \(emotions.count)/7")
             await MainActor.run {
-                errorMessage = "you've logged \(emotions.count)/7 emotions. log \(7 - emotions.count) more to receive personalized insights."
+                errorMessage = "log \(7 - emotions.count) more emotions to receive personalized insights."
                 errorTitle = "almost there"  // Encouraging title for progress
             }
             return
@@ -158,12 +158,22 @@ struct InsightsView: View {
             // Create a new Functions instance for each call
             let functions = Functions.functions(app: FirebaseApp.app()!, region: "us-central1")
             
-            // Format emotions without intensity
+            // Format emotions with all required fields
             let formattedEmotions = emotions.map { emotion in
-                [
+                var dict: [String: Any] = [
                     "type": emotion.type,
-                    "date": relativeTimeString(from: emotion.date)  // Removed intensity
+                    "timestamp": Int(emotion.date.timeIntervalSince1970 * 1000)  // Convert to milliseconds
                 ]
+                
+                if let text = emotion.text {
+                    dict["text"] = text
+                }
+                
+                if let energyLevel = emotion.energyLevel {
+                    dict["energy_level"] = energyLevel
+                }
+                
+                return dict
             }
             
             print("Debug: 📤 Cloud Function payload:")

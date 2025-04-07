@@ -68,17 +68,19 @@ struct SignInView: View {
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 24, height: 24)
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.primary)
                                 }
                                 
                                 Text("continue with google")
                                     .font(.custom("IBMPlexMono-Light", size: 15))
-                                    .fontWeight(.semibold)
                             }
-                            .foregroundColor(Color.primary)
-                            .frame(width: 280, height: 55)
-                            .background(Color.primary.opacity(0.15))
-                            .cornerRadius(8)
+                            .foregroundColor(.primary)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primary, lineWidth: 1)
+                            )
                         }
                         .padding(.horizontal, 24)
                     }

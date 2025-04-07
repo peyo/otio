@@ -13,7 +13,6 @@ struct SoundSelectorView: View {
                     // Add an invisible spacer at the beginning to allow the first card to center
                     Spacer()
                         .frame(width: geometry.size.width / 2 - 50)
-                        .opacity(0)
                     
                     // Show recommended sound first
                     VStack {
@@ -54,7 +53,6 @@ struct SoundSelectorView: View {
                     // Add an invisible spacer at the end to allow the last card to center
                     Spacer()
                         .frame(width: geometry.size.width / 2 - 50)
-                        .opacity(0)
                 }
                 .onAppear {
                     // Center the initial sound immediately without animation

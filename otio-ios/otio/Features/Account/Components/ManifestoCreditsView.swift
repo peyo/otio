@@ -82,7 +82,7 @@ struct ManifestoCreditsView: View {
                                         ForEach(["chris cardillo", "liz yoon", "matt klein", "mike sim", "mike yi", "nick brennan", "paul kang"], id: \.self) { name in
                                             Text(name)
                                                 .font(.custom("IBMPlexMono-Light", size: 15))
-                                                .foregroundColor(.secondary)
+                                                .foregroundColor(.primary)
                                         }
                                     }
                                 )
@@ -135,12 +135,12 @@ struct ManifestoCreditsView: View {
                     HStack(alignment: .top, spacing: 8) {
                         Text("•")
                             .font(.custom("IBMPlexMono-Light", size: 15))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
                             .frame(width: 12, alignment: .leading)
                         
                         Text(detail)
                             .font(.custom("IBMPlexMono-Light", size: 15))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.primary)
                     }
                 }
             }

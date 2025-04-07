@@ -10,12 +10,17 @@ class EmotionService: ObservableObject {
     @Published private(set) var inCooldown: Bool = false
     private var cooldownEndTime: Date?
     
+    // Recent emotions data
+    @Published var recentEmotions: [EmotionData] = []
+    
     // Constants
     private let triggerThreshold = 5 // Number of emotions
     private let triggerTimeWindow: TimeInterval = 10 * 60 // 10 minutes in seconds
-    private let cooldownPeriod: TimeInterval = 30 * 60 // 30 minutes in seconds
+    private let cooldownPeriod: TimeInterval = 20 * 60 // 30 minutes in seconds
     
-    init() {
+    static let shared = EmotionService()
+    
+    private init() {
         // Load saved state if needed
         loadState()
     }
@@ -31,6 +36,12 @@ class EmotionService: ObservableObject {
         
         return !inCooldown
     }
+
+    /* Logic for testing without cooldown
+    func canLogEmotion() -> Bool {
+        return true  // Always allow logging, never in cooldown
+    }
+    */
     
     // Try to log an emotion - returns true if successful, false if in cooldown
     func tryLogEmotion() -> Bool {
@@ -114,46 +125,225 @@ class EmotionService: ObservableObject {
         // Validate state on load
         _ = canLogEmotion() // This will update inCooldown if needed
     }
-
-    static func submitEmotion(type: String, userId: String) async throws {
-        print("Submitting emotion for user:", userId)  // Add debug log
+    
+    // Log emotion with optional text and energy level
+    func logEmotion(type: String, text: String? = nil, energyLevel: Int? = nil) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: No user logged in")
+            return
+        }
+        
         let ref = Database.database().reference()
         let emotionRef = ref.child("users").child(userId).child("emotions").childByAutoId()
         
-        let data: [String: Any] = [
+        var data: [String: Any] = [
             "type": type,
-            "timestamp": ServerValue.timestamp()
+            "date": ServerValue.timestamp()
         ]
         
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            emotionRef.setValue(data) { error, _ in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume(returning: ())
+        if let text = text, !text.isEmpty {
+            data["text"] = text
+        }
+        
+        if let energyLevel = energyLevel {
+            data["energy_level"] = energyLevel
+        }
+        
+        emotionRef.setValue(data) { error, _ in
+            if let error = error {
+                print("Error saving emotion: \(error.localizedDescription)")
+            } else {
+                print("Emotion logged successfully")
+                Task {
+                    try? await self.refreshRecentEmotions()
                 }
             }
         }
     }
+    
+    // Update an existing emotion
+    func updateEmotion(id: String, type: String, text: String? = nil, energyLevel: Int? = nil) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: No user logged in")
+            return
+        }
+        
+        let emotionRef = Database.database().reference()
+            .child("users")
+            .child(userId)
+            .child("emotions")
+            .child(id)
+        
+        var updates: [String: Any] = [
+            "type": type
+        ]
+        
+        if let text = text, !text.isEmpty {
+            updates["text"] = text
+        } else {
+            // Remove text field if empty
+            updates["text"] = NSNull()
+        }
+        
+        if let energyLevel = energyLevel {
+            updates["energy_level"] = energyLevel
+        } else {
+            // Remove energy_level field if nil
+            updates["energy_level"] = NSNull()
+        }
+        
+        emotionRef.updateChildValues(updates) { error, _ in
+            if let error = error {
+                print("Error updating emotion: \(error.localizedDescription)")
+            } else {
+                print("Emotion updated successfully")
+                Task {
+                    try? await self.refreshRecentEmotions()
+                }
+            }
+        }
+    }
+    
+    // Delete an emotion
+    func deleteEmotion(id: String) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: No user logged in")
+            return
+        }
+        
+        let emotionRef = Database.database().reference()
+            .child("users")
+            .child(userId)
+            .child("emotions")
+            .child(id)
+        
+        emotionRef.removeValue { error, _ in
+            if let error = error {
+                print("Error deleting emotion: \(error.localizedDescription)")
+            } else {
+                print("Emotion deleted successfully")
+                Task {
+                    try? await self.refreshRecentEmotions()
+                }
+            }
+        }
+    }
+    
+    // Refresh recent emotions
+    @MainActor
+    func refreshRecentEmotions() async throws {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("Error: No user logged in")
+            throw NSError(domain: "EmotionService", code: 1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])
+        }
+        
+        let (_, recent) = try await Self.fetchEmotions(userId: userId)
+        self.recentEmotions = recent
+    }
+    
+    // MARK: - Data Validation
+    
+    private static func validateEmotionData(type: String, energyLevel: Int?, text: String?) throws {
+        // Validate emotion type
+        guard !type.isEmpty else {
+            throw NSError(domain: "EmotionService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Emotion type cannot be empty"])
+        }
+        
+        // Validate energy level if provided
+        if let energyLevel = energyLevel {
+            guard (1...5).contains(energyLevel) else {
+                throw NSError(domain: "EmotionService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Energy level must be between 1 and 5"])
+            }
+        }
+        
+        // Validate text if provided
+        if let text = text {
+            guard text.count <= 500 else {
+                throw NSError(domain: "EmotionService", code: 3, userInfo: [NSLocalizedDescriptionKey: "Notes cannot exceed 500 characters"])
+            }
+        }
+    }
+    
+    private static func validateEmotionData(_ data: [String: Any]) throws -> EmotionData {
+        guard let type = data["type"] as? String,
+              let timestamp = data["timestamp"] as? Double else {
+            throw NSError(domain: "EmotionService", code: 4, userInfo: [NSLocalizedDescriptionKey: "Invalid emotion data structure"])
+        }
+        
+        let energyLevel = data["energy_level"] as? Int
+        let text = data["text"] as? String
+        
+        // Validate the data
+        try validateEmotionData(type: type, energyLevel: energyLevel, text: text)
+        
+        return EmotionData(
+            id: data["id"] as? String ?? UUID().uuidString,
+            type: type,
+            date: Date(timeIntervalSince1970: timestamp / 1000),
+            text: text,
+            energyLevel: energyLevel
+        )
+    }
 
+    // MARK: - Public Methods
+    
+    static func submitEmotion(type: String, userId: String, text: String? = nil, energyLevel: Int? = nil) async throws {
+        print("Submitting emotion:", type)
+        
+        // Validate the data before sending
+        try validateEmotionData(type: type, energyLevel: energyLevel, text: text)
+        
+        let ref = Database.database().reference()
+        let emotionsRef = ref.child("users").child(userId).child("emotions")
+        
+        let emotionData = EmotionData(
+            type: type,
+            text: text,
+            energyLevel: energyLevel
+        )
+        
+        let dict = emotionData.toDictionary()
+        
+        do {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                emotionsRef.childByAutoId().setValue(dict) { error, _ in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume(returning: ())
+                    }
+                }
+            }
+            
+            // Post notification for emotion saved
+            NotificationCenter.default.post(name: NSNotification.Name("EmotionSaved"), object: nil)
+            
+        } catch {
+            print("Error submitting emotion:", error)
+            throw error
+        }
+    }
+    
     static func fetchEmotions(userId: String) async throws -> (all: [EmotionData], recent: [EmotionData]) {
-        print("Fetching emotions for user:", userId)  // Add debug log
+        print("Fetching emotions for user:", userId)
         let ref = Database.database().reference()
         
-        // Get reference for all emotions from the past week
+        // Get reference for all emotions from the past week using indexed query
         let weekAgo = Date().addingTimeInterval(-7 * 24 * 60 * 60)
-        let timestamp = Int(weekAgo.timeIntervalSince1970 * 1000)
+        // Add a small safety margin (1 hour) to ensure we don't miss any emotions
+        let weekAgoTimestamp = Int(weekAgo.addingTimeInterval(-3600).timeIntervalSince1970 * 1000)
         
+        // Get all emotions from the past week using indexed query
         let allEmotionsRef = ref.child("users").child(userId).child("emotions")
             .queryOrdered(byChild: "timestamp")
-            .queryStarting(atValue: timestamp)
+            .queryStarting(atValue: weekAgoTimestamp)
         
-        // Get reference for most recent emotions
+        // Get reference for most recent emotions - limited by count, not by field
         let recentEmotionsRef = ref.child("users").child(userId).child("emotions")
             .queryOrdered(byChild: "timestamp")
-            .queryLimited(toLast: 7)
+            .queryLimited(toLast: 7)  // Fetch more to account for potential filtering
         
-        async let allEmotionsSnapshot = try await withCheckedThrowingContinuation { continuation in
+        async let allEmotionsSnapshot = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DataSnapshot, Error>) in
             allEmotionsRef.observeSingleEvent(of: .value) { snapshot in
                 continuation.resume(returning: snapshot)
             } withCancel: { error in
@@ -161,7 +351,7 @@ class EmotionService: ObservableObject {
             }
         }
         
-        async let recentEmotionsSnapshot = try await withCheckedThrowingContinuation { continuation in
+        async let recentEmotionsSnapshot = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DataSnapshot, Error>) in
             recentEmotionsRef.observeSingleEvent(of: .value) { snapshot in
                 continuation.resume(returning: snapshot)
             } withCancel: { error in
@@ -171,52 +361,52 @@ class EmotionService: ObservableObject {
         
         let (allSnapshot, recentSnapshot) = try await (allEmotionsSnapshot, recentEmotionsSnapshot)
         
-        var allEmotions: [EmotionData] = []
-        var recentEmotions: [EmotionData] = []
-        
         // Process all emotions
-        for child in allSnapshot.children {
+        let allEmotions: [EmotionData] = allSnapshot.children.compactMap { child in
             if let snapshot = child as? DataSnapshot,
-               let dict = snapshot.value as? [String: Any],
-               let type = dict["type"] as? String,
-               let timestamp = dict["timestamp"] as? Double {
-                
-                let date = Date(timeIntervalSince1970: timestamp / 1000)
-                let emotion = EmotionData(
-                    id: snapshot.key,
-                    type: type,
-                    date: date  // Removed intensity
-                )
-                allEmotions.append(emotion)
+               let dict = snapshot.value as? [String: Any] {
+                do {
+                    let emotion = try validateEmotionData(dict)
+                    if emotion.date >= weekAgo {
+                        return emotion
+                    }
+                } catch {
+                    print("Error validating emotion data:", error)
+                    // Continue processing other emotions even if one fails
+                }
             }
+            return nil
         }
         
         // Process recent emotions
-        for child in recentSnapshot.children {
+        let recentEmotions: [EmotionData] = recentSnapshot.children.compactMap { child in
             if let snapshot = child as? DataSnapshot,
-               let dict = snapshot.value as? [String: Any],
-               let type = dict["type"] as? String,
-               let timestamp = dict["timestamp"] as? Double {
-                
-                let date = Date(timeIntervalSince1970: timestamp / 1000)
-                let emotion = EmotionData(
-                    id: snapshot.key,
-                    type: type,
-                    date: date  // Removed intensity
-                )
-                recentEmotions.append(emotion)
+               let dict = snapshot.value as? [String: Any] {
+                do {
+                    let emotion = try validateEmotionData(dict)
+                    return emotion
+                } catch {
+                    print("Error validating emotion data:", error)
+                    // Continue processing other emotions even if one fails
+                }
             }
+            return nil
         }
         
         // Sort emotions by date (newest first)
-        allEmotions.sort { (emotion1: EmotionData, emotion2: EmotionData) -> Bool in
+        let sortedAllEmotions = allEmotions.sorted { (emotion1: EmotionData, emotion2: EmotionData) -> Bool in
             emotion1.date > emotion2.date
         }
-        recentEmotions.sort { (emotion1: EmotionData, emotion2: EmotionData) -> Bool in
+        let sortedRecentEmotions = recentEmotions.sorted { (emotion1: EmotionData, emotion2: EmotionData) -> Bool in
             emotion1.date > emotion2.date
         }
         
-        return (allEmotions, recentEmotions)
+        // Limit recent emotions to 7 after sorting
+        if sortedRecentEmotions.count > 7 {
+            return (sortedAllEmotions, Array(sortedRecentEmotions.prefix(7)))
+        }
+        
+        return (sortedAllEmotions, sortedRecentEmotions)
     }
 
     static func deleteEmotion(emotionId: String, userId: String) async throws {

@@ -4,7 +4,7 @@ import Foundation
 
 struct EmotionsView: View {
     @EnvironmentObject var userService: UserService
-    @StateObject private var emotionService = EmotionService()
+    @StateObject private var emotionService = EmotionService.shared
     
     private var emotionOrder: [String] { EmotionData.emotionOrder }
     private var emotions: [String: [String]] { EmotionData.emotions }
@@ -25,6 +25,38 @@ struct EmotionsView: View {
 
     var body: some View {
         mainNavigationStack
+            .onAppear {
+                setupNotifications()
+            }
+            .onDisappear {
+                NotificationCenter.default.removeObserver(self)
+            }
+    }
+
+    private func setupNotifications() {
+        // Remove the old observers
+        NotificationCenter.default.removeObserver(self)
+        
+        // Add observer for refreshing emotions
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("RefreshEmotions"),
+            object: nil,
+            queue: .main
+        ) { _ in
+            Task {
+                await fetchEmotions()
+            }
+        }
+        
+        // Add observer for emotion saved
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("EmotionSaved"),
+            object: nil,
+            queue: .main
+        ) { _ in
+            // Reset navigation
+            showEmotionDetail = false
+        }
     }
 
     private var mainNavigationStack: some View {
@@ -210,7 +242,8 @@ struct EmotionsView: View {
         EmotionDetailView(
             emotion: selectedEmotion ?? "",
             deeperEmotions: emotions[selectedEmotion ?? ""] ?? [],
-            onSelect: handleDeeperEmotionSelect
+            onSelect: handleDeeperEmotionSelect,
+            showEmotionDetail: $showEmotionDetail
         )
         .environmentObject(emotionService)
     }

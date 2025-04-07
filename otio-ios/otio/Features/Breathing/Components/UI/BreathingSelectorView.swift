@@ -14,7 +14,6 @@ struct BreathingSelectorView: View {
                     // Add an invisible spacer at the beginning to allow the first card to center
                     Spacer()
                         .frame(width: geometry.size.width / 2 - 50)  // Half screen width minus half card width
-                        .opacity(0)
                     
                     ForEach(breathingTechniques, id: \.id) { technique in
                         VStack {
@@ -38,7 +37,6 @@ struct BreathingSelectorView: View {
                     // Add an invisible spacer at the end to allow the last card to center
                     Spacer()
                         .frame(width: geometry.size.width / 2 - 50)  // Half screen width minus half card width
-                        .opacity(0)
                 }
                 .onAppear {
                     // Center the initial technique immediately without animation

@@ -21,7 +21,7 @@ struct InsightCard: View {
             Text(insight.description)
                 .font(.custom("IBMPlexMono-Light", size: 15))
                 .fontWeight(.medium)
-                .foregroundColor(.secondary)
+                .foregroundColor(.primary)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)

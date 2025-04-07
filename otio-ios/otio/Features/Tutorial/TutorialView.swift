@@ -45,10 +45,10 @@ struct TutorialView: View {
                                     .font(.custom("IBMPlexMono-Light", size: 15))
                                 Image(systemName: "chevron.right")
                             }
-                            .foregroundColor(.primary.opacity(0.7))
+                            .foregroundColor(.primary)
                             .padding(.vertical, 8)
                             .padding(.horizontal, 12)
-                            .background(Color.appCardBackground.opacity(0.8))
+                            .background(Color.appCardBackground)
                             .opacity(showSwipeHint ? 1 : 0)
                             .animation(
                                 Animation
