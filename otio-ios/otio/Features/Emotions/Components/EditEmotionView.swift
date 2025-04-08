@@ -4,6 +4,7 @@ import FirebaseDatabase
 
 struct EditEmotionView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var emotionService: EmotionService
     
     let emotion: EmotionData
     let onUpdate: () -> Void
@@ -119,9 +120,6 @@ struct EditEmotionView: View {
                                 if let userId = Auth.auth().currentUser?.uid {
                                     do {
                                         try await updateEmotion(userId: userId)
-                                        DispatchQueue.main.async {
-                                            NotificationCenter.default.post(name: NSNotification.Name("RefreshEmotions"), object: nil)
-                                        }
                                         onUpdate()
                                         dismiss()
                                     } catch {
@@ -190,31 +188,15 @@ struct EditEmotionView: View {
     }
     
     private func updateEmotion(userId: String) async throws {
-        let ref = Database.database().reference()
-            .child("users")
-            .child(userId)
-            .child("emotions")
-            .child(emotion.id)
+        try await emotionService.updateEmotion(
+            id: emotion.id,
+            type: emotion.type,
+            text: text.isEmpty ? nil : text,
+            energyLevel: energyLevel
+        )
         
-        var updates: [String: Any] = [:]
-        
-        // Only update the fields that can be edited
-        if !text.isEmpty {
-            updates["text"] = text
-        } else {
-            updates["text"] = NSNull()  // Remove the field if empty
-        }
-        
-        updates["energy_level"] = energyLevel
-        
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            ref.updateChildValues(updates) { error, _ in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume(returning: ())
-                }
-            }
+        await MainActor.run {
+            NotificationCenter.default.post(name: NSNotification.Name("RefreshEmotions"), object: nil)
         }
     }
     
@@ -247,8 +229,15 @@ struct EditEmotionView: View {
                 
                 // Delete button
                 Button {
-                    onDelete()
-                    dismiss()
+                    Task {
+                        do {
+                            try await emotionService.deleteEmotion(id: emotion.id)
+                            onDelete()
+                            dismiss()
+                        } catch {
+                            print("Error deleting emotion: \(error.localizedDescription)")
+                        }
+                    }
                 } label: {
                     Text("delete")
                         .font(.custom("IBMPlexMono-Light", size: 15))
@@ -265,5 +254,20 @@ struct EditEmotionView: View {
         .padding(24)
         .background(Color.appBackground)
         .padding(.horizontal, 40)
+    }
+}
+
+struct EditEmotionViewWrapper: View {
+    let emotion: EmotionData
+    let onUpdate: () -> Void
+    let onDelete: () -> Void
+    
+    var body: some View {
+        EditEmotionView(
+            emotion: emotion,
+            onUpdate: onUpdate,
+            onDelete: onDelete
+        )
+        .environmentObject(EmotionService.shared)
     }
 }

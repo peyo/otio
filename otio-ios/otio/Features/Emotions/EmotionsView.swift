@@ -18,8 +18,6 @@ struct EmotionsView: View {
     @State private var normalizedScore: Double = 0.0
     @State private var showEmotionDetail = false
     @State private var navigationId = UUID()
-    @State private var showDeleteConfirmation = false
-    @State private var emotionToDelete: EmotionData?
     @StateObject private var tutorialState = TutorialState()
     @State private var showTutorial = false
 
@@ -63,12 +61,7 @@ struct EmotionsView: View {
         NavigationStack {
             mainContent
                 .id(navigationId)
-                .overlay(deleteConfirmationOverlay)
                 .onAppear {
-                    // Reset tutorial version to show it again
-                    // UserDefaults.standard.set(0, forKey: "tutorialVersion")
-                    
-                    // Replace your current logic with this
                     showTutorial = TutorialState.shouldShowTutorial()
                 }
                 .fullScreenCover(isPresented: $showTutorial) {
@@ -88,84 +81,6 @@ struct EmotionsView: View {
                     .environmentObject(userService)
                     .onAppear(perform: clearState)
             }
-        }
-    }
-
-    private var deleteConfirmationOverlay: some View {
-        Group {
-            if showDeleteConfirmation {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                    .overlay(deleteConfirmationContent)
-                    .transition(.opacity)
-            }
-        }
-    }
-
-    private var deleteConfirmationContent: some View {
-        VStack(spacing: 24) {
-            Text("delete emotion")
-                .font(.custom("IBMPlexMono-Light", size: 17))
-                .fontWeight(.semibold)
-            
-            Text("let go of this emotion?")
-                .font(.custom("IBMPlexMono-Light", size: 15))
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-            
-            HStack(spacing: 16) {
-                cancelButton
-                deleteButton
-            }
-        }
-        .padding(24)
-        .background(Color.appBackground)
-        .padding(.horizontal, 40)
-    }
-
-    private var cancelButton: some View {
-        Button {
-            emotionToDelete = nil
-            showDeleteConfirmation = false
-        } label: {
-            Text("cancel")
-                .font(.custom("IBMPlexMono-Light", size: 15))
-                .foregroundColor(.primary)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .overlay(
-                    Rectangle()
-                        .strokeBorder(Color.primary, lineWidth: 1)
-                )
-        }
-    }
-
-    private var deleteButton: some View {
-        Button {
-            if let emotion = emotionToDelete,
-               let userId = userService.userId {
-                Task {
-                    do {
-                        try await EmotionService.deleteEmotion(emotionId: emotion.id, userId: userId)
-                        await fetchEmotions()
-                    } catch {
-                        errorMessage = error.localizedDescription
-                        showError = true
-                    }
-                }
-            }
-            emotionToDelete = nil
-            showDeleteConfirmation = false
-        } label: {
-            Text("delete")
-                .font(.custom("IBMPlexMono-Light", size: 15))
-                .foregroundColor(.primary)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .overlay(
-                    Rectangle()
-                        .strokeBorder(Color.primary, lineWidth: 1)
-                )
         }
     }
 
@@ -194,10 +109,6 @@ struct EmotionsView: View {
                         isLoading: isLoading,
                         recentEmotions: recentEmotions,
                         timeString: RelativeDateFormatter.relativeTimeString,
-                        onDelete: { emotion in
-                            emotionToDelete = emotion
-                            showDeleteConfirmation = true
-                        },
                         geometry: geometry
                     )
                 }
@@ -260,12 +171,9 @@ struct EmotionsView: View {
     }
     
     private func handleDeeperEmotionSelect(_ deeperEmotion: String) {
-        // We'll let EmotionDetailView handle the cooldown check
-        // This function will only be called if the cooldown check passes
         Task {
-            guard let userId = userService.userId else { return }
             do {
-                try await EmotionService.submitEmotion(type: deeperEmotion, userId: userId)
+                try await emotionService.logEmotion(type: deeperEmotion)
                 await fetchEmotions()
             } catch {
                 errorMessage = error.localizedDescription
@@ -285,7 +193,7 @@ struct EmotionsView: View {
         defer { isLoading = false }
         
         do {
-            let (all, recent) = try await EmotionService.fetchEmotions(userId: userId)
+            let (all, recent) = try await EmotionDatabaseService.fetchEmotions(userId: userId)
             
             await MainActor.run {
                 self.weekEmotions = all

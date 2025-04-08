@@ -3,7 +3,6 @@ import SwiftUI
 struct EmotionCard: View {
     let emotion: EmotionData
     let timeString: (Date) -> String
-    let onDelete: () -> Void
     @Environment(\.colorScheme) var colorScheme
     @State private var showEditSheet = false
 
@@ -69,10 +68,14 @@ struct EmotionCard: View {
                 .fill(Color.appCardBackground)
         )
         .sheet(isPresented: $showEditSheet) {
-            EditEmotionView(
+            EditEmotionViewWrapper(
                 emotion: emotion,
-                onUpdate: { /* Will be handled by EmotionService */ },
-                onDelete: onDelete
+                onUpdate: {
+                    NotificationCenter.default.post(name: NSNotification.Name("RefreshEmotions"), object: nil)
+                },
+                onDelete: {
+                    NotificationCenter.default.post(name: NSNotification.Name("RefreshEmotions"), object: nil)
+                }
             )
         }
     }

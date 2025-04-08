@@ -5,7 +5,6 @@ struct RecentEmotionsView: View {
     let isLoading: Bool
     let recentEmotions: [EmotionData]
     let timeString: (Date) -> String
-    let onDelete: (EmotionData) -> Void
     let geometry: GeometryProxy
     
     var body: some View {
@@ -44,8 +43,7 @@ struct RecentEmotionsView: View {
                     ForEach(recentEmotions) { emotion in
                         EmotionCard(
                             emotion: emotion,
-                            timeString: timeString,
-                            onDelete: { onDelete(emotion) }
+                            timeString: timeString
                         )
                     }
                 }

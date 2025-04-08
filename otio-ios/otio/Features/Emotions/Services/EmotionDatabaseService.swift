@@ -1,0 +1,160 @@
+import FirebaseDatabase
+import Foundation
+
+class EmotionDatabaseService {
+    static func submitEmotion(type: String, userId: String, text: String? = nil, energyLevel: Int? = nil) async throws {
+        let ref = Database.database().reference()
+        let emotionsRef = ref.child("users").child(userId).child("emotions")
+        let newEmotionRef = emotionsRef.childByAutoId()
+        
+        guard let id = newEmotionRef.key else {
+            throw NSError(domain: "EmotionService", code: 3, userInfo: [NSLocalizedDescriptionKey: "Failed to generate emotion ID"])
+        }
+        
+        let emotionData = EmotionData(
+            id: id,
+            type: type,
+            text: text,
+            energyLevel: energyLevel
+        )
+        
+        let dict = emotionData.toDictionary()
+        
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            newEmotionRef.setValue(dict) { error, _ in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: ())
+                }
+            }
+        }
+    }
+    
+    static func updateEmotion(id: String, userId: String, type: String, text: String? = nil, energyLevel: Int? = nil) async throws {
+        let emotionRef = Database.database().reference()
+            .child("users")
+            .child(userId)
+            .child("emotions")
+            .child(id)
+        
+        var updates: [String: Any] = [
+            "type": type,
+            "updated_at": ServerValue.timestamp()
+        ]
+        
+        if let text = text, !text.isEmpty {
+            updates["text"] = text
+        } else {
+            updates["text"] = NSNull()
+        }
+        
+        if let energyLevel = energyLevel {
+            updates["energy_level"] = energyLevel
+        } else {
+            updates["energy_level"] = NSNull()
+        }
+        
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            emotionRef.updateChildValues(updates) { error, _ in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: ())
+                }
+            }
+        }
+    }
+    
+    static func deleteEmotion(emotionId: String, userId: String) async throws {
+        let ref = Database.database().reference()
+            .child("users")
+            .child(userId)
+            .child("emotions")
+            .child(emotionId)
+        
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            ref.removeValue { error, _ in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: ())
+                }
+            }
+        }
+    }
+    
+    static func fetchEmotions(userId: String) async throws -> (all: [EmotionData], recent: [EmotionData]) {
+        let ref = Database.database().reference()
+        
+        // Get reference for all emotions from the past week using indexed query
+        let weekAgo = Date().addingTimeInterval(-7 * 24 * 60 * 60)
+        let weekAgoTimestamp = Int(weekAgo.addingTimeInterval(-3600).timeIntervalSince1970 * 1000)
+        
+        let allEmotionsRef = ref.child("users").child(userId).child("emotions")
+            .queryOrdered(byChild: "timestamp")
+            .queryStarting(atValue: weekAgoTimestamp)
+        
+        let recentEmotionsRef = ref.child("users").child(userId).child("emotions")
+            .queryOrdered(byChild: "timestamp")
+            .queryLimited(toLast: 7)
+        
+        async let allEmotionsSnapshot = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DataSnapshot, Error>) in
+            allEmotionsRef.observeSingleEvent(of: .value) { snapshot in
+                continuation.resume(returning: snapshot)
+            } withCancel: { error in
+                continuation.resume(throwing: error)
+            }
+        }
+        
+        async let recentEmotionsSnapshot = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DataSnapshot, Error>) in
+            recentEmotionsRef.observeSingleEvent(of: .value) { snapshot in
+                continuation.resume(returning: snapshot)
+            } withCancel: { error in
+                continuation.resume(throwing: error)
+            }
+        }
+        
+        let (allSnapshot, recentSnapshot) = try await (allEmotionsSnapshot, recentEmotionsSnapshot)
+        
+        return try processSnapshots(allSnapshot: allSnapshot, recentSnapshot: recentSnapshot, weekAgo: weekAgo)
+    }
+    
+    private static func processSnapshots(allSnapshot: DataSnapshot, recentSnapshot: DataSnapshot, weekAgo: Date) throws -> (all: [EmotionData], recent: [EmotionData]) {
+        let allEmotions: [EmotionData] = allSnapshot.children.compactMap { child in
+            if let snapshot = child as? DataSnapshot,
+               let dict = snapshot.value as? [String: Any] {
+                do {
+                    let emotion = try EmotionValidationService().validateEmotionData(dict, id: snapshot.key)
+                    if emotion.date >= weekAgo {
+                        return emotion
+                    }
+                } catch {
+                    print("Error validating emotion data:", error)
+                }
+            }
+            return nil
+        }
+        
+        let recentEmotions: [EmotionData] = recentSnapshot.children.compactMap { child in
+            if let snapshot = child as? DataSnapshot,
+               let dict = snapshot.value as? [String: Any] {
+                do {
+                    let emotion = try EmotionValidationService().validateEmotionData(dict, id: snapshot.key)
+                    return emotion
+                } catch {
+                    print("Error validating emotion data:", error)
+                }
+            }
+            return nil
+        }
+        
+        let sortedAllEmotions = allEmotions.sorted { $0.date > $1.date }
+        let sortedRecentEmotions = recentEmotions.sorted { $0.date > $1.date }
+        
+        return (
+            sortedAllEmotions,
+            sortedRecentEmotions.count > 7 ? Array(sortedRecentEmotions.prefix(7)) : sortedRecentEmotions
+        )
+    }
+} 

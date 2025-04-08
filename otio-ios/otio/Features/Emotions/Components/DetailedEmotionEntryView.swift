@@ -4,12 +4,15 @@ import FirebaseAuth
 struct DetailedEmotionEntryView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var emotionService: EmotionService
+    @StateObject private var cooldownService = EmotionCooldownService()
     
     let emotionType: String
     
     @State private var text: String = ""
     @State private var energyLevel: Int? = nil
     @State private var showCooldownAlert = false
+    @State private var errorMessage: String = ""
+    @State private var showError = false
     
     private let maxCharacters = 100
     
@@ -112,7 +115,7 @@ struct DetailedEmotionEntryView: View {
                     // Action buttons
                     HStack {
                         Spacer() // Center the button
-                        Button(action: handleSave) {
+                        Button(action: handleSubmit) {
                             Text("save")
                                 .font(.custom("IBMPlexMono-Light", size: 15))
                                 .foregroundColor(.primary)
@@ -145,12 +148,47 @@ struct DetailedEmotionEntryView: View {
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                         
-                        Text("next log available in: \(emotionService.formattedRemainingTime())")
+                        Text("next log available in: \(cooldownService.formattedRemainingTime())")
                             .font(.custom("IBMPlexMono-Light", size: 15))
                             .foregroundColor(.primary)
                         
                         Button {
                             showCooldownAlert = false
+                        } label: {
+                            Text("ok")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                                .foregroundColor(.primary)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .overlay(
+                                    Rectangle()
+                                        .strokeBorder(Color.primary, lineWidth: 1)
+                                )
+                        }
+                    }
+                    .padding(24)
+                    .background(Color.appBackground)
+                    .padding(.horizontal, 40)
+                }
+                
+                if showError {
+                    // Semi-transparent background
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    
+                    // Alert content
+                    VStack(spacing: 24) {
+                        Text("oops")
+                            .font(.custom("IBMPlexMono-Light", size: 17))
+                            .fontWeight(.semibold)
+                        
+                        Text(errorMessage)
+                            .font(.custom("IBMPlexMono-Light", size: 15))
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                        
+                        Button {
+                            showError = false
                         } label: {
                             Text("ok")
                                 .font(.custom("IBMPlexMono-Light", size: 15))
@@ -191,35 +229,32 @@ struct DetailedEmotionEntryView: View {
     }
     
     // Modify the save button action
-    private func handleSave() {
+    private func handleSubmit() {
         // Check if we can log an emotion
-        if emotionService.canLogEmotion() {
+        if cooldownService.canLogEmotion() {
             // Try to log the emotion
-            if emotionService.tryLogEmotion() {
+            if cooldownService.tryLogEmotion() {
                 // Proceed with saving
                 let capturedType = emotionType
                 let capturedText = text.isEmpty ? nil : text
                 let capturedEnergyLevel = energyLevel
                 
-                Task.detached {
-                    if let userId = Auth.auth().currentUser?.uid {
-                        do {
-                            try await EmotionService.submitEmotion(
-                                type: capturedType,
-                                userId: userId,
-                                text: capturedText,
-                                energyLevel: capturedEnergyLevel
-                            )
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(name: NSNotification.Name("EmotionSaved"), object: nil)
-                            }
-                        } catch {
-                            print("Error logging emotion: \(error.localizedDescription)")
+                Task {
+                    do {
+                        try await emotionService.logEmotion(
+                            type: capturedType,
+                            text: capturedText,
+                            energyLevel: capturedEnergyLevel
+                        )
+                        await MainActor.run {
+                            NotificationCenter.default.post(name: NSNotification.Name("EmotionSaved"), object: nil)
                         }
+                        dismiss()
+                    } catch {
+                        errorMessage = error.localizedDescription
+                        showError = true
                     }
                 }
-                
-                dismiss()
             }
         } else {
             // Show cooldown alert
