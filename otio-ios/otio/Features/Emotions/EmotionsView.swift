@@ -4,7 +4,13 @@ import Foundation
 
 struct EmotionsView: View {
     @EnvironmentObject var userService: UserService
-    @StateObject private var emotionService = EmotionService.shared
+    @EnvironmentObject var emotionService: EmotionService
+    @State private var selectedTab = 0
+    @State private var showingBreathingView = false
+    @State private var showingListeningView = false
+    @State private var showingInsightsView = false
+    @State private var showingAccountView = false
+    @State private var showingCalendarView = false
     
     private var emotionOrder: [String] { EmotionData.emotionOrder }
     private var emotions: [String: [String]] { EmotionData.emotions }

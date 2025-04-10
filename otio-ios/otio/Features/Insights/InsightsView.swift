@@ -34,7 +34,6 @@ struct InsightsView: View {
                                 .font(.custom("IBMPlexMono-Light", size: 17))
                                 .fontWeight(.medium)
                                 .foregroundColor(.primary)
-                                .padding(.top, 0)
                             
                             if isLoading {
                                 VStack {

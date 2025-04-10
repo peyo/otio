@@ -6,13 +6,31 @@ struct RecentEmotionsView: View {
     let recentEmotions: [EmotionData]
     let timeString: (Date) -> String
     let geometry: GeometryProxy
+    @State private var showCalendarView = false
+    @EnvironmentObject private var emotionService: EmotionService
     
     var body: some View {
         VStack(alignment: .leading, spacing: geometry.size.height * 0.03) {
-            Text("recent emotions")
-                .font(.custom("IBMPlexMono-Light", size: 17))
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
+            HStack {
+                Text("recent emotions")
+                    .font(.custom("IBMPlexMono-Light", size: 17))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Button {
+                    showCalendarView = true
+                } label: {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 20))
+                        .foregroundColor(.primary)
+                }
+                .navigationDestination(isPresented: $showCalendarView) {
+                    CalendarView()
+                        .environmentObject(emotionService)
+                }
+            }
             
             if isLoading {
                 HStack {

@@ -11,9 +11,17 @@ struct AccountView: View {
                 Color.appBackground
                     .ignoresSafeArea()
                 
-                VStack(spacing: 0) {
+                VStack(spacing: 24) {
+                    
+                    // Subtitle
+                    Text("celebrate your progress")
+                        .font(.custom("IBMPlexMono-Light", size: 17))
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                        .padding(.top, 6)
+                    
                     // User Information
-                    VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 16) {
                         if let email = userService.userEmail {
                             Text("email address: \(email)")
                                 .font(.custom("IBMPlexMono-Light", size: 15))
@@ -34,7 +42,6 @@ struct AccountView: View {
                             .font(.custom("IBMPlexMono-Light", size: 15))
                             .foregroundColor(.primary)
                     }
-                    .padding(.top, 20)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
                     
@@ -78,7 +85,7 @@ struct AccountView: View {
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("account")
+                    Text("overview")
                         .font(.custom("IBMPlexMono-Light", size: 22))
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)

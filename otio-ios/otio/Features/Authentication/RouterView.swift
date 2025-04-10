@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RouterView: View {
     @EnvironmentObject var userService: UserService
+    @StateObject private var emotionService = EmotionService.shared
     @State private var resetNavigation = UUID()
     
     var body: some View {
@@ -9,6 +10,7 @@ struct RouterView: View {
             if userService.isAuthenticated {
                 EmotionsView()
                     .environmentObject(userService)
+                    .environmentObject(emotionService)
                     .id(resetNavigation)
             } else {
                 SignInView()

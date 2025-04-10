@@ -157,4 +157,37 @@ class EmotionDatabaseService {
             sortedRecentEmotions.count > 7 ? Array(sortedRecentEmotions.prefix(7)) : sortedRecentEmotions
         )
     }
+    
+    // Fetch emotions for a specific date range
+    static func fetchEmotionsForDateRange(userId: String, startDate: Date, endDate: Date) async throws -> [EmotionData] {
+        let database = Database.database().reference()
+        let emotionsRef = database.child("users").child(userId).child("emotions")
+        
+        // Convert dates to timestamps for query
+        let startTimestamp = Int(startDate.timeIntervalSince1970 * 1000)  // Convert to milliseconds
+        let endTimestamp = Int(endDate.timeIntervalSince1970 * 1000)      // Convert to milliseconds
+        
+        // Query emotions within the date range
+        let snapshot = try await emotionsRef
+            .queryOrdered(byChild: "timestamp")
+            .queryStarting(atValue: startTimestamp)
+            .queryEnding(beforeValue: endTimestamp)
+            .getData()
+        
+        guard let emotionsDict = snapshot.value as? [String: [String: Any]] else {
+            return []
+        }
+        
+        return emotionsDict.compactMap { id, data in
+            guard let type = data["type"] as? String,
+                  let timestamp = data["timestamp"] as? TimeInterval
+            else { return nil }
+            
+            let date = Date(timeIntervalSince1970: timestamp / 1000)  // Convert from milliseconds
+            let text = data["text"] as? String
+            let energyLevel = data["energy_level"] as? Int
+            
+            return EmotionData(id: id, type: type, date: date, text: text, energyLevel: energyLevel)
+        }.sorted { $0.date > $1.date }
+    }
 } 
