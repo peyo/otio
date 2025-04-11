@@ -3,12 +3,12 @@ import AVFoundation
 
 class AudioIntroManager {
     private let natureSoundManager = NatureSoundManager()
-    private var isPlayingRecommendedIntro = false
     private var pendingSound: SoundType?
     private var pendingNormalizedScore: Double?
     private var pendingIsRecommended = false
     private var currentSound: SoundType?
     private var isStopping = false
+    private var isPlayingRecommendedIntro = false
     private var isPlayingEmotionIntro = false
     private var isSkipped = false
     

@@ -112,16 +112,17 @@ class SoundManager: ObservableObject {
     private func startActualSound(type: SoundType, normalizedScore: Double? = nil, isRecommendedButton: Bool = false) {
         print("SoundManager: Starting actual sound for type: \(type.rawValue)")
         
-        if let audioFile = type.audioFileName {
-            // Play nature sound
-            print("SoundManager: Playing nature sound: \(audioFile)")
+        // Handle nature sounds first
+        if type == .rancheriaFalls || type == .balanced {
+            print("SoundManager: Playing nature sound: \(type.audioFileName ?? "none")")
             natureSoundManager.playNatureSound(
-                fileName: audioFile,
+                fileName: type.audioFileName!,
                 directory: "nature",
                 initialVolume: 1.0
             )
-        } else if type == .recommendedSound, isRecommendedButton {
-            // Play binaural beat for recommended sound
+        }
+        // Handle recommended sound
+        else if type == .recommendedSound, isRecommendedButton {
             print("SoundManager: Playing binaural beat for recommended sound")
             if !engine.avEngine.isRunning {
                 try? engine.start()
@@ -141,8 +142,9 @@ class SoundManager: ObservableObject {
             // Start crossfade timer
             print("SoundManager: Starting crossfade timer for recommended sound")
             crossfadeManager.startCrossfadeTimer()
-        } else {
-            // Play binaural beat for specific emotion
+        }
+        // Handle all other emotion sounds
+        else {
             print("SoundManager: Playing binaural beat for specific emotion: \(type.rawValue)")
             if !engine.avEngine.isRunning {
                 try? engine.start()
