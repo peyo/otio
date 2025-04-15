@@ -5,8 +5,8 @@ struct SignInView: View {
     @EnvironmentObject var userService: UserService
     @State private var isLoading = false
     @State private var showFirstText = true
-    private let firstText = "feeling into insight"
-    private let secondText = "insight into sound"
+    private let firstText = "feel more"
+    private let secondText = "know more"
     private let animationDuration = 1.0
     private let displayDuration = 2.0
     
