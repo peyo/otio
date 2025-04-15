@@ -13,125 +13,141 @@ struct DetailedEmotionEntryView: View {
     @State private var showCooldownAlert = false
     @State private var errorMessage: String = ""
     @State private var showError = false
+    @State private var keyboardHeight: CGFloat = 0
     
     private let maxCharacters = 100
     
     var body: some View {
         NavigationView {
-            ZStack {
-                // Main content
-                Color.appBackground
-                    .ignoresSafeArea()
-                
-                VStack(spacing: 24) {
-                    // Emotion type display
-                    Text("emotion: \(emotionType)")
-                        .font(.custom("IBMPlexMono-Light", size: 17))
-                        .fontWeight(.medium)
-                        .padding(.top)
+            ScrollView(showsIndicators: false) {
+                ZStack {
+                    Color.appBackground
+                        .ignoresSafeArea()
                     
-                    // Energy level selector
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("energy level (optional)")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
+                    VStack(spacing: 24) {
+                        // Emotion type display
+                        Text("emotion: \(emotionType)")
+                            .font(.custom("IBMPlexMono-Light", size: 17))
+                            .fontWeight(.medium)
+                            .padding(.top)
                         
-                        HStack(spacing: 8) {
-                            ForEach(1...5, id: \.self) { level in
-                                Button {
-                                    if energyLevel == level {
-                                        energyLevel = nil
-                                    } else {
-                                        energyLevel = level
-                                    }
-                                } label: {
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color.clear)
-                                            .overlay(
+                        // Energy level selector
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("energy level (optional)")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                            
+                            GeometryReader { geometry in
+                                let availableWidth = geometry.size.width
+                                let spacing: CGFloat = 8
+                                let buttonWidth = (availableWidth - (spacing * 4)) / 5
+                                
+                                HStack(spacing: spacing) {
+                                    ForEach(1...5, id: \.self) { level in
+                                        Button {
+                                            if energyLevel == level {
+                                                energyLevel = nil
+                                            } else {
+                                                energyLevel = level
+                                            }
+                                        } label: {
+                                            ZStack {
                                                 Rectangle()
-                                                    .strokeBorder(energyLevel == level ? Color.secondary : Color.primary, lineWidth: 1)
-                                            )
-                                        
-                                        Text("\(level)")
-                                            .font(.custom("IBMPlexMono-Light", size: 15))
-                                            .foregroundColor(energyLevel == level ? Color.secondary : Color.primary)
+                                                    .fill(Color.clear)
+                                                    .overlay(
+                                                        Rectangle()
+                                                            .strokeBorder(energyLevel == level ? Color.secondary : Color.primary, lineWidth: 1)
+                                                    )
+                                                
+                                                Text("\(level)")
+                                                    .font(.custom("IBMPlexMono-Light", size: 15))
+                                                    .foregroundColor(energyLevel == level ? Color.secondary : Color.primary)
+                                            }
+                                        }
+                                        .frame(width: buttonWidth, height: buttonWidth)
                                     }
                                 }
-                                .aspectRatio(1, contentMode: .fit)
-                                .frame(maxWidth: .infinity)
                             }
+                            .frame(height: (UIScreen.main.bounds.width - 40 - 32) / 5) // Match width for square aspect ratio
+                            
+                            Text("low → high")
+                                .font(.custom("IBMPlexMono-Light", size: 13))
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                         
-                        Text("low → high")
-                            .font(.custom("IBMPlexMono-Light", size: 13))
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
-                    
-                    // Text input
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("notes (optional)")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
-                        
-                        ZStack(alignment: .topLeading) {
-                            // First, create a transparent background
-                            Color.clear
-                                .frame(height: 120)
-                            
-                            // Then add the TextEditor with modifications to make it transparent
-                            TextEditor(text: $text)
+                        // Text input
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("notes (optional)")
                                 .font(.custom("IBMPlexMono-Light", size: 15))
-                                .padding(8)
-                                .scrollContentBackground(.hidden) // This hides the default background on iOS 16+
-                                .background(Color.clear) // Set background to clear
-                                .overlay(
-                                    Rectangle()
-                                        .strokeBorder(Color.primary, lineWidth: 1)
-                                )
-                                .frame(height: 120)
-                                .onChange(of: text) { newValue in
-                                    if newValue.count > maxCharacters {
-                                        text = String(newValue.prefix(maxCharacters))
-                                    }
-                                }
                             
-                            if text.isEmpty {
-                                Text("what's that feeling tied to?")
+                            ZStack(alignment: .topLeading) {
+                                // First, create a transparent background
+                                Color.clear
+                                    .frame(height: 120)
+                                
+                                // Then add the TextEditor with modifications to make it transparent
+                                TextEditor(text: $text)
                                     .font(.custom("IBMPlexMono-Light", size: 15))
-                                    .foregroundColor(.secondary)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 16)
+                                    .padding(8)
+                                    .scrollContentBackground(.hidden) // This hides the default background on iOS 16+
+                                    .background(Color.clear) // Set background to clear
+                                    .overlay(
+                                        Rectangle()
+                                            .strokeBorder(Color.primary, lineWidth: 1)
+                                    )
+                                    .frame(height: 120)
+                                    .onChange(of: text) { newValue in
+                                        if newValue.count > maxCharacters {
+                                            text = String(newValue.prefix(maxCharacters))
+                                        }
+                                    }
+                                
+                                if text.isEmpty {
+                                    Text("what's that feeling tied to?")
+                                        .font(.custom("IBMPlexMono-Light", size: 15))
+                                        .foregroundColor(.secondary)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 16)
+                                }
                             }
+                            
+                            Text("\(maxCharacters - text.count)")
+                                .font(.custom("IBMPlexMono-Light", size: 13))
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                         
-                        Text("\(maxCharacters - text.count)")
-                            .font(.custom("IBMPlexMono-Light", size: 13))
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        Spacer()
+                            .frame(height: 200) // Fixed space for save button
                     }
-                    
-                    Spacer()
-                    
-                    // Action buttons
-                    HStack {
-                        Spacer() // Center the button
-                        Button(action: handleSubmit) {
-                            Text("save")
-                                .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.primary)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 12)
-                                .overlay(
-                                    Rectangle()
-                                        .strokeBorder(Color.primary, lineWidth: 1)
-                                )
-                        }
-                        Spacer() // Center the button
-                    }
+                    .padding()
                 }
-                .padding()
-                
-                // Cooldown alert overlay
+            }
+            .background(Color.appBackground)
+            .overlay(alignment: .bottom) {
+                VStack {
+                    Button(action: handleSubmit) {
+                        Text("save")
+                            .font(.custom("IBMPlexMono-Light", size: 15))
+                            .foregroundColor(.primary)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(Color.appBackground)
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primary, lineWidth: 1)
+                            )
+                    }
+                    .padding(.vertical, 16)
+                }
+                .frame(maxWidth: .infinity)
+                .background(
+                    (keyboardHeight > 0 ? Color.appCardBackground : Color.appBackground)
+                        .edgesIgnoringSafeArea(.bottom)
+                )
+                .padding(.bottom, keyboardHeight > 0 ? 0 : 16)
+            }
+            .overlay {
                 if showCooldownAlert {
                     // Semi-transparent background
                     Color.black.opacity(0.3)
@@ -207,6 +223,8 @@ struct DetailedEmotionEntryView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.appBackground, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("log")
@@ -220,9 +238,19 @@ struct DetailedEmotionEntryView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .font(.system(size: 17))  // Adjust size to match iOS standard
+                            .font(.system(size: 17))
                             .foregroundColor(.primary)
                     }
+                }
+            }
+            .onAppear {
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
+                    let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+                    keyboardHeight = keyboardFrame.height
+                }
+                
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
+                    keyboardHeight = 0
                 }
             }
         }
