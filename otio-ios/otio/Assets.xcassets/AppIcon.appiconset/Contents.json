@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "otio_logo_1024_f6f6f6_on_1c1d1f_scaled_79.png",
+      "filename" : "otio_logo_1024.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "otio_logo_1024_f6f6f6_on_1c1d1f_scaled_79 1.png",
+      "filename" : "otio_logo_1024 1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "otio_logo_1024_f6f6f6_on_1c1d1f_scaled_79 2.png",
+      "filename" : "otio_logo_1024 2.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

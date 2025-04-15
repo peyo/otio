@@ -7,17 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D0079EB42D2B27F600E0F36E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EB32D2B27F600E0F36E /* FirebaseAuth */; };
-		D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EB52D2B27F600E0F36E /* FirebaseDatabase */; };
 		D0079EBC2D2B372800E0F36E /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBB2D2B372800E0F36E /* GoogleSignIn */; };
 		D0079EBE2D2B372800E0F36E /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */; };
 		D07F38F42D3DF46C00BDDD62 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D07F38F32D3DF46C00BDDD62 /* LaunchScreen.storyboard */; };
-		D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = D0834F102D2B9406000200C7 /* FirebaseFunctions */; };
-		D08350162D2F1BC0000200C7 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D08350152D2F1BC0000200C7 /* FirebaseFirestore */; };
 		D08350192D2F1C15000200C7 /* Fakery in Frameworks */ = {isa = PBXBuildFile; productRef = D08350182D2F1C15000200C7 /* Fakery */; };
-		D083501E2D2F32DB000200C7 /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = D083501D2D2F32DB000200C7 /* AudioKit */; };
-		D083502C2D2F48F8000200C7 /* SoundpipeAudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */; };
-		D0FF13D32D33594700CD1359 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = D0FF13D22D33594700CD1359 /* FirebaseStorage */; };
+		D0BB41B52DAE361200982DAF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41B42DAE361200982DAF /* FirebaseAnalytics */; };
+		D0BB41B72DAE361200982DAF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41B62DAE361200982DAF /* FirebaseAuth */; };
+		D0BB41B92DAE361200982DAF /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41B82DAE361200982DAF /* FirebaseCrashlytics */; };
+		D0BB41BB2DAE361200982DAF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41BA2DAE361200982DAF /* FirebaseFirestore */; };
+		D0BB41BD2DAE361200982DAF /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41BC2DAE361200982DAF /* FirebaseMessaging */; };
+		D0BB41BF2DAE361200982DAF /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41BE2DAE361200982DAF /* FirebasePerformance */; };
+		D0BB41C12DAE361200982DAF /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41C02DAE361200982DAF /* FirebaseRemoteConfig */; };
+		D0BB41C32DAE36E300982DAF /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41C22DAE36E300982DAF /* FirebaseDatabase */; };
+		D0BB41C52DAE378800982DAF /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41C42DAE378800982DAF /* FirebaseFunctions */; };
+		D0BB41C72DAE388D00982DAF /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = D0BB41C62DAE388D00982DAF /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,16 +73,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0BB41BD2DAE361200982DAF /* FirebaseMessaging in Frameworks */,
 				D08350192D2F1C15000200C7 /* Fakery in Frameworks */,
-				D0079EB62D2B27F600E0F36E /* FirebaseDatabase in Frameworks */,
-				D083501E2D2F32DB000200C7 /* AudioKit in Frameworks */,
-				D0FF13D32D33594700CD1359 /* FirebaseStorage in Frameworks */,
-				D0079EB42D2B27F600E0F36E /* FirebaseAuth in Frameworks */,
-				D0834F112D2B9406000200C7 /* FirebaseFunctions in Frameworks */,
-				D083502C2D2F48F8000200C7 /* SoundpipeAudioKit in Frameworks */,
+				D0BB41BF2DAE361200982DAF /* FirebasePerformance in Frameworks */,
+				D0BB41C52DAE378800982DAF /* FirebaseFunctions in Frameworks */,
+				D0BB41B72DAE361200982DAF /* FirebaseAuth in Frameworks */,
 				D0079EBC2D2B372800E0F36E /* GoogleSignIn in Frameworks */,
+				D0BB41B92DAE361200982DAF /* FirebaseCrashlytics in Frameworks */,
+				D0BB41B52DAE361200982DAF /* FirebaseAnalytics in Frameworks */,
+				D0BB41C72DAE388D00982DAF /* FirebaseStorage in Frameworks */,
 				D0079EBE2D2B372800E0F36E /* GoogleSignInSwift in Frameworks */,
-				D08350162D2F1BC0000200C7 /* FirebaseFirestore in Frameworks */,
+				D0BB41C32DAE36E300982DAF /* FirebaseDatabase in Frameworks */,
+				D0BB41BB2DAE361200982DAF /* FirebaseFirestore in Frameworks */,
+				D0BB41C12DAE361200982DAF /* FirebaseRemoteConfig in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,16 +145,19 @@
 			);
 			name = otio;
 			packageProductDependencies = (
-				D0079EB32D2B27F600E0F36E /* FirebaseAuth */,
-				D0079EB52D2B27F600E0F36E /* FirebaseDatabase */,
 				D0079EBB2D2B372800E0F36E /* GoogleSignIn */,
 				D0079EBD2D2B372800E0F36E /* GoogleSignInSwift */,
-				D0834F102D2B9406000200C7 /* FirebaseFunctions */,
-				D08350152D2F1BC0000200C7 /* FirebaseFirestore */,
 				D08350182D2F1C15000200C7 /* Fakery */,
-				D083501D2D2F32DB000200C7 /* AudioKit */,
-				D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */,
-				D0FF13D22D33594700CD1359 /* FirebaseStorage */,
+				D0BB41B42DAE361200982DAF /* FirebaseAnalytics */,
+				D0BB41B62DAE361200982DAF /* FirebaseAuth */,
+				D0BB41B82DAE361200982DAF /* FirebaseCrashlytics */,
+				D0BB41BA2DAE361200982DAF /* FirebaseFirestore */,
+				D0BB41BC2DAE361200982DAF /* FirebaseMessaging */,
+				D0BB41BE2DAE361200982DAF /* FirebasePerformance */,
+				D0BB41C02DAE361200982DAF /* FirebaseRemoteConfig */,
+				D0BB41C22DAE36E300982DAF /* FirebaseDatabase */,
+				D0BB41C42DAE378800982DAF /* FirebaseFunctions */,
+				D0BB41C62DAE388D00982DAF /* FirebaseStorage */,
 			);
 			productName = otio;
 			productReference = D064A4CC2D2646450001C402 /* otio.app */;
@@ -228,11 +237,9 @@
 			mainGroup = D064A4C32D2646450001C402;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				D08350172D2F1C15000200C7 /* XCRemoteSwiftPackageReference "Fakery" */,
-				D083501C2D2F32DB000200C7 /* XCRemoteSwiftPackageReference "AudioKit" */,
-				D083502A2D2F48F8000200C7 /* XCRemoteSwiftPackageReference "SoundpipeAudioKit" */,
+				D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D064A4CD2D2646450001C402 /* Products */;
@@ -434,8 +441,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = otio/otio.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_ASSET_PATHS = "\"otio/Preview Content\"";
 				DEVELOPMENT_TEAM = 8TD422KYZU;
 				ENABLE_PREVIEWS = YES;
@@ -453,7 +461,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.0;
+				MARKETING_VERSION = 1.6.3;
 				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -469,8 +477,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = otio/otio.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_ASSET_PATHS = "\"otio/Preview Content\"";
 				DEVELOPMENT_TEAM = 8TD422KYZU;
 				ENABLE_PREVIEWS = YES;
@@ -488,7 +497,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.0;
+				MARKETING_VERSION = 1.6.3;
 				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -608,14 +617,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.6.0;
-			};
-		};
 		D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
@@ -632,35 +633,17 @@
 				minimumVersion = 5.1.0;
 			};
 		};
-		D083501C2D2F32DB000200C7 /* XCRemoteSwiftPackageReference "AudioKit" */ = {
+		D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AudioKit/AudioKit";
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 5.6.4;
-			};
-		};
-		D083502A2D2F48F8000200C7 /* XCRemoteSwiftPackageReference "SoundpipeAudioKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AudioKit/SoundpipeAudioKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.6.1;
+				minimumVersion = 11.11.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D0079EB32D2B27F600E0F36E /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		D0079EB52D2B27F600E0F36E /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
-		};
 		D0079EBB2D2B372800E0F36E /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
@@ -671,34 +654,59 @@
 			package = D0079EBA2D2B372800E0F36E /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
 		};
-		D0834F102D2B9406000200C7 /* FirebaseFunctions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFunctions;
-		};
-		D08350152D2F1BC0000200C7 /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
-		};
 		D08350182D2F1C15000200C7 /* Fakery */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D08350172D2F1C15000200C7 /* XCRemoteSwiftPackageReference "Fakery" */;
 			productName = Fakery;
 		};
-		D083501D2D2F32DB000200C7 /* AudioKit */ = {
+		D0BB41B42DAE361200982DAF /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D083501C2D2F32DB000200C7 /* XCRemoteSwiftPackageReference "AudioKit" */;
-			productName = AudioKit;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
 		};
-		D083502B2D2F48F8000200C7 /* SoundpipeAudioKit */ = {
+		D0BB41B62DAE361200982DAF /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D083502A2D2F48F8000200C7 /* XCRemoteSwiftPackageReference "SoundpipeAudioKit" */;
-			productName = SoundpipeAudioKit;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
-		D0FF13D22D33594700CD1359 /* FirebaseStorage */ = {
+		D0BB41B82DAE361200982DAF /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D0079EB22D2B27F600E0F36E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		D0BB41BA2DAE361200982DAF /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		D0BB41BC2DAE361200982DAF /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		D0BB41BE2DAE361200982DAF /* FirebasePerformance */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebasePerformance;
+		};
+		D0BB41C02DAE361200982DAF /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
+		D0BB41C22DAE36E300982DAF /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		D0BB41C42DAE378800982DAF /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		D0BB41C62DAE388D00982DAF /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D0BB41B32DAE361200982DAF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
