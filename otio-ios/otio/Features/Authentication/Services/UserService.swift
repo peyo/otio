@@ -19,8 +19,6 @@ class UserService: ObservableObject {
     @Published var isAuthenticated = false
     @Published var userEmail: String?
     @Published var joinDate: Date?
-    @Published var totalBreathingMinutes: Int = 0
-    @Published var totalMeditationMinutes: Int = 0
 
     init() {
         // Check if the user is already signed in
@@ -123,8 +121,6 @@ class UserService: ObservableObject {
                 let profileUpdate = [
                     "profile/email": user.email ?? "",
                     "profile/lastUpdated": ServerValue.timestamp(),
-                    "profile/totalBreathingMinutes": self.totalBreathingMinutes,
-                    "profile/totalMeditationMinutes": self.totalMeditationMinutes
                 ] as [String : Any]
                 
                 ref.updateChildValues(profileUpdate) { error, _ in
@@ -142,9 +138,7 @@ class UserService: ObservableObject {
                     "profile": [
                         "email": user.email ?? "",
                         "joinDate": ServerValue.timestamp(),
-                        "lastUpdated": ServerValue.timestamp(),
-                        "totalBreathingMinutes": 0,
-                        "totalMeditationMinutes": 0
+                        "lastUpdated": ServerValue.timestamp()
                     ]
                 ]
                 
@@ -185,42 +179,6 @@ class UserService: ObservableObject {
         print("Debug: ✅ Sign in completed")
     }
     
-    // Add function to update breathing minutes
-    func updateBreathingMinutes(minutes: Int) {
-        guard let userId = userId else { return }
-        
-        let ref = Database.database().reference().child("users").child(userId).child("profile")
-        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            var value = currentData.value as? [String: Any] ?? [:]
-            let currentMinutes = value["totalBreathingMinutes"] as? Int ?? 0
-            value["totalBreathingMinutes"] = currentMinutes + minutes
-            currentData.value = value
-            return TransactionResult.success(withValue: currentData)
-        }) { error, _, _ in
-            if let error = error {
-                print("Error updating breathing minutes:", error.localizedDescription)
-            }
-        }
-    }
-    
-    // Add function to update meditation minutes
-    func updateMeditationMinutes(minutes: Int) {
-        guard let userId = userId else { return }
-        
-        let ref = Database.database().reference().child("users").child(userId).child("profile")
-        ref.runTransactionBlock({ (currentData: MutableData) -> TransactionResult in
-            var value = currentData.value as? [String: Any] ?? [:]
-            let currentMinutes = value["totalMeditationMinutes"] as? Int ?? 0
-            value["totalMeditationMinutes"] = currentMinutes + minutes
-            currentData.value = value
-            return TransactionResult.success(withValue: currentData)
-        }) { error, _, _ in
-            if let error = error {
-                print("Error updating meditation minutes:", error.localizedDescription)
-            }
-        }
-    }
-    
     // Add function to fetch user stats
     func fetchUserStats() {
         guard let userId = userId else { return }
@@ -230,8 +188,6 @@ class UserService: ObservableObject {
             guard let profile = snapshot.value as? [String: Any] else { return }
             
             DispatchQueue.main.async {
-                self?.totalBreathingMinutes = profile["totalBreathingMinutes"] as? Int ?? 0
-                self?.totalMeditationMinutes = profile["totalMeditationMinutes"] as? Int ?? 0
                 if let joinTimestamp = profile["joinDate"] as? TimeInterval {
                     self?.joinDate = Date(timeIntervalSince1970: joinTimestamp / 1000)
                 }

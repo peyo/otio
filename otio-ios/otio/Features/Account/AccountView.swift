@@ -33,14 +33,6 @@ struct AccountView: View {
                                 .font(.custom("IBMPlexMono-Light", size: 15))
                                 .foregroundColor(.primary)
                         }
-                        
-                        Text("total breath time: \(formatMinutes(userService.totalBreathingMinutes))")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
-                            .foregroundColor(.primary)
-                        
-                        Text("total meditation time: \(formatMinutes(userService.totalMeditationMinutes))")
-                            .font(.custom("IBMPlexMono-Light", size: 15))
-                            .foregroundColor(.primary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 20)
