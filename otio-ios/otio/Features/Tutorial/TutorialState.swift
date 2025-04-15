@@ -53,18 +53,6 @@ class TutorialState: ObservableObject {
             darkModeImage: "insights_screen_dark",
             title: /*"spot emotional insights",*/"",
             description: "view your emotional patterns and receive daily reflections. mindfulness research (kabat-zinn, 1990) shows that reflective awareness improves mental health and emotional understanding."
-        ),
-        TutorialSlide(
-            lightModeImage: "listening_screen_light",
-            darkModeImage: "listening_screen_dark",
-            title: /*"listen and center",*/"",
-            description: "choose from binaural beats and nature sounds from u.s. parks. studies (zeidan, 2010 and goyal, 2014) show meditation improves focus and reduces anxiety."
-        ),
-        TutorialSlide(
-            lightModeImage: "breathing_screen_light",
-            darkModeImage: "breathing_screen_dark",
-            title: /*"take a breath",*/"",
-            description: "follow guided breathing exercises. research (balban, 2023) found that this cyclic sighing pattern reduces anxiety and negative mood more effectively than meditation alone."
         )
     ]
     

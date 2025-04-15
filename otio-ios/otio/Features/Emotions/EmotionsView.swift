@@ -21,7 +21,6 @@ struct EmotionsView: View {
     @State private var isLoading = false
     @State private var showError = false
     @State private var errorMessage = ""
-    @State private var normalizedScore: Double = 0.0
     @State private var showEmotionDetail = false
     @State private var navigationId = UUID()
     @StateObject private var tutorialState = TutorialState()
@@ -130,7 +129,6 @@ struct EmotionsView: View {
         }
         .task {
             await fetchEmotions()
-            normalizedScore = EmotionCalculator.calculateAndNormalizeWeeklyScore(emotions: weekEmotions)
         }
     }
     
@@ -148,8 +146,7 @@ struct EmotionsView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 EmotionsToolbarView(
-                    weekEmotions: weekEmotions,
-                    normalizedScore: normalizedScore
+                    weekEmotions: weekEmotions
                 )
             }
         }
@@ -204,7 +201,6 @@ struct EmotionsView: View {
             await MainActor.run {
                 self.weekEmotions = all
                 self.recentEmotions = recent
-                self.normalizedScore = EmotionCalculator.calculateAndNormalizeWeeklyScore(emotions: all)
             }
         } catch {
             errorMessage = error.localizedDescription

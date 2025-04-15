@@ -5,7 +5,6 @@ import Foundation
 struct EmotionsToolbarView: View {
     @EnvironmentObject var userService: UserService
     let weekEmotions: [EmotionData]
-    let normalizedScore: Double
     @State private var showInsightsView = false
     @State private var showAccountView = false
     

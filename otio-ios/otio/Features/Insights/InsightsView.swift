@@ -21,13 +21,6 @@ struct InsightsView: View {
                         .ignoresSafeArea()
                     
                     ScrollView(showsIndicators: false) {
-                        // Pull to refresh with cooldown check
-                        RefreshControl(
-                            coordinateSpace: .named("refresh"),
-                            onRefresh: fetchInsights,
-                            isInCooldown: cooldownTime > 0
-                        )
-                        
                         VStack(spacing: 24) {
                             // Subtitle only
                             Text("navigate your emotions")
@@ -71,7 +64,11 @@ struct InsightsView: View {
                         }
                         .padding(.horizontal, 20)
                     }
-                    .coordinateSpace(name: "refresh")
+                    .refreshable {
+                        if cooldownTime <= 0 {
+                            await fetchInsights()
+                        }
+                    }
                 }
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)

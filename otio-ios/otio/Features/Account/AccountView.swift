@@ -14,7 +14,7 @@ struct AccountView: View {
                 VStack(spacing: 24) {
                     
                     // Subtitle
-                    Text("celebrate your progress")
+                    Text("check your profile")
                         .font(.custom("IBMPlexMono-Light", size: 17))
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
