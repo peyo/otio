@@ -3,10 +3,9 @@ import Foundation
 class EmotionValidationService {
     // MARK: - Validation Methods
     
-    func validateEmotionData(type: String, energyLevel: Int?, text: String?) throws {
-        // Validate emotion type
-        guard !type.isEmpty else {
-            throw EmotionValidationError.emptyType
+    func validateEmotionData(emotion: String, energyLevel: Int?, log: String?) throws {
+        if emotion.isEmpty {
+            throw EmotionValidationError.emptyEmotion
         }
         
         // Validate energy level if provided
@@ -16,26 +15,26 @@ class EmotionValidationService {
             }
         }
         
-        // Validate text if provided
-        if let text = text {
-            guard text.count <= 500 else {
-                throw EmotionValidationError.textTooLong
+        // Validate log if provided
+        if let log = log {
+            guard log.count <= 500 else {
+                throw EmotionValidationError.logTooLong
             }
         }
     }
     
     func validateEmotionData(_ data: [String: Any], id: String) throws -> EmotionData {
-        guard let type = data["type"] as? String,
+        guard let emotion = data["emotion"] as? String,
               let timestamp = data["timestamp"] as? Double else {
             throw EmotionValidationError.invalidDataStructure
         }
         
         let energyLevel = data["energy_level"] as? Int
-        let text = data["text"] as? String
+        let log = data["log"] as? String
         let updatedAtTimestamp = data["updated_at"] as? Double
         
         // Validate the data
-        try validateEmotionData(type: type, energyLevel: energyLevel, text: text)
+        try validateEmotionData(emotion: emotion, energyLevel: energyLevel, log: log)
         
         // Convert timestamps to dates
         let date = Date(timeIntervalSince1970: timestamp / 1000)
@@ -50,9 +49,9 @@ class EmotionValidationService {
         
         return EmotionData(
             id: id,
-            type: type,
+            emotion: emotion,
             date: date,
-            text: text,
+            log: log,
             energyLevel: energyLevel,
             updatedAt: updatedAt
         )
@@ -61,19 +60,19 @@ class EmotionValidationService {
 
 // MARK: - Error Types
 enum EmotionValidationError: LocalizedError {
-    case emptyType
+    case emptyEmotion
     case invalidEnergyLevel
-    case textTooLong
+    case logTooLong
     case invalidDataStructure
     case invalidUpdateTimestamp
     
     var errorDescription: String? {
         switch self {
-        case .emptyType:
-            return "Emotion type cannot be empty"
+        case .emptyEmotion:
+            return "Emotion cannot be empty"
         case .invalidEnergyLevel:
             return "Energy level must be between 1 and 5"
-        case .textTooLong:
+        case .logTooLong:
             return "Notes cannot exceed 500 characters"
         case .invalidDataStructure:
             return "Invalid emotion data structure"

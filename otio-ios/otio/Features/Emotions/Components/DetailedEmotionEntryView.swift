@@ -6,9 +6,9 @@ struct DetailedEmotionEntryView: View {
     @EnvironmentObject var emotionService: EmotionService
     @StateObject private var cooldownService = EmotionCooldownService()
     
-    let emotionType: String
+    let emotionName: String
     
-    @State private var text: String = ""
+    @State private var log: String = ""
     @State private var energyLevel: Int? = nil
     @State private var showCooldownAlert = false
     @State private var errorMessage: String = ""
@@ -25,8 +25,8 @@ struct DetailedEmotionEntryView: View {
                         .ignoresSafeArea()
                     
                     VStack(spacing: 24) {
-                        // Emotion type display
-                        Text("emotion: \(emotionType)")
+                        // Emotion name display
+                        Text("emotion: \(emotionName)")
                             .font(.custom("IBMPlexMono-Light", size: 17))
                             .fontWeight(.medium)
                             .padding(.top)
@@ -86,7 +86,7 @@ struct DetailedEmotionEntryView: View {
                                     .frame(height: 120)
                                 
                                 // Then add the TextEditor with modifications to make it transparent
-                                TextEditor(text: $text)
+                                TextEditor(text: $log)
                                     .font(.custom("IBMPlexMono-Light", size: 15))
                                     .padding(8)
                                     .scrollContentBackground(.hidden) // This hides the default background on iOS 16+
@@ -96,13 +96,13 @@ struct DetailedEmotionEntryView: View {
                                             .strokeBorder(Color.primary, lineWidth: 1)
                                     )
                                     .frame(height: 120)
-                                    .onChange(of: text) { newValue in
+                                    .onChange(of: log) { newValue in
                                         if newValue.count > maxCharacters {
-                                            text = String(newValue.prefix(maxCharacters))
+                                            log = String(newValue.prefix(maxCharacters))
                                         }
                                     }
                                 
-                                if text.isEmpty {
+                                if log.isEmpty {
                                     Text("what's that feeling tied to?")
                                         .font(.custom("IBMPlexMono-Light", size: 15))
                                         .foregroundColor(.secondary)
@@ -111,7 +111,7 @@ struct DetailedEmotionEntryView: View {
                                 }
                             }
                             
-                            Text("\(maxCharacters - text.count)")
+                            Text("\(maxCharacters - log.count)")
                                 .font(.custom("IBMPlexMono-Light", size: 13))
                                 .foregroundColor(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -123,6 +123,12 @@ struct DetailedEmotionEntryView: View {
                     .padding()
                 }
             }
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), 
+                                            to: nil, 
+                                            from: nil, 
+                                            for: nil)
+            }
             .background(Color.appBackground)
             .overlay(alignment: .bottom) {
                 VStack {
@@ -132,7 +138,7 @@ struct DetailedEmotionEntryView: View {
                             .foregroundColor(.primary)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color.appBackground)
+                            .background(keyboardHeight > 0 ? Color.appCardBackground : Color.appBackground)
                             .overlay(
                                 Rectangle()
                                     .strokeBorder(Color.primary, lineWidth: 1)
@@ -263,15 +269,15 @@ struct DetailedEmotionEntryView: View {
             // Try to log the emotion
             if cooldownService.tryLogEmotion() {
                 // Proceed with saving
-                let capturedType = emotionType
-                let capturedText = text.isEmpty ? nil : text
+                let capturedEmotion = emotionName
+                let capturedLog = log.isEmpty ? nil : log
                 let capturedEnergyLevel = energyLevel
                 
                 Task {
                     do {
                         try await emotionService.logEmotion(
-                            type: capturedType,
-                            text: capturedText,
+                            emotion: capturedEmotion,
+                            log: capturedLog,
                             energyLevel: capturedEnergyLevel
                         )
                         await MainActor.run {

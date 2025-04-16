@@ -30,21 +30,21 @@ struct CalendarView: View {
                         }
                     } else {
                         ScrollView(showsIndicators: false) {
-                            VStack(spacing: 32) {
+                            VStack(spacing: ViewSpacing.subtitleToContent) {
                                 Text("trace your steps")
                                     .font(.custom("IBMPlexMono-Light", size: 17))
                                     .fontWeight(.medium)
                                     .foregroundColor(.primary)
-                                    .padding(.top, -32)
+                                    // .padding(.top, -32)
                                 
                                 CalendarControlBar(selectedDate: $selectedDate, viewMode: $viewMode, geometry: geometry)
-                                    .padding(.top, 16)
+                                    // .padding(.top, 16)
                                     .zIndex(ZIndex.controls)
                                 
                                 mainContent(geometry: geometry)
                                     .zIndex(ZIndex.calendar)
                             }
-                            .padding(.vertical, geometry.size.height * 0.05)
+                            .padding(.vertical, ViewSpacing.screenVerticalPadding)
                         }
                     }
                 }

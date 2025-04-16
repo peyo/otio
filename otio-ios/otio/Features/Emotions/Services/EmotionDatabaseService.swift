@@ -2,7 +2,7 @@ import FirebaseDatabase
 import Foundation
 
 class EmotionDatabaseService {
-    static func submitEmotion(type: String, userId: String, text: String? = nil, energyLevel: Int? = nil) async throws {
+    static func submitEmotion(emotion: String, userId: String, log: String? = nil, energyLevel: Int? = nil) async throws {
         let ref = Database.database().reference()
         let emotionsRef = ref.child("users").child(userId).child("emotions")
         let newEmotionRef = emotionsRef.childByAutoId()
@@ -13,8 +13,8 @@ class EmotionDatabaseService {
         
         let emotionData = EmotionData(
             id: id,
-            type: type,
-            text: text,
+            emotion: emotion,
+            log: log,
             energyLevel: energyLevel
         )
         
@@ -31,7 +31,7 @@ class EmotionDatabaseService {
         }
     }
     
-    static func updateEmotion(id: String, userId: String, type: String, text: String? = nil, energyLevel: Int? = nil) async throws {
+    static func updateEmotion(id: String, userId: String, emotion: String, log: String? = nil, energyLevel: Int? = nil) async throws {
         let emotionRef = Database.database().reference()
             .child("users")
             .child(userId)
@@ -39,14 +39,14 @@ class EmotionDatabaseService {
             .child(id)
         
         var updates: [String: Any] = [
-            "type": type,
+            "emotion": emotion,
             "updated_at": ServerValue.timestamp()
         ]
         
-        if let text = text, !text.isEmpty {
-            updates["text"] = text
+        if let log = log, !log.isEmpty {
+            updates["log"] = log
         } else {
-            updates["text"] = NSNull()
+            updates["log"] = NSNull()
         }
         
         if let energyLevel = energyLevel {
@@ -179,15 +179,15 @@ class EmotionDatabaseService {
         }
         
         return emotionsDict.compactMap { id, data in
-            guard let type = data["type"] as? String,
+            guard let emotion = data["emotion"] as? String,
                   let timestamp = data["timestamp"] as? TimeInterval
             else { return nil }
             
             let date = Date(timeIntervalSince1970: timestamp / 1000)  // Convert from milliseconds
-            let text = data["text"] as? String
+            let log = data["log"] as? String
             let energyLevel = data["energy_level"] as? Int
             
-            return EmotionData(id: id, type: type, date: date, text: text, energyLevel: energyLevel)
+            return EmotionData(id: id, emotion: emotion, date: date, log: log, energyLevel: energyLevel)
         }.sorted { $0.date > $1.date }
     }
 } 

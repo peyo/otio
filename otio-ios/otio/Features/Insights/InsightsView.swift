@@ -21,8 +21,7 @@ struct InsightsView: View {
                         .ignoresSafeArea()
                     
                     ScrollView(showsIndicators: false) {
-                        VStack(spacing: 24) {
-                            // Subtitle only
+                        VStack(spacing: ViewSpacing.subtitleToContent) {
                             Text("navigate your emotions")
                                 .font(.custom("IBMPlexMono-Light", size: 17))
                                 .fontWeight(.medium)
@@ -63,6 +62,7 @@ struct InsightsView: View {
                             }
                         }
                         .padding(.horizontal, 20)
+                        .padding(.vertical, ViewSpacing.screenVerticalPadding)
                     }
                     .refreshable {
                         if cooldownTime <= 0 {
@@ -157,12 +157,12 @@ struct InsightsView: View {
             // Format emotions with all required fields
             let formattedEmotions = emotions.map { emotion in
                 var dict: [String: Any] = [
-                    "type": emotion.type,
+                    "emotion": emotion.emotion,
                     "timestamp": Int(emotion.date.timeIntervalSince1970 * 1000)  // Convert to milliseconds
                 ]
                 
-                if let text = emotion.text {
-                    dict["text"] = text
+                if let log = emotion.log {
+                    dict["log"] = log
                 }
                 
                 if let energyLevel = emotion.energyLevel {

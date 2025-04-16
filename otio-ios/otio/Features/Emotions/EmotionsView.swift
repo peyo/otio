@@ -25,6 +25,7 @@ struct EmotionsView: View {
     @State private var navigationId = UUID()
     @StateObject private var tutorialState = TutorialState()
     @State private var showTutorial = false
+    @State private var showDownloadView = false
 
     var body: some View {
         mainNavigationStack
@@ -102,7 +103,7 @@ struct EmotionsView: View {
                         onEmotionTap: handleEmotionTap,
                         geometry: geometry
                     )
-                    .padding(.top, geometry.size.height * 0.06)
+                    .padding(.top, geometry.size.height * ViewSpacing.contentSpacing)
                     
                     Spacer()
                         .frame(
@@ -116,6 +117,27 @@ struct EmotionsView: View {
                         timeString: RelativeDateFormatter.relativeTimeString,
                         geometry: geometry
                     )
+                    
+                    Spacer()
+                        .frame(height: geometry.size.height * ViewSpacing.contentSpacing)
+                    
+                    Button {
+                        showDownloadView = true
+                    } label: {
+                        HStack {
+                            Text("download your data")
+                                .font(.custom("IBMPlexMono-Light", size: 15))
+                        }
+                        .foregroundColor(.primary)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(Color.appBackground)
+                        .overlay(
+                            Rectangle()
+                                .strokeBorder(Color.primary, lineWidth: 1)
+                        )
+                    }
+                    .padding(.horizontal, 20)
                 }
                 .padding(.top, -8)
                 .padding(.bottom, geometry.size.height * 0.05)
@@ -126,6 +148,9 @@ struct EmotionsView: View {
         .navigationBarBackButtonHidden(true)
         .navigationDestination(isPresented: $showEmotionDetail) {
             emotionDetailDestination
+        }
+        .sheet(isPresented: $showDownloadView) {
+            DownloadView()
         }
         .task {
             await fetchEmotions()
@@ -168,15 +193,15 @@ struct EmotionsView: View {
         navigationId = UUID()
     }
     
-    private func handleEmotionTap(_ type: String) {
-        selectedEmotion = type
+    private func handleEmotionTap(_ emotion: String) {
+        selectedEmotion = emotion
         showEmotionDetail = true
     }
     
     private func handleDeeperEmotionSelect(_ deeperEmotion: String) {
         Task {
             do {
-                try await emotionService.logEmotion(type: deeperEmotion)
+                try await emotionService.logEmotion(emotion: deeperEmotion)
                 await fetchEmotions()
             } catch {
                 errorMessage = error.localizedDescription

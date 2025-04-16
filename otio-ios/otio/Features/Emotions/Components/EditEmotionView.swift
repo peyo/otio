@@ -10,7 +10,7 @@ struct EditEmotionView: View {
     let onUpdate: () -> Void
     let onDelete: () -> Void
     
-    @State private var text: String
+    @State private var log: String
     @State private var energyLevel: Int?
     @State private var showDeleteConfirmation = false
     @State private var keyboardHeight: CGFloat = 0
@@ -21,7 +21,7 @@ struct EditEmotionView: View {
         self.emotion = emotion
         self.onUpdate = onUpdate
         self.onDelete = onDelete
-        _text = State(initialValue: emotion.text ?? "")
+        _log = State(initialValue: emotion.log ?? "")
         _energyLevel = State(initialValue: emotion.energyLevel)
     }
     
@@ -33,7 +33,7 @@ struct EditEmotionView: View {
                         .ignoresSafeArea()
                     
                     VStack(spacing: 24) {
-                        Text("emotion: \(emotion.type)")
+                        Text("emotion: \(emotion.emotion)")
                             .font(.custom("IBMPlexMono-Light", size: 17))
                             .fontWeight(.medium)
                             .padding(.top)
@@ -89,7 +89,7 @@ struct EditEmotionView: View {
                                 Color.clear
                                     .frame(height: 120)
                                 
-                                TextEditor(text: $text)
+                                TextEditor(text: $log)
                                     .font(.custom("IBMPlexMono-Light", size: 15))
                                     .padding(8)
                                     .scrollContentBackground(.hidden)
@@ -100,7 +100,7 @@ struct EditEmotionView: View {
                                     )
                                     .frame(height: 120)
                                 
-                                if text.isEmpty {
+                                if log.isEmpty {
                                     Text("what's that feeling tied to?")
                                         .font(.custom("IBMPlexMono-Light", size: 15))
                                         .foregroundColor(.secondary)
@@ -115,6 +115,12 @@ struct EditEmotionView: View {
                     }
                     .padding()
                 }
+            }
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), 
+                                            to: nil, 
+                                            from: nil, 
+                                            for: nil)
             }
             .background(Color.appBackground)
             .overlay(alignment: .bottom) {
@@ -137,7 +143,7 @@ struct EditEmotionView: View {
                             .foregroundColor(.primary)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color.appBackground)
+                            .background(keyboardHeight > 0 ? Color.appCardBackground : Color.appBackground)
                             .overlay(
                                 Rectangle()
                                     .strokeBorder(Color.primary, lineWidth: 1)
@@ -162,7 +168,7 @@ struct EditEmotionView: View {
                             .foregroundColor(.primary)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color.appBackground)
+                            .background(keyboardHeight > 0 ? Color.appCardBackground : Color.appBackground)
                             .overlay(
                                 Rectangle()
                                     .strokeBorder(Color.primary, lineWidth: 1)
@@ -214,8 +220,8 @@ struct EditEmotionView: View {
     private func updateEmotion(userId: String) async throws {
         try await emotionService.updateEmotion(
             id: emotion.id,
-            type: emotion.type,
-            text: text.isEmpty ? nil : text,
+            emotion: emotion.emotion,
+            log: log.isEmpty ? nil : log,
             energyLevel: energyLevel
         )
         

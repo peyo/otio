@@ -96,8 +96,8 @@ exports.generateInsights = functions.https.onCall(
         .map((e) => {
           const date = new Date(e.timestamp).toLocaleString();
           const energyLevel = e.energy_level ? ` (energy: ${e.energy_level})` : '';
-          const notes = e.text ? `\n   notes: ${e.text}` : '';
-          return `- ${e.type}${energyLevel} on ${date}${notes}`;
+          const log = e.log ? `\n   log: ${e.log}` : '';
+          return `- ${e.emotion}${energyLevel} on ${date}${log}`;
         })
         .join("\n");
 
@@ -106,7 +106,7 @@ exports.generateInsights = functions.https.onCall(
         !e.timestamp || 
         typeof e.timestamp !== 'number' ||
         (e.energy_level && (typeof e.energy_level !== 'number' || e.energy_level < 1 || e.energy_level > 5)) ||
-        (e.text && typeof e.text !== 'string')
+        (e.log && typeof e.log !== 'string')
       );
       
       if (invalidEmotions.length > 0) {
@@ -132,7 +132,7 @@ exports.generateInsights = functions.https.onCall(
         - Reference specific notes when they provide context for patterns.
         
         The second category is a self-reflection insight:
-        - Pose general, open-ended questions to encourage self-awareness and personal exploration.
+        - Pose specific, open-ended questions to encourage self-awareness and personal exploration.
         - Consider energy levels and notes when framing questions about emotional experiences.
         - Use specific language to make the reflection relatable (e.g., "over the past week," "in the evenings").
         - Frame questions to help users connect with their experiences (e.g., "What was happening when you felt this way?" or "What helped you feel calmer during similar times?").
@@ -293,7 +293,7 @@ function generatePatternFallback(emotions) {
   const energyLevels = [];
   
   emotions.forEach(e => {
-    emotionCounts[e.type] = (emotionCounts[e.type] || 0) + 1;
+    emotionCounts[e.emotion] = (emotionCounts[e.emotion] || 0) + 1;
     if (e.energy_level) energyLevels.push(e.energy_level);
   });
   
@@ -315,7 +315,7 @@ function generatePatternFallback(emotions) {
 
 // Helper function to generate a fallback reflection insight
 function generateReflectionFallback(emotions) {
-  const uniqueEmotions = [...new Set(emotions.map(e => e.type))];
+  const uniqueEmotions = [...new Set(emotions.map(e => e.emotion))];
   const emotionList = uniqueEmotions.join(", ");
   
   return `what was happening when you felt ${emotionList}? how did these emotions affect your day?`;

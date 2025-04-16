@@ -19,7 +19,7 @@ class EmotionService: ObservableObject {
     
     // MARK: - Public Methods
     
-    func logEmotion(type: String, text: String? = nil, energyLevel: Int? = nil) async throws {
+    func logEmotion(emotion: String, log: String? = nil, energyLevel: Int? = nil) async throws {
         guard let userId = Auth.auth().currentUser?.uid else {
             throw NSError(domain: "EmotionService", code: 1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])
         }
@@ -29,22 +29,22 @@ class EmotionService: ObservableObject {
             throw NSError(domain: "EmotionService", code: 2, userInfo: [NSLocalizedDescriptionKey: "In cooldown period"])
         }
         
-        try validationService.validateEmotionData(type: type, energyLevel: energyLevel, text: text)
-        try await EmotionDatabaseService.submitEmotion(type: type, userId: userId, text: text, energyLevel: energyLevel)
+        try validationService.validateEmotionData(emotion: emotion, energyLevel: energyLevel, log: log)
+        try await EmotionDatabaseService.submitEmotion(emotion: emotion, userId: userId, log: log, energyLevel: energyLevel)
         NotificationCenter.default.post(name: NSNotification.Name("EmotionSaved"), object: nil)
         try await refreshRecentEmotions()
     }
     
     // Update an existing emotion
-    func updateEmotion(id: String, type: String, text: String? = nil, energyLevel: Int? = nil) async throws {
+    func updateEmotion(id: String, emotion: String, log: String? = nil, energyLevel: Int? = nil) async throws {
         guard let userId = Auth.auth().currentUser?.uid else {
             throw NSError(domain: "EmotionService", code: 1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])
         }
         
         // First validate the data
-        try validationService.validateEmotionData(type: type, energyLevel: energyLevel, text: text)
+        try validationService.validateEmotionData(emotion: emotion, energyLevel: energyLevel, log: log)
         
-        try await EmotionDatabaseService.updateEmotion(id: id, userId: userId, type: type, text: text, energyLevel: energyLevel)
+        try await EmotionDatabaseService.updateEmotion(id: id, userId: userId, emotion: emotion, log: log, energyLevel: energyLevel)
         
         // Refresh both recent and calendar emotions
         try await refreshRecentEmotions()

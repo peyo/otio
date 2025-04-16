@@ -10,7 +10,7 @@ struct EmotionCard: View {
         VStack(alignment: .leading, spacing: 16) {
             // Top row with emotion name and edit button
             HStack(alignment: .center, spacing: 24) {
-                Text(emotion.type)
+                Text(emotion.emotion)
                     .font(.custom("IBMPlexMono-Light", size: 15))
                     .fontWeight(.semibold)
                 
@@ -49,8 +49,8 @@ struct EmotionCard: View {
             }
             
             // Text preview if available
-            if let text = emotion.text, !text.isEmpty {
-                Text(text)
+            if let log = emotion.log, !log.isEmpty {
+                Text(log)
                     .font(.custom("IBMPlexMono-Light", size: 15))
                     .foregroundColor(.primary)
                     .lineLimit(2)

@@ -103,7 +103,7 @@ struct EmotionDetailView: View {
         )
         .sheet(isPresented: $showDetailedEntry) {
             if let selectedDeeperEmotion = selectedDeeperEmotion {
-                DetailedEmotionEntryView(emotionType: selectedDeeperEmotion)
+                DetailedEmotionEntryView(emotionName: selectedDeeperEmotion)
             }
         }
     }
