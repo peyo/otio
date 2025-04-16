@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EmotionButton: View {
-    let type: String
+    let emotion: String
     let isSelected: Bool
     let onTap: () -> Void
     @State private var isPressed = false
@@ -25,8 +25,8 @@ struct EmotionButton: View {
             )
             .overlay(
                 VStack(spacing: 4) {
-                    Text(type)
-                        .font(.custom("IBMPlexMono-Light", size: dynamicFontSize(for: type)))
+                    Text(emotion)
+                        .font(.custom("IBMPlexMono-Light", size: dynamicFontSize(for: emotion)))
                         .fontWeight(.medium)
                         .foregroundColor(isPressed ? Color.secondary : Color.primary)
                 }

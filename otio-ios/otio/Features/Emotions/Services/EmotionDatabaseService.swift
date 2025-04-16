@@ -167,6 +167,9 @@ class EmotionDatabaseService {
         let startTimestamp = Int(startDate.timeIntervalSince1970 * 1000)  // Convert to milliseconds
         let endTimestamp = Int(endDate.timeIntervalSince1970 * 1000)      // Convert to milliseconds
         
+        print("Debug: Fetching emotions from \(startDate) to \(endDate)")
+        print("Debug: Start timestamp: \(startTimestamp), End timestamp: \(endTimestamp)")
+        
         // Query emotions within the date range
         let snapshot = try await emotionsRef
             .queryOrdered(byChild: "timestamp")
@@ -177,6 +180,8 @@ class EmotionDatabaseService {
         guard let emotionsDict = snapshot.value as? [String: [String: Any]] else {
             return []
         }
+        
+        print("Debug: Found \(emotionsDict.count) emotions in snapshot")
         
         return emotionsDict.compactMap { id, data in
             guard let emotion = data["emotion"] as? String,

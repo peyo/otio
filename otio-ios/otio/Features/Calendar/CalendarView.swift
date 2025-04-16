@@ -83,6 +83,12 @@ struct CalendarView: View {
                     }
                 }
             }
+            .onChange(of: emotionService.calendarEmotions) { _ in
+                print("Debug: Calendar emotions updated, refreshing view")
+                if isInitializing {
+                    isInitializing = false
+                }
+            }
             .gesture(
                 DragGesture()
                     .onEnded { gesture in

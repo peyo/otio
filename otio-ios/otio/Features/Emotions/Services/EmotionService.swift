@@ -32,7 +32,18 @@ class EmotionService: ObservableObject {
         try validationService.validateEmotionData(emotion: emotion, energyLevel: energyLevel, log: log)
         try await EmotionDatabaseService.submitEmotion(emotion: emotion, userId: userId, log: log, energyLevel: energyLevel)
         NotificationCenter.default.post(name: NSNotification.Name("EmotionSaved"), object: nil)
+        
+        // Refresh both recent and calendar emotions
         try await refreshRecentEmotions()
+        
+        // Force a refresh of calendar data
+        calendarDataStartDate = nil
+        calendarDataEndDate = nil
+        if let startOfMonth = Calendar.current.date(
+            from: Calendar.current.dateComponents([.year, .month], from: Date())
+        ) {
+            try await fetchEmotionsForMonth(startOfMonth)
+        }
     }
     
     // Update an existing emotion
@@ -109,6 +120,7 @@ class EmotionService: ObservableObject {
     // Fetch emotions for a specific month
     @MainActor
     func fetchEmotionsForMonth(_ date: Date) async throws {
+        print("Debug: Fetching emotions for month: \(date)")
         guard let userId = Auth.auth().currentUser?.uid else {
             throw NSError(domain: "EmotionService", code: 1, userInfo: [NSLocalizedDescriptionKey: "User not logged in"])
         }
@@ -147,6 +159,7 @@ class EmotionService: ObservableObject {
             endDate: startOfNextMonth
         )
         
+        print("Debug: Found \(emotions.count) emotions for calendar")
         self.calendarEmotions = emotions
         self.calendarDataStartDate = startOfPreviousMonth
         self.calendarDataEndDate = startOfNextMonth
