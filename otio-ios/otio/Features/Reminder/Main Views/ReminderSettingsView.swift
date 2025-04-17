@@ -5,8 +5,6 @@ struct ReminderSettingsView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            let availableWidth = geometry.size.width
-            
             VStack(alignment: .leading, spacing: 16) {
                 // Enable/Disable Toggle
                 Toggle(isOn: $reminderManager.preferences.isEnabled) {

@@ -5,13 +5,13 @@ struct DayToggleButton: View {
     let isSelected: Bool
     let action: () -> Void
     
-    private let buttonWidth: CGFloat = 32
+    private let buttonSize: CGFloat = 24
     
     var body: some View {
         Button(action: action) {
             Text(day.rawValue)
                 .font(.custom("IBMPlexMono-Light", size: 15))
-                .frame(width: buttonWidth, height: 24)
+                .frame(width: buttonSize, height: buttonSize)
                 .foregroundColor(isSelected ? .appBackground : .primary)
                 .background(
                     Rectangle()
@@ -35,7 +35,7 @@ struct TimeField: View {
         TextField("00:00", text: $timeText)
             .font(.custom("IBMPlexMono-Light", size: 15))
             .foregroundColor(.primary)
-            .frame(width: 60)
+            .frame(width: 60, height: 24)
             .multilineTextAlignment(.center)
             .keyboardType(.numberPad)
             .focused($isFocused)
@@ -76,15 +76,17 @@ struct TimeField: View {
 struct AMPMToggle: View {
     @Binding var isAM: Bool
     
+    private let buttonSize: CGFloat = 24
+    
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 12) {
             Button {
                 isAM = true
             } label: {
                 Text("am")
                     .font(.custom("IBMPlexMono-Light", size: 15))
                     .foregroundColor(isAM ? .appBackground : .primary)
-                    .frame(width: 40, height: 24)
+                    .frame(width: buttonSize, height: buttonSize)
                     .background(
                         Rectangle()
                             .fill(isAM ? Color.primary : Color.clear)
@@ -101,7 +103,7 @@ struct AMPMToggle: View {
                 Text("pm")
                     .font(.custom("IBMPlexMono-Light", size: 15))
                     .foregroundColor(!isAM ? .appBackground : .primary)
-                    .frame(width: 40, height: 24)
+                    .frame(width: buttonSize, height: buttonSize)
                     .background(
                         Rectangle()
                             .fill(!isAM ? Color.primary : Color.clear)
@@ -121,17 +123,11 @@ struct CheckboxToggleStyle: ToggleStyle {
             configuration.label
             Spacer()
             Rectangle()
-                .fill(Color.clear)
+                .fill(configuration.isOn ? Color.primary : Color.clear)
                 .frame(width: 20, height: 20)
                 .overlay(
                     Rectangle()
                         .strokeBorder(Color.primary, lineWidth: 1)
-                )
-                .overlay(
-                    configuration.isOn ?
-                    Rectangle()
-                        .fill(Color.primary)
-                        .padding(4) : nil
                 )
                 .onTapGesture {
                     configuration.isOn.toggle()
