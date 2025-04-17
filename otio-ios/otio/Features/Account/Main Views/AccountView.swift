@@ -14,88 +14,84 @@ struct AccountView: View {
                 Color.appBackground
                     .ignoresSafeArea()
                 
-                VStack(spacing: 24) {
-                    ScrollView(showsIndicators: false) {
-                        VStack(spacing: 24) {
-                            // Subtitle
-                            Text("review your details")
-                                .font(.custom("IBMPlexMono-Light", size: 17))
-                                .fontWeight(.medium)
-                                .foregroundColor(.primary)
-                                .padding(.top, 6)
-                            
-                            // User Information
-                            VStack(alignment: .leading, spacing: 16) {
-                                if let email = userService.userEmail {
-                                    Text("email address: \(email)")
-                                        .font(.custom("IBMPlexMono-Light", size: 15))
-                                        .foregroundColor(.primary)
-                                }
-                                
-                                if let joinDate = userService.joinDate {
-                                    Text("join date: \(formatDate(joinDate))")
-                                        .font(.custom("IBMPlexMono-Light", size: 15))
-                                        .foregroundColor(.primary)
-                                }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
-                            
-                            // Add Divider
-                            Rectangle()
-                                .fill(Color.appCardBackground)
-                                .frame(height: 1)
-                                .padding(.horizontal, 20)
-                            
-                            // Reminder Settings
-                            ReminderSettingsView(reminderManager: reminderManager)
-                                .padding(.horizontal, 20)
-                                .padding(.bottom, 140)
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    // Bottom buttons
+                ScrollView(showsIndicators: false) {
                     VStack(spacing: 24) {
-                        NavigationLink {
-                            ManifestoCreditsView()
-                        } label: {
-                            Text("manifesto / credits")
-                                .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.primary)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 12)
-                                .background(isKeyboardVisible ? Color.appCardBackground : Color.appBackground)
-                                .overlay(
-                                    Rectangle()
-                                        .strokeBorder(Color.primary, lineWidth: 1)
-                                )
-                        }
+                        // Subtitle
+                        Text("review your details")
+                            .font(.custom("IBMPlexMono-Light", size: 17))
+                            .fontWeight(.medium)
+                            .foregroundColor(.primary)
+                            .padding(.top, 6)
                         
-                        Button(action: {
-                            userService.signOut()
-                        }) {
-                            Text("log out")
-                                .font(.custom("IBMPlexMono-Light", size: 15))
-                                .foregroundColor(.primary)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 12)
-                                .background(isKeyboardVisible ? Color.appCardBackground : Color.appBackground)
-                                .overlay(
-                                    Rectangle()
-                                        .strokeBorder(Color.primary, lineWidth: 1)
-                                )
+                        // User Information
+                        VStack(alignment: .leading, spacing: 16) {
+                            if let email = userService.userEmail {
+                                Text("email address: \(email)")
+                                    .font(.custom("IBMPlexMono-Light", size: 15))
+                                    .foregroundColor(.primary)
+                            }
+                            
+                            if let joinDate = userService.joinDate {
+                                Text("join date: \(formatDate(joinDate))")
+                                    .font(.custom("IBMPlexMono-Light", size: 15))
+                                    .foregroundColor(.primary)
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                        
+                        // Add Divider
+                        Rectangle()
+                            .fill(Color.appCardBackground)
+                            .frame(height: 1)
+                            .padding(.horizontal, 20)
+                        
+                        // Reminder Settings
+                        ReminderSettingsView(reminderManager: reminderManager)
+                            .padding(.horizontal, 20)
                     }
-                    .padding(.vertical, 16)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        (isKeyboardVisible ? Color.appCardBackground : Color.appBackground)
-                            .edgesIgnoringSafeArea(.bottom)
-                    )
-                    .padding(.bottom, isKeyboardVisible ? 0 : 16)
                 }
+                .background(Color.appBackground)
+            }
+            .overlay(alignment: .bottom) {
+                VStack(spacing: 24) {
+                    NavigationLink {
+                        ManifestoCreditsView()
+                    } label: {
+                        Text("manifesto / credits")
+                            .font(.custom("IBMPlexMono-Light", size: 15))
+                            .foregroundColor(.primary)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(isKeyboardVisible ? Color.appCardBackground : Color.appBackground)
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primary, lineWidth: 1)
+                            )
+                    }
+                    
+                    Button(action: {
+                        userService.signOut()
+                    }) {
+                        Text("log out")
+                            .font(.custom("IBMPlexMono-Light", size: 15))
+                            .foregroundColor(.primary)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(isKeyboardVisible ? Color.appCardBackground : Color.appBackground)
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.primary, lineWidth: 1)
+                            )
+                    }
+                }
+                .padding(.vertical, 16)
+                .frame(maxWidth: .infinity)
+                .background(
+                    (isKeyboardVisible ? Color.appCardBackground : Color.appBackground)
+                        .edgesIgnoringSafeArea(.bottom)
+                )
+                .padding(.bottom, isKeyboardVisible ? 0 : 16)
             }
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), 

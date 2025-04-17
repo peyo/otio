@@ -45,14 +45,32 @@ class TutorialState: ObservableObject {
         TutorialSlide(
             lightModeImage: "emotions_screen_light",
             darkModeImage: "emotions_screen_dark",
-            title: /*"track your emotions",*/"",
+            title: /*"",*/"",
             description: "tap an emotion whenever you'd like to track how you're feeling. studies (lieberman, 2007) found that naming emotions reduces amygdala activity, making feelings less overwhelming."
         ),
         TutorialSlide(
             lightModeImage: "insights_screen_light",
             darkModeImage: "insights_screen_dark",
-            title: /*"spot emotional insights",*/"",
+            title: /*"",*/"",
             description: "view your emotional patterns and receive daily reflections. mindfulness research (kabat-zinn, 1990) shows that reflective awareness improves mental health and emotional understanding."
+        ),
+        TutorialSlide(
+            lightModeImage: "",
+            darkModeImage: "",
+            title: /*"",*/"",
+            description: "download your emotion log as a csv for personal use or to share with a therapist. research (bailey et al., 2019) shows that emotional data can support collaboration and more personalized care."
+        ),
+        TutorialSlide(
+            lightModeImage: "",
+            darkModeImage: "",
+            title: /*"",*/"",
+            description: "view emotions on a calendar. tap any day to reflect on how you felt. research (pennebaker, 1997) shows that tracking emotions over time reveals patterns and builds self-awareness."
+        ),
+        TutorialSlide(
+            lightModeImage: "",
+            darkModeImage: "",
+            title: /*"",*/"",
+            description: "schedule gentle reminders to check in with yourself. compassionate prompts support emotional regulation and ease self-criticism, key to emotional well-being and resilience (neff, 2003)."
         )
     ]
     
