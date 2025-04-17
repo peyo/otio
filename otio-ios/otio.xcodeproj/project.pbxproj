@@ -443,7 +443,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = otio/otio.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_ASSET_PATHS = "\"otio/Preview Content\"";
 				DEVELOPMENT_TEAM = 8TD422KYZU;
 				ENABLE_PREVIEWS = YES;
@@ -461,7 +461,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6.3;
+				MARKETING_VERSION = 1.7.0;
 				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -479,7 +479,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = otio/otio.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 22;
 				DEVELOPMENT_ASSET_PATHS = "\"otio/Preview Content\"";
 				DEVELOPMENT_TEAM = 8TD422KYZU;
 				ENABLE_PREVIEWS = YES;
@@ -497,7 +497,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6.3;
+				MARKETING_VERSION = 1.7.0;
 				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.otio.otio;
 				PRODUCT_NAME = "$(TARGET_NAME)";

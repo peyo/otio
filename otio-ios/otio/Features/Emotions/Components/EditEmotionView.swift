@@ -58,15 +58,15 @@ struct EditEmotionView: View {
                                         } label: {
                                             ZStack {
                                                 Rectangle()
-                                                    .fill(Color.clear)
+                                                    .fill(energyLevel == level ? Color.primary : Color.clear)
                                                     .overlay(
                                                         Rectangle()
-                                                            .strokeBorder(energyLevel == level ? Color.secondary : Color.primary, lineWidth: 1)
+                                                            .strokeBorder(Color.primary, lineWidth: 1)
                                                     )
                                                 
                                                 Text("\(level)")
                                                     .font(.custom("IBMPlexMono-Light", size: 15))
-                                                    .foregroundColor(energyLevel == level ? Color.secondary : Color.primary)
+                                                    .foregroundColor(energyLevel == level ? Color.appBackground : Color.primary)
                                             }
                                         }
                                         .frame(width: buttonWidth, height: buttonWidth)
