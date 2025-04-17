@@ -55,20 +55,20 @@ class TutorialState: ObservableObject {
             description: "view your emotional patterns and receive daily reflections. mindfulness research (kabat-zinn, 1990) shows that reflective awareness improves mental health and emotional understanding."
         ),
         TutorialSlide(
-            lightModeImage: "",
-            darkModeImage: "",
+            lightModeImage: "download_screen_light",
+            darkModeImage: "download_screen_dark",
             title: /*"",*/"",
             description: "download your emotion log as a csv for personal use or to share with a therapist. research (bailey et al., 2019) shows that emotional data can support collaboration and more personalized care."
         ),
         TutorialSlide(
-            lightModeImage: "",
-            darkModeImage: "",
+            lightModeImage: "calendar_screen_light",
+            darkModeImage: "calendar_screen_dark",
             title: /*"",*/"",
             description: "view emotions on a calendar. tap any day to reflect on how you felt. research (pennebaker, 1997) shows that tracking emotions over time reveals patterns and builds self-awareness."
         ),
         TutorialSlide(
-            lightModeImage: "",
-            darkModeImage: "",
+            lightModeImage: "reminder_screen_light",
+            darkModeImage: "reminder_screen_dark",
             title: /*"",*/"",
             description: "schedule gentle reminders to check in with yourself. compassionate prompts support emotional regulation and ease self-criticism, key to emotional well-being and resilience (neff, 2003)."
         )
