@@ -14,7 +14,8 @@ struct MonthView: View {
         self.geometry = geometry
     }
     
-    private let weekdaySymbols = Calendar.current.veryShortWeekdaySymbols
+    // private let weekdaySymbols = Calendar.current.veryShortWeekdaySymbols
+    private let weekdaySymbols = ["su", "m", "t", "w", "th", "f", "s"]
     
     private var daysInMonth: [Date?] {
         let calendar = Calendar.current
@@ -62,7 +63,7 @@ struct MonthView: View {
             // Weekday headers
             HStack(spacing: 0) {
                 ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
-                    Text(symbol.lowercased())
+                    Text(symbol)
                         .font(.custom("IBMPlexMono-Light", size: 15))
                         .foregroundColor(.primary)
                         .frame(width: (geometry.size.width - 32) / 7)
