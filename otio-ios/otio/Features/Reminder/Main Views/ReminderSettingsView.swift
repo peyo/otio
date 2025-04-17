@@ -60,7 +60,7 @@ struct ReminderSettingsView: View {
                             .font(.custom("IBMPlexMono-Light", size: 13))
                             .foregroundColor(.secondary)
                         
-                        Text("this moment doesn't define you. you're allowed to begin again, gently.")
+                        Text("there's strength in stillness. doing nothing is sometimes exactly what you need.")
                             .font(.custom("IBMPlexMono-Light", size: 15))
                             .foregroundColor(.primary)
                             .padding(.horizontal, 16)
